@@ -1961,6 +1961,55 @@
     }
   }).catch(function () {});
 
+  /* ---- GA4 クリック計測（主要 CTA）：document へのイベント委譲で 1 クリック 1 イベント ----
+     phone_click＝href が tel: / line_click＝href に lin.ee（PC の QR を開く LINE ボタンも line_method:qr_modal で同じイベント）
+     map_click＝Google マップ / review_click＝Google 口コミ。リンク先・動作・見た目には一切触れない（送信のみ）。
+     gtag が無い・失敗しても、例外は握りつぶしてクリック動作を妨げない。 */
+  (function () {
+    var LINE_URL = (function () { var a = $('a[href*="lin.ee"]'); return a ? a.href : ''; })();
+    function where(el) {
+      if (el.closest('#line-modal-overlay')) return 'line_modal';
+      for (var x = el; x && x !== document.body; x = x.parentElement) {
+        if (x.id === 'site-header' || x.tagName === 'HEADER' || x.id === 'sp-menu') return 'header';
+        if (getComputedStyle(x).position === 'fixed') return 'mobile_fixed';
+      }
+      if (el.closest('footer')) return 'footer';
+      if (el.closest('#top')) return 'hero';
+      if (el.closest('section, #anshin5, [id$="-cta-wrap"]')) return 'section';
+      return 'unknown';
+    }
+    function kind(el) {
+      var h = (el.getAttribute('href') || '').trim(), t = el.textContent || '';
+      if (el.tagName === 'A') {
+        if (/^tel:/i.test(h)) return 'phone_click';
+        if (/lin\.ee/i.test(h)) return 'line_click';
+        if (/share\.google|g\.page\/r|search\.google\.com\/local\/(reviews|writereview)/i.test(h) || (/口コミ/.test(t) && /google/i.test(h))) return 'review_click';
+        if (/maps\.app\.goo\.gl|goo\.gl\/maps|maps\.google\.|google\.[a-z.]+\/maps/i.test(h)) return 'map_click';
+        return '';
+      }
+      if (/oshisumaOpenLineModal/.test(el.getAttribute('onclick') || '')) return 'line_click';
+      return '';
+    }
+    document.addEventListener('click', function (e) {
+      try {
+        var el = e.target && e.target.closest && e.target.closest('a[href], button[onclick*="oshisumaOpenLineModal"]');
+        if (!el) return;
+        var name = kind(el);
+        if (!name || typeof window.gtag !== 'function') return;
+        var sec = el.closest('section[id], [id$="-cta-wrap"], #anshin5');
+        var p = {
+          link_url: el.tagName === 'A' ? el.href : LINE_URL,
+          link_text: (el.getAttribute('aria-label') || el.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 100),
+          page_location: location.href,
+          cta_location: where(el),
+          cta_section: sec ? sec.id : ''
+        };
+        if (el.tagName !== 'A') p.line_method = 'qr_modal';
+        window.gtag('event', name, p);
+      } catch (err) {}
+    }, true);
+  })();
+
   /* ---- ページ内リンク：移動は今まで通り（固定ヘッダー分の余白は scroll-padding-top）、URL には #… を残さない ----
      （#… が残ると更新時にそのセクションから表示されてしまうため）。#top はページ最上部（HERO）へ */
   document.addEventListener('click', function (e) {
