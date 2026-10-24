@@ -2045,22 +2045,38 @@
         rate.children[1].classList.add('rv-stars');
         $all('svg', rate.children[1]).forEach(function (s, i) { s.classList.add('fx-star'); s.style.setProperty('--i', i); });
       }
-      // 「4.9」：0.0 から評価値まで、ゆっくり減速しながら数える（値は data/google-reviews.json の更新後の値を使う）
-      var rateRaf = 0;
+      // 「4.9」：評価値の 0.2 手前から 0.1 刻みの 3 段階（例：4.7 → 4.8 → 4.9）だけを、ゆっくり静かに切り替えて止める。
+      //  4.7 はブロックのフェードイン（約 1.2 秒）と一緒に現れ、その後 4.8 → 4.9 を軽いクロスフェードで（全体 約 2.1 秒）。
+      //  拡大・バウンド・点滅はしない。値は data/google-reviews.json の更新後の値を使う。
+      var rateTimers = [], rateAnims = [];
       var target = function () { var v = parseFloat(score.getAttribute('data-value') || score.textContent); return v > 0 && v <= 5 ? v : 0; };
       score.setAttribute('data-value', score.textContent.trim());
+      function rateStop() {
+        rateTimers.forEach(clearTimeout); rateTimers = [];
+        rateAnims.forEach(function (a) { a.cancel(); }); rateAnims = [];
+      }
+      function rateSwap(text) {
+        if (!score.animate) { score.textContent = text; return; }
+        var out = score.animate([{ opacity: 1, transform: 'none' }, { opacity: 0.2, transform: 'translate3d(0,-3px,0)' }], { duration: 200, easing: 'cubic-bezier(.4,0,1,1)', fill: 'forwards' });
+        rateAnims.push(out);
+        out.onfinish = function () {
+          score.textContent = text;
+          var inn = score.animate([{ opacity: 0.2, transform: 'translate3d(0,3px,0)' }, { opacity: 1, transform: 'none' }], { duration: 320, easing: 'cubic-bezier(.22,.61,.36,1)' });
+          rateAnims.push(inn);
+          out.cancel();
+        };
+      }
       unit(rate, score, function () {
-        cancelAnimationFrame(rateRaf);
+        rateStop();
         var to = target(); if (!to) return;
-        score.textContent = '0.0';
-        var dur = mobile ? 1300 : 1500, t0 = performance.now() + 250;
-        rateRaf = requestAnimationFrame(function tick(now) {
-          var t = Math.min(1, Math.max(0, (now - t0) / dur));
-          score.textContent = (target() * easeOut(t)).toFixed(1);
-          if (t < 1) rateRaf = requestAnimationFrame(tick);
+        var steps = [Math.max(0, to - 0.2), Math.max(0, to - 0.1)].filter(function (v) { return v > 0; });
+        score.textContent = (steps.length ? steps[0] : to).toFixed(1);
+        var at = [1200, 1700]; // 4.8 と 4.9 に切り替える時刻（ms、再生開始から。4.9 で止まるのは約 2.2 秒後）
+        steps.slice(1).concat([to]).forEach(function (v, i) {
+          rateTimers.push(setTimeout(function () { rateSwap(i === steps.length - 1 ? target().toFixed(1) : v.toFixed(1)); }, at[i + (2 - steps.length)]));
         });
       }, function () {
-        cancelAnimationFrame(rateRaf);
+        rateStop();
         if (target()) score.textContent = target().toFixed(1);
       });
     }
