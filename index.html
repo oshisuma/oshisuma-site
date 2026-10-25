@@ -8,6 +8,8 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
+  // 本番（oshisuma.jp）以外（プレビュー・ローカル確認）では計測を送らない
+  if (location.hostname !== 'oshisuma.jp') window['ga-disable-G-QMN0B0QSLX'] = true;
 
   gtag('config', 'G-QMN0B0QSLX');
 </script>
@@ -1974,16 +1976,26 @@ if(!('IntersectionObserver' in window)){go();return}phase();var io=new Intersect
     }
   };
 
-  /* ---- Google口コミの評価・件数（フォールバック表示済み／取得できれば更新） ---- */
-  fetch('data/google-reviews.json', { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-    if (!d) return;
-    var rating = Number(d.googleRating), count = Number(d.googleReviewCount);
-    if (rating > 0 && rating <= 5 && Number.isInteger(count) && count > 0) {
+  /* ---- Google口コミの評価・件数（フォールバック表示済み／取得できれば更新） ----
+     毎日の自動更新は reviews-data ブランチだけに書き込む（main は承認制のため）。そこを先に読み、
+     取れない・値がおかしいときはサイト内の data/google-reviews.json、それも駄目なら HTML の数字のまま。 */
+  (function () {
+    var SOURCES = ['https://raw.githubusercontent.com/oshisuma/oshisuma-site/reviews-data/data/google-reviews.json', 'data/google-reviews.json'];
+    function apply(d) {
+      if (!d) return false;
+      var rating = Number(d.googleRating), count = Number(d.googleReviewCount);
+      if (!(rating > 0 && rating <= 5 && Number.isInteger(count) && count > 0)) return false;
       var ratingEl = $('#google-rating'), countEl = $('#google-review-count');
       if (ratingEl) { ratingEl.textContent = rating.toFixed(1); ratingEl.setAttribute('data-value', rating.toFixed(1)); }
       if (countEl) countEl.textContent = String(count);
+      return true;
     }
-  }).catch(function () {});
+    (function next(i) {
+      if (i >= SOURCES.length) return;
+      fetch(SOURCES[i], { cache: 'no-cache' }).then(function (r) { return r.ok ? r.json() : null; })
+        .then(function (d) { if (!apply(d)) next(i + 1); }, function () { next(i + 1); });
+    })(0);
+  })();
 
   /* ---- GA4 クリック計測（主要 CTA）：document へのイベント委譲で 1 クリック 1 イベント ----
      phone_click＝href が tel: / line_click＝href に lin.ee（PC の QR を開く LINE ボタンも line_method:qr_modal で同じイベント）

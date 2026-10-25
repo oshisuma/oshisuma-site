@@ -1,5 +1,9 @@
 name: Update Google Reviews
 
+# 口コミの評価・件数を毎日取得し、reviews-data ブランチ（data/google-reviews.json だけを置く）へ書き込む。
+# main（承認制・本番）には書き込まない。ページは reviews-data のデータを読み、取れなければ main のデータを使う。
+# APIキー・Place ID は Environment「google-reviews」（main からの実行に限定）から読む。
+
 on:
   schedule:
     # 09:17 JST every day
@@ -17,6 +21,7 @@ jobs:
   update:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    environment: google-reviews
 
     steps:
       - name: Checkout
@@ -33,14 +38,25 @@ jobs:
           GOOGLE_PLACE_ID: ${{ secrets.GOOGLE_PLACE_ID }}
         run: node tools/update-google-reviews.mjs
 
-      - name: Commit if changed
+      - name: Commit to reviews-data branch if changed
         run: |
-          if git diff --quiet -- data/google-reviews.json; then
+          set -euo pipefail
+          cp data/google-reviews.json "$RUNNER_TEMP/google-reviews.json"
+          git checkout -- data/google-reviews.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch --depth=1 origin reviews-data; then
+            git checkout -B reviews-data FETCH_HEAD
+          else
+            git checkout --orphan reviews-data
+            git rm -rfq .
+          fi
+          mkdir -p data
+          cp "$RUNNER_TEMP/google-reviews.json" data/google-reviews.json
+          git add data/google-reviews.json
+          if git diff --cached --quiet; then
             echo "No review data changes."
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/google-reviews.json
           git commit -m "chore: update Google review data"
-          git push
+          git push origin reviews-data
