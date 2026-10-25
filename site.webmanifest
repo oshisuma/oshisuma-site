@@ -1,0 +1,11 @@
+{
+  "name": "スマホ・Switch・iPad修理 オシエテスマホ+茨城町本店",
+  "short_name": "オシスマ",
+  "icons": [
+    { "src": "android-chrome-192x192.png?v=20261025", "sizes": "192x192", "type": "image/png" },
+    { "src": "android-chrome-512x512.png?v=20261025", "sizes": "512x512", "type": "image/png" }
+  ],
+  "theme_color": "#0F2B46",
+  "background_color": "#ffffff",
+  "display": "browser"
+}
