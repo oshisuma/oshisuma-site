@@ -231,7 +231,7 @@ function sections(c) {
   const sum = plain(c.summary);
   const fresh = (t) => str(t) && !sum.includes(plain(t));
   const list = [];
-  if (fresh(c.details)) list.push({ kind: "details", heading: "修理・対応内容", text: c.details });
+  if (fresh(c.details)) list.push({ kind: "details", heading: "修理・対応内容と結果", text: c.details });
   for (const s of Array.isArray(c.body) ? c.body : []) if (str(s.heading) && fresh(s.text)) list.push({ kind: "", heading: s.heading, text: s.text });
   const ep = fresh(c.episode) ? c.episode : "";
   const sc = fresh(c.staffComment) ? c.staffComment : "";
