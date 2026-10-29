@@ -315,7 +315,7 @@ ${header(current)}
 ${main}
 </main>
 ${FOOTER}
-${BAR}
+${BAR}${main.includes("data-line-qr") ? "\n" + LINE_QR : ""}
 </body>
 </html>
 `;
@@ -357,6 +357,35 @@ const FOOTER = `<footer class="cs-footer"><div class="cs-wrap">
   </div>
   <div class="cs-footer-bottom"><span>© オシエテスマホ＋ 茨城町本店</span><a href="/privacy-policy.html">プライバシーポリシー</a></div>
 </div></footer>`;
+
+// 記事内のお問い合わせ（全記事共通）。PC はトップの「電話で相談する／LINEで相談する」と同じ大きなボタン、
+// スマホ・タブレットは画面下の固定ボタンがあるので、ボタンは出さず案内文と電話番号だけ
+const ASK = `<aside class="cs-ask" aria-label="お問い合わせ">
+        <p class="cs-ask-title">同じような症状でお困りですか？</p>
+        <p class="cs-ask-text">修理するか迷っている段階でも大丈夫です。料金は機種や状態によって変わるため、修理の前にご説明します。</p>
+        <div class="cs-ask-btns">
+          <a class="cs-cta cs-cta-tel" href="tel:${TEL}"><span class="cs-cta-ic">${ICON_TEL}</span><span class="cs-cta-tx"><span>電話で相談する</span><b class="cs-cta-num">${TEL_LABEL}</b></span></a>
+          <a class="cs-cta cs-cta-line" href="${LINE_URL}" data-line-qr><span class="cs-cta-ic">${ICON_LINE}</span><span class="cs-cta-tx"><b>LINEで相談する</b><span>QRコードを表示</span></span></a>
+        </div>
+        <p class="cs-ask-sp">画面下のボタンから、お電話・LINEでご相談いただけます。<a class="cs-ask-num" href="tel:${TEL}">${ICON_TEL}${TEL_LABEL}</a></p>
+        <p class="cs-hours">${HOURS}</p>
+      </aside>`;
+
+// PC で LINE ボタンを押したときの QR コード（トップと同じ表示）。スマホ・タブレットはそのまま LINE を開く
+const LINE_QR = `<dialog id="cs-qr" class="cs-qr" aria-label="LINEでのご相談のしかた">
+  <form method="dialog"><button class="cs-qr-close" aria-label="閉じる">× 閉じる</button></form>
+  <p class="cs-qr-title">${ICON_LINE}LINEでのご相談はこちら</p>
+  <div class="cs-qr-body">
+    <img loading="lazy" decoding="async" src="https://api.qrserver.com/v1/create-qr-code/?size=460x460&amp;margin=8&amp;data=https%3A%2F%2Flin.ee%2F5w0kuAG" width="200" height="200" alt="${STORE} 公式LINEのQRコード">
+    <ol><li>スマホのカメラを開く</li><li>QRコードにカメラを向ける<small>※写真を撮る必要はありません</small></li><li>LINEが開いたら、メッセージでご相談内容を送ってください</li></ol>
+  </div>
+  <a class="cs-qr-tel" href="tel:${TEL}">QRコードが難しい方は、お電話で <b>${TEL_LABEL}</b></a>
+</dialog>
+<script>
+(function(){var d=document.getElementById("cs-qr");if(!d||!d.showModal)return;
+document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("[data-line-qr]");if(!a||!matchMedia("(min-width:1024px)").matches)return;e.preventDefault();d.showModal()});
+d.addEventListener("click",function(e){if(e.target===d)d.close()})})();
+</script>`;
 
 const BAR = `<div class="cs-bar"><a class="tel" href="tel:${TEL}">${ICON_TEL}電話で相談</a><a class="line" href="${LINE_URL}">${ICON_LINE}LINEで相談</a></div>`;
 
@@ -539,12 +568,7 @@ function renderArticle(c) {
     </div>
     <div class="cs-art-side">
       <section class="cs-facts" aria-label="この事例の概要"><p class="cs-facts-title">この事例の概要</p><dl>${facts.map(([k, val]) => `<dt>${k}</dt><dd>${esc(val)}</dd>`).join("")}</dl></section>
-      <aside class="cs-ask">
-        <p class="cs-ask-title">同じような症状でお困りですか？</p>
-        <p>修理するか迷っている段階でも大丈夫です。料金は機種や状態によって変わるため、修理の前にご説明します。<span class="cs-ask-sp">画面下のボタンから、お電話・LINEでご相談いただけます。</span></p>
-        <div class="cs-ask-row"><a class="cs-btn cs-btn-tel" href="tel:${TEL}">${ICON_TEL}${TEL_LABEL}</a><a class="cs-btn cs-btn-line" href="${LINE_URL}">${ICON_LINE}LINEで相談</a></div>
-        <p class="cs-hours">${HOURS}</p>
-      </aside>
+      ${ASK}
     </div>
     <nav class="cs-next" aria-label="ほかのページへ">${
       review
