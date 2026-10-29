@@ -1,0 +1,36 @@
+{
+  "slug": "20261029-sample-card",
+  "status": "sample",
+  "date": "2026-10-29",
+  "seq": 1,
+  "category": "iphone",
+  "area": "（見本）地域名",
+  "device": "iPhone",
+  "model": "",
+  "work": "（見本）修理内容",
+  "symptom": "（見本）症状",
+  "title": "【表示見本】基本情報だけの報告（一覧カードのみ）",
+  "summary": "（見本）基本情報だけの報告は、個別ページを作らず、事例一覧に写真付きのカードとしてこの要約まで表示します。",
+  "photos": [
+    {
+      "src": "optimized/uploads/iphone-repair-tweezers-closeup.webp",
+      "srcset": [
+        ["optimized/uploads/iphone-repair-tweezers-closeup-768w.webp", 768],
+        ["optimized/uploads/iphone-repair-tweezers-closeup.webp", 1536]
+      ],
+      "width": 1536,
+      "height": 1152,
+      "alt": "（見本写真）ピンセットでiPhone内部を修理する手元",
+      "caption": "",
+      "check": "ok"
+    }
+  ],
+  "verification": {
+    "facts": "unconfirmed",
+    "note": "この記事は表示見本です。実際の事例ではありません\n写真はトップページで使っている店舗の写真を借りています"
+  },
+  "source": {
+    "type": "sample",
+    "note": "レイアウト確認用の見本（基本情報だけの報告）"
+  }
+}

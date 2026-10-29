@@ -1,0 +1,38 @@
+{
+  "slug": "20261029-sample-short",
+  "status": "sample",
+  "date": "2026-10-29",
+  "seq": 2,
+  "category": "iphone",
+  "area": "（見本）地域名",
+  "device": "iPhone",
+  "model": "（見本）機種名",
+  "work": "（見本）修理内容",
+  "symptom": "（見本）症状",
+  "result": "（見本）当日お渡し",
+  "title": "【表示見本】通常の修理事例（短い個別ページ）",
+  "summary": "（見本）症状と対応を1〜2文で伝える要約です。通常の事例は、この要約・基本情報・写真・修理内容の1〜2段落だけで十分です。",
+  "details": "（見本）Googleフォームの報告にある「症状」「確認したこと」「行った作業」を、自然な文章で1段落にまとめます。報告にある内容だけを書き、報告にない見出しや段落は作りません。スタッフのひとことやエピソードの報告がない事例では、その欄は表示されません。",
+  "photos": [
+    {
+      "src": "optimized/uploads/iphone-camera-lens-repair.webp",
+      "srcset": [
+        ["optimized/uploads/iphone-camera-lens-repair-480w.webp", 480],
+        ["optimized/uploads/iphone-camera-lens-repair.webp", 1108]
+      ],
+      "width": 1108,
+      "height": 1477,
+      "alt": "（見本写真）背面カメラレンズが割れたiPhone",
+      "caption": "",
+      "check": "ok"
+    }
+  ],
+  "verification": {
+    "facts": "unconfirmed",
+    "note": "この記事は表示見本です。実際の事例ではありません\n写真はトップページで使っている店舗の写真を借りています\n症状・作業・結果が具体的に報告された、通常の事例の表示です"
+  },
+  "source": {
+    "type": "sample",
+    "note": "レイアウト確認用の見本（通常の事例）"
+  }
+}

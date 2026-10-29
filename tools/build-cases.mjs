@@ -9,6 +9,11 @@
 //   sample     … 表示見本。review と同じ扱い
 //   published  … 正式公開。verification.facts が "confirmed" で、確認者・確認日があるものだけ
 // legacyTopCard: true … このしくみ以前からトップに載っている事例。公開記事が3件に満たない間、トップに元の表示のまま残す
+//
+// 情報量による載せ方（すべての記事に同じ見出しを並べない）
+//   本文（修理・対応内容・追加の見出し・スタッフのひとこと等）が少ない … 一覧に写真付きのカードだけを載せる（個別ページなし）
+//   本文が MIN_PAGE_CHARS 字以上 … 短い個別ページを作り、検索対象にする
+// お客様の年代・年齢・性別は載せない。項目として持たず、文章に入っていたら作成を止める（人が個別に確認した場合だけ例外）
 
 import { readFile, writeFile, readdir, mkdir, rm, rmdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -33,19 +38,17 @@ const OG_FALLBACK = "optimized/og/oshietesumaho-store-exterior-og.jpg";
 const ASSET_V = "20261025";
 const PER_PAGE = 24;
 const MIN_CATEGORY_INDEX = 3; // 分類ページを検索対象にする最低件数
-const MIN_BODY_CHARS = 150; // 記事を検索対象にする本文の最低文字数（要約を除く）
+const MIN_PAGE_CHARS = 100; // 個別ページを作る本文の最低文字数（要約と重なる文は除く）。足りない事例は一覧のカードだけ
+const MAX_PHOTOS = 3; // 写真は原則1〜3枚
 const GENERATED = "<!-- このページは tools/build-cases.mjs が content/cases/ から自動生成しています。直接編集しないでください。 -->";
 const RESERVED = new Set(["page", "review"]);
 
-const STD_SECTIONS = [
-  ["consultation", "お困りだったこと"],
-  ["diagnosis", "確認したこと・ご説明"],
-  ["treatment", "対応内容"],
-  ["result", "お渡しまで"],
-  ["episode", "エピソード"],
-  ["staffComment", "スタッフより"],
-];
-const TEXT_FIELDS = ["title", "description", "summary", "symptom", "work", ...STD_SECTIONS.map(([k]) => k)];
+const TEXT_FIELDS = ["title", "description", "summary", "symptom", "work", "result", "details", "episode", "staffComment"];
+// 年代・年齢・性別：項目として持たない。文章に入っていたら止める
+const DEMOGRAPHIC_KEYS = ["age", "ageGroup", "gender", "sex", "customerAge", "customerGender", "年代", "年齢", "性別"];
+const DEMOGRAPHIC_RE = /[0-9０-９十]+\s*(?:代|歳|才)(?!目)|男性|女性|ご年配|年配の|高齢|お年寄り|おじいちゃん|おばあちゃん|おじいさん|おばあさん/;
+// 以前の版の項目。内容が黙って消えないよう、残っていたら止める
+const OLD_FIELDS = ["consultation", "diagnosis", "treatment", "headings"];
 const PRICE_RE = /[0-9０-９][0-9０-９,，]*\s*円|[¥￥]|税込|税抜/;
 
 // ---------- 読み込みと検証 ----------
@@ -95,6 +98,15 @@ function validate(c, base) {
   if (!c.source || !str(c.source.type)) err("source.type（元になった報告の種類）が空です");
   for (const k of TEXT_FIELDS) if (PRICE_RE.test(c[k] || "")) err(`${k} に料金の記載があります。事例には料金を掲載しない方針です`);
   for (const s of c.body || []) if (PRICE_RE.test(`${s.heading}${s.text}`)) err("body に料金の記載があります");
+  for (const k of OLD_FIELDS) if (k in c) err(`${k} は使わなくなりました。修理・対応内容は details に1〜2段落でまとめてください`);
+  for (const k of DEMOGRAPHIC_KEYS) if (k in c) err(`${k}：お客様の年代・年齢・性別は掲載しない方針のため、記事データに入れないでください`);
+  if ((c.verification || {}).ageGender !== "approved") {
+    const texts = [...TEXT_FIELDS.map((k) => c[k]), ...(c.body || []).flatMap((s) => [s.heading, s.text]), c.customerComment?.text, ...(c.photos || []).flatMap((p) => [p.alt, p.caption])];
+    const hit = texts.filter(str).map((t) => t.match(DEMOGRAPHIC_RE)).find(Boolean);
+    if (hit) err(`「${hit[0]}」：お客様の年代・年齢・性別は原則載せません。削除するか、エピソードに必要で人が確認した場合だけ verification.ageGender を "approved" にしてください`);
+  }
+  if (str(c.result) && [...c.result].length > 40) warnings.push(`${c._file}: result（対応結果）は概要に出す短い一言です（40字以内が目安）。詳しい内容は details へ`);
+  if (okPhotos(c).length > MAX_PHOTOS) warnings.push(`${c._file}: 写真は原則${MAX_PHOTOS}枚までです（${okPhotos(c).length}枚）`);
   if (c.customerComment) {
     if (!str(c.customerComment.text)) err("customerComment.text が空です");
     if (c.customerComment.consent !== true) err("customerComment は、お客様の掲載同意（consent: true）がある場合だけ載せられます");
@@ -167,8 +179,12 @@ function okPhotos(c) {
 function isReview(c) {
   return c.status !== "published";
 }
+// 個別ページがあるか（確認用ページは、確認のため常に作る）
+function hasPage(c) {
+  return isReview(c) || c._page;
+}
 function url(c) {
-  return isReview(c) ? `/cases/review/${c.slug}/` : `/cases/${c.slug}/`;
+  return isReview(c) ? `/cases/review/${c.slug}/` : c._page ? `/cases/${c.slug}/` : null;
 }
 function catUrl(key, page = 1) {
   const base = key ? `/cases/${key}/` : "/cases/";
@@ -209,26 +225,33 @@ function img(p, { sizes, eager = false } = {}) {
   return `<img ${eager ? 'fetchpriority="high"' : 'loading="lazy"'} decoding="async" src="/${esc(p.src)}"${set ? ` srcset="${esc(set)}" sizes="${sizes}"` : ""} width="${p.width}" height="${p.height}" alt="${esc(p.alt)}"${style}>`;
 }
 
-// 本文：body（自由な見出し）があればそれを使い、なければ標準項目。要約と同じ内容の項目は繰り返さない
+// 本文：修理・対応内容（details）→ 詳しく書くときの追加の見出し（body）→ スタッフのひとこと・エピソード（報告にあるときだけ）。
+// 報告にない見出しは作らない。要約と同じ内容は繰り返さない
 function sections(c) {
-  const list = Array.isArray(c.body) && c.body.length
-    ? c.body.map((s) => ({ kind: s.kind || "", heading: s.heading, text: s.text }))
-    : STD_SECTIONS.map(([k, h]) => ({ kind: k, heading: (c.headings && c.headings[k]) || h, text: c[k] }));
   const sum = plain(c.summary);
-  return list.filter((s) => str(s.text) && str(s.heading) && !(sum.includes(plain(s.text)) || plain(s.text) === sum));
+  const fresh = (t) => str(t) && !sum.includes(plain(t));
+  const list = [];
+  if (fresh(c.details)) list.push({ kind: "details", heading: "修理・対応内容", text: c.details });
+  for (const s of Array.isArray(c.body) ? c.body : []) if (str(s.heading) && fresh(s.text)) list.push({ kind: "", heading: s.heading, text: s.text });
+  const ep = fresh(c.episode) ? c.episode : "";
+  const sc = fresh(c.staffComment) ? c.staffComment : "";
+  if (ep || sc) list.push({ kind: "staff", heading: ep && sc ? "スタッフのひとこと・エピソード" : ep ? "エピソード" : "スタッフのひとこと", text: [ep, sc].filter(Boolean).join("\n") });
+  return list;
 }
 function bodyChars(c) {
   return sections(c).reduce((n, s) => n + plain(s.text).length, 0) + (c.customerComment ? plain(c.customerComment.text).length : 0);
 }
-function indexable(c) {
-  if (isReview(c) || c.indexable === false) return false;
-  if (bodyChars(c) < MIN_BODY_CHARS) {
-    warnings.push(`${c._file}: 本文が短いため（${bodyChars(c)}字／目安${MIN_BODY_CHARS}字）検索対象外（noindex）にしました`);
-    return false;
-  }
-  return true;
+for (const c of all) c._page = c.page !== false && bodyChars(c) >= MIN_PAGE_CHARS;
+for (const c of published) {
+  c._index = c._page && c.indexable !== false;
+  if (!c._page) warnings.push(`${c._file}: 本文が少ないため（${bodyChars(c)}字／目安${MIN_PAGE_CHARS}字）個別ページは作らず、一覧のカードだけに載せました`);
 }
-for (const c of published) c._index = indexable(c);
+// 同じような文章の事例が並ばないように
+for (const [k, label] of [["summary", "要約"], ["details", "修理・対応内容"]]) {
+  const by = new Map();
+  for (const c of all.filter((x) => x.status !== "draft" && plain(x[k]).length >= 20)) by.set(plain(c[k]), [...(by.get(plain(c[k])) || []), c._file]);
+  for (const files of by.values()) if (files.length > 1) warnings.push(`${label}が同じ文章の事例があります（${files.join("、")}）。事例ごとの内容に書き分けてください`);
+}
 
 const css = await readFile(path.join(OUT_DIR, "cases.css"), "utf8");
 const cssV = createHash("sha256").update(css.replace(/\r\n/g, "\n")).digest("hex").slice(0, 10);
@@ -345,19 +368,22 @@ function crumbsLd(items) {
   return { "@type": "BreadcrumbList", itemListElement: items.map(([h, t], i) => ({ "@type": "ListItem", position: i + 1, name: t, item: abs(h) })) };
 }
 
+// 一覧カード。個別ページのない事例は、リンクなしで要約まで見せる
 function card(c) {
   const cat = catByKey.get(c.category);
   const p = okPhotos(c)[0];
-  const sym = str(c.symptom) ? c.symptom : c.summary;
-  return `<li class="cs-card"><a href="${url(c)}">
+  const linked = hasPage(c);
+  const sym = linked && str(c.symptom) ? c.symptom : c.summary;
+  const tag = linked ? "a" : "div";
+  return `<li class="cs-card" id="${c.slug}"><${tag} class="cs-card-in"${linked ? ` href="${url(c)}"` : ""}>
   <span class="cs-card-img">${p ? img(p, { sizes: "(max-width:599px) 100vw, (max-width:1023px) 50vw, 380px" }) : '<span class="cs-noimg">写真は確認中です</span>'}<span class="cs-card-area">${esc(c.area)}</span></span>
   <span class="cs-card-body">
     <span class="cs-card-cat">${esc(cat.label)}</span>
     <span class="cs-card-title">${esc(deviceName(c))}｜${esc(c.work)}</span>
-    <span class="cs-card-sym">${esc(sym)}</span>
-    <span class="cs-card-foot"><time datetime="${c.date}">${c.date.replaceAll("-", ".")} 掲載</time><span class="cs-card-more">詳しく見る →</span></span>
+    <span class="cs-card-sym${linked ? "" : " is-full"}">${esc(sym)}</span>
+    <span class="cs-card-foot"><time datetime="${c.date}">${c.date.replaceAll("-", ".")} 掲載</time>${linked ? '<span class="cs-card-more">詳しく見る →</span>' : ""}</span>
   </span>
-</a></li>`;
+</${tag}></li>`;
 }
 
 // ---------- 一覧（すべて・分類別、ページ分け） ----------
@@ -429,7 +455,7 @@ ${slice.map(card).join("\n")}
         inLanguage: "ja",
         isPartOf: { "@id": `${SITE}/#website` },
         about: { "@id": `${SITE}/#store` },
-        ...(slice.length ? { mainEntity: { "@type": "ItemList", itemListElement: slice.map((c, i) => ({ "@type": "ListItem", position: (n - 1) * PER_PAGE + i + 1, url: abs(url(c)), name: headline(c) })) } } : {}),
+        ...(slice.length ? { mainEntity: { "@type": "ItemList", itemListElement: slice.map((c, i) => ({ "@type": "ListItem", position: (n - 1) * PER_PAGE + i + 1, url: c._page ? abs(url(c)) : `${canonical}#${c.slug}`, name: headline(c) })) } } : {}),
       },
       crumbsLd(ldTrail),
       STORE_LD,
@@ -446,7 +472,7 @@ for (const cat of categories) if (published.some((c) => c.category === cat.key))
 // ---------- 個別記事 ----------
 
 function related(c) {
-  const pool = published.filter((x) => x !== c);
+  const pool = published.filter((x) => x !== c && x._page);
   return [...pool.filter((x) => x.category === c.category), ...pool.filter((x) => x.category !== c.category)].slice(0, 3);
 }
 
@@ -463,8 +489,9 @@ function renderArticle(c) {
   const facts = [
     ["地域", `${c.area}からご来店`],
     ["機種", deviceName(c)],
-    ["症状", c.symptom],
-    ["対応", c.work],
+    ["症状・ご相談", c.symptom],
+    ["修理・対応", c.work],
+    ["対応結果", c.result],
     ["作業日", c.workDate && jpDate(c.workDate)],
   ].filter(([, v]) => str(v));
 
@@ -480,9 +507,12 @@ function renderArticle(c) {
   const banner = review
     ? `<div class="cs-review" role="note"><b>${c.status === "sample" ? "表示見本（実際の事例ではありません）" : "確認用ページ（未公開）"}</b>${
         c.status === "sample"
-          ? "記事の情報が多い場合のレイアウトを確認するための見本です。文章は説明用のダミーで、写真もこの記事のための撮影ではありません。"
+          ? "記事の表示を確認するための見本です。文章は説明用のダミーで、写真もこの記事のための撮影ではありません。"
           : "スタッフによる事実・写真の確認が終わっていないため、一覧には載せず、検索エンジンにも表示されません。"
-      }${str(v.note) ? `<ul>${v.note.split(/\n+/).map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}</div>`
+      }${(() => {
+        const notes = [...(str(v.note) ? v.note.split(/\n+/) : []), ...(c._page ? [] : [`本文が少ないため、公開しても個別ページは作らず、事例一覧に写真付きのカードだけを載せます（本文${bodyChars(c)}字／個別ページの目安${MIN_PAGE_CHARS}字）`])];
+        return notes.length ? `<ul>${notes.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : "";
+      })()}</div>`
     : "";
   const dates = `<time datetime="${c.date}">${jpDate(c.date)} 掲載</time>${c.updated && c.updated > c.date ? `<span>${jpDate(c.updated)} 更新</span>` : ""}`;
 
@@ -555,7 +585,7 @@ ${rel.map(card).join("\n")}
   if (index) sitemapUrls.push({ loc: canonical, lastmod: lastmod(c) });
 }
 
-for (const c of [...published, ...reviewing]) renderArticle(c);
+for (const c of [...published, ...reviewing]) if (hasPage(c)) renderArticle(c);
 
 // 確認用ページの一覧（noindex・どこからもリンクしない）
 out(
@@ -583,8 +613,8 @@ const topCases = [...published, ...all.filter((c) => c.legacyTopCard && c.status
 
 function topCard(c, i) {
   const main = i === 0;
-  const linked = c.status === "published";
-  const p = linked ? okPhotos(c)[0] : c.photos[0];
+  const linked = c.status === "published" && c._page;
+  const p = c.status === "published" ? okPhotos(c)[0] : c.photos[0];
   const tag = linked ? "a" : "div";
   const href = linked ? ` href="${url(c).slice(1)}"` : "";
   const id = main ? "case-main" : `case-sub-${i}`;
@@ -708,7 +738,7 @@ for (const f of stale) {
   for (let d = path.dirname(f); d !== OUT_DIR && (await readdir(d)).length === 0; d = path.dirname(d)) await rmdir(d);
 }
 
-console.log(`公開 ${published.length} 件（検索対象 ${published.filter((c) => c._index).length} 件）／確認待ち・見本 ${reviewing.length} 件／下書き ${all.filter((c) => c.status === "draft").length} 件`);
+console.log(`公開 ${published.length} 件（個別ページ ${published.filter((c) => c._page).length} 件・検索対象 ${published.filter((c) => c._index).length} 件）／確認待ち・見本 ${reviewing.length} 件／下書き ${all.filter((c) => c.status === "draft").length} 件`);
 for (const w of warnings) console.log(`注意：${w}`);
 if (CHECK && changed.length) {
   console.error("生成結果がコミット済みのファイルと違います。node tools/build-cases.mjs を実行してください：\n- " + changed.join("\n- "));
