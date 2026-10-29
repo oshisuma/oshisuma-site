@@ -1,7 +1,7 @@
 {
   "slug": "20261023-iphone-battery-mito",
-  "status": "published",
-  "indexable": false,
+  "status": "review",
+  "legacyTopCard": true,
   "date": "2026-10-23",
   "seq": 3,
   "category": "iphone",
@@ -11,12 +11,6 @@
   "work": "バッテリー交換",
   "symptom": "充電がすぐ減る・突然電源が落ちる",
   "summary": "充電がすぐ減る・突然電源が落ちる症状。当日中にお返ししました。",
-  "consultation": "充電がすぐ減る・突然電源が落ちる症状でご来店いただきました。",
-  "diagnosis": "",
-  "treatment": "iPhoneのバッテリーを交換しました。",
-  "result": "当日中にお返ししました。",
-  "episode": "",
-  "staffComment": "",
   "photos": [
     {
       "src": "optimized/uploads/iphone-battery-replacement-repair.webp",
@@ -28,11 +22,20 @@
       "height": 1536,
       "alt": "iPhoneのバッテリー交換",
       "caption": "",
-      "filter": "brightness(1.085) contrast(1.08) saturate(1.068) sepia(0.06)"
+      "filter": "brightness(1.085) contrast(1.08) saturate(1.068) sepia(0.06)",
+      "check": "ng",
+      "checkNote": "左側の箱にQRコードが写っている。この事例の作業写真かどうかも未確認"
     }
   ],
+  "verification": {
+    "facts": "unconfirmed",
+    "photos": "unconfirmed",
+    "by": "",
+    "date": "",
+    "note": "トップページの掲載文（2026-10-23 公開）だけをもとにしています\n機種名・実際の修理日・作業の詳しい内容は未確認です\n掲載日はトップページへの掲載日で、修理を行った日ではありません\n写真にQRコードが写っているため、事例ページでは表示していません"
+  },
   "source": {
     "type": "existing-site",
-    "note": "2026-10-23 公開のトップページ「最新の修理事例」CASE 01 の掲載文をもとに作成。機種名・作業日・詳しい経緯は未記入（店舗で確認後に追記）。"
+    "note": "トップページ「最新の修理事例」CASE 01 の掲載文"
   }
 }

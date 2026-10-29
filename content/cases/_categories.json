@@ -1,8 +1,5 @@
 {
-  "groups": [
-    { "key": "repair", "label": "修理", "kind": "修理事例" },
-    { "key": "support", "label": "相談・サポート", "kind": "対応事例" }
-  ],
+  "_comment": "分類の一覧。並び順が一覧ページの分類ボタンの順になる。group は repair（修理事例）か support（対応事例）。key は URL（/cases/<key>/）になるので変えない",
   "categories": [
     { "key": "iphone", "label": "iPhone修理", "short": "iPhone", "group": "repair" },
     { "key": "android", "label": "Android修理", "short": "Android", "group": "repair" },

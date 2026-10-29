@@ -1,7 +1,7 @@
 {
   "slug": "20261023-android-screen-ibarakimachi",
-  "status": "published",
-  "indexable": false,
+  "status": "review",
+  "legacyTopCard": true,
   "date": "2026-10-23",
   "seq": 2,
   "category": "android",
@@ -11,12 +11,6 @@
   "work": "画面交換",
   "symptom": "画面の不具合",
   "summary": "画面の不具合でご相談。内部を開けて画面パーツを交換しました。",
-  "consultation": "画面の不具合でご相談いただきました。",
-  "diagnosis": "",
-  "treatment": "内部を開けて画面パーツを交換しました。",
-  "result": "",
-  "episode": "",
-  "staffComment": "",
   "photos": [
     {
       "src": "optimized/uploads/android-screen-repair-disassembly.webp",
@@ -30,11 +24,20 @@
       "alt": "Androidスマートフォンの内部と画面パーツを分解している修理作業",
       "caption": "",
       "objectPosition": "60% 45%",
-      "filter": "brightness(1.06) contrast(1.07) saturate(1.008) sepia(0.02)"
+      "filter": "brightness(1.06) contrast(1.07) saturate(1.008) sepia(0.02)",
+      "check": "ng",
+      "checkNote": "右上にバーコードと数字の入ったラベル（伝票・番号の可能性）が写っている。この事例の作業写真かどうかも未確認"
     }
   ],
+  "verification": {
+    "facts": "unconfirmed",
+    "photos": "unconfirmed",
+    "by": "",
+    "date": "",
+    "note": "トップページの掲載文（2026-10-23 公開）だけをもとにしています\n機種名・実際の修理日・不具合の詳しい内容・修理後の結果は未確認です\n掲載日はトップページへの掲載日で、修理を行った日ではありません\n写真にバーコード付きのラベルが写っているため、事例ページでは表示していません"
+  },
   "source": {
     "type": "existing-site",
-    "note": "2026-10-23 公開のトップページ「最新の修理事例」CASE 02 の掲載文をもとに作成。機種名・作業日・結果・詳しい経緯は未記入（店舗で確認後に追記）。"
+    "note": "トップページ「最新の修理事例」CASE 02 の掲載文"
   }
 }

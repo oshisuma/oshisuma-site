@@ -1,23 +1,24 @@
 {
-  "_comment": "記事データの見本。ファイル名を「slug と同じ名前.json」にして content/cases/ に置く。先頭が _ のファイルはページにならない。項目の説明は docs/cases-guide.md。",
+  "_comment": "記事データの見本。ファイル名を「slug と同じ名前.json」にして content/cases/（年ごとのフォルダ content/cases/2026/ なども可）に置く。先頭が _ のファイルはページにならない。項目の説明は docs/cases-guide.md。分からない項目は空のままにし、推測で埋めない。",
   "slug": "20261101-iphone-screen-mito",
-  "status": "draft",
-  "indexable": true,
+  "status": "review",
   "date": "2026-11-01",
+  "workDate": "",
   "seq": 0,
   "category": "iphone",
   "area": "水戸市",
   "device": "iPhone",
-  "model": "iPhone 13",
+  "model": "",
   "work": "画面交換",
   "symptom": "画面割れ・タッチが効かない",
-  "summary": "カードと説明文に使う1〜2文の要約（報告にある事実だけ）",
-  "consultation": "ご相談内容（報告にある事実だけ）",
+  "summary": "一覧・検索結果に使う1〜2文の要約（報告にある事実だけ）",
+  "headings": {},
+  "consultation": "",
   "diagnosis": "",
-  "treatment": "対応内容",
-  "result": "結果",
-  "episode": "お客様のエピソード（報告にあり、掲載の同意がある場合だけ）",
-  "staffComment": "スタッフのひとこと（スタッフが書いた内容だけ）",
+  "treatment": "",
+  "result": "",
+  "episode": "",
+  "staffComment": "",
   "photos": [
     {
       "src": "optimized/uploads/example.webp",
@@ -25,9 +26,17 @@
       "width": 960,
       "height": 1280,
       "alt": "写真の内容を具体的に説明する文",
-      "caption": ""
+      "caption": "",
+      "check": "pending",
+      "checkNote": ""
     }
   ],
+  "verification": {
+    "facts": "unconfirmed",
+    "by": "",
+    "date": "",
+    "note": ""
+  },
   "source": {
     "type": "google-form",
     "ref": "フォーム回答のタイムスタンプなど、元の報告をたどれる情報",

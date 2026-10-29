@@ -1,0 +1,74 @@
+{
+  "slug": "20261029-sample-layout",
+  "status": "sample",
+  "date": "2026-10-29",
+  "category": "iphone",
+  "area": "（見本）地域名",
+  "device": "iPhone",
+  "model": "（見本）機種名",
+  "work": "（見本）対応内容",
+  "symptom": "（見本）症状",
+  "title": "【表示見本】情報が多い事例は、このように表示されます",
+  "summary": "（見本）ここには記事の要約が入ります。どんな症状で、どう対応し、どうなったかを1〜2文で伝えます。一覧のカードには「症状」が、検索結果の説明文にはこの要約が使われます。",
+  "headings": {
+    "consultation": "（見本）見出しは事例ごとに変えられます",
+    "result": "（見本）お渡しまで"
+  },
+  "consultation": "（見本）ここには、スタッフの報告にある「お客様が困っていたこと」が入ります。いつから、どんな症状が出ていたか、来店のきっかけなど、報告で確認できた内容だけを書きます。\n段落は改行で分けられます。報告にない事情や気持ちを想像で書き足すことはしません。",
+  "diagnosis": "（見本）ここには、点検で確認したことや、お客様にご説明した内容が入ります。修理方法の選択肢をご案内した場合なども、事実の範囲で書きます。",
+  "treatment": "（見本）ここには、実際に行った作業が入ります。交換した部品や、データを残したまま作業したかどうかなど、報告にある内容を書きます。料金は記事には載せません。",
+  "result": "（見本）ここには、修理後の動作確認やお渡しの様子が入ります。「当日中にお返しした」など、報告で確認できた結果だけを書きます。",
+  "episode": "（見本）ご家族でご来店された、思い出の写真が残せた、など報告にあるエピソードがある場合だけ、この欄が表示されます。お客様の反応（「喜んでいただけた」など）は、報告で確認できた場合だけ書きます。",
+  "staffComment": "（見本）担当スタッフのひとことが入ります。スタッフ本人が書いた内容だけを載せます。",
+  "customerComment": {
+    "text": "（見本）お客様から掲載の同意をいただいた言葉がある場合だけ、この枠が表示されます。",
+    "consent": true
+  },
+  "photos": [
+    {
+      "src": "optimized/uploads/iphone-back-glass-repair.webp",
+      "srcset": [
+        ["optimized/uploads/iphone-back-glass-repair-480w.webp", 480],
+        ["optimized/uploads/iphone-back-glass-repair-768w.webp", 768],
+        ["optimized/uploads/iphone-back-glass-repair.webp", 1108]
+      ],
+      "width": 1108,
+      "height": 1477,
+      "alt": "（見本写真）背面ガラスにひび割れが広がったiPhone",
+      "caption": "（見本）1枚目の写真は記事の上に大きく表示されます。",
+      "check": "ok"
+    },
+    {
+      "src": "optimized/uploads/iphone-camera-lens-repair.webp",
+      "srcset": [
+        ["optimized/uploads/iphone-camera-lens-repair-480w.webp", 480],
+        ["optimized/uploads/iphone-camera-lens-repair.webp", 1108]
+      ],
+      "width": 1108,
+      "height": 1477,
+      "alt": "（見本写真）背面カメラレンズが割れたiPhone",
+      "caption": "（見本）2枚目以降は記事の下にまとめて並びます。",
+      "check": "ok"
+    },
+    {
+      "src": "optimized/uploads/iphone-repair-tweezers-closeup.webp",
+      "srcset": [
+        ["optimized/uploads/iphone-repair-tweezers-closeup-768w.webp", 768],
+        ["optimized/uploads/iphone-repair-tweezers-closeup.webp", 1536]
+      ],
+      "width": 1536,
+      "height": 1152,
+      "alt": "（見本写真）ピンセットでiPhone内部を修理する手元",
+      "caption": "（見本）写真ごとに説明を付けられます。",
+      "check": "ok"
+    }
+  ],
+  "verification": {
+    "facts": "unconfirmed",
+    "note": "この記事は表示見本です。実際の事例ではありません\n写真はトップページで使っている店舗の写真を借りています"
+  },
+  "source": {
+    "type": "sample",
+    "note": "レイアウト確認用の見本"
+  }
+}

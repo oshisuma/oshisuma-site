@@ -1155,8 +1155,8 @@ if(!('IntersectionObserver' in window)){go();return}phase();var io=new Intersect
       </div>
     </div>
     <div id="cases-grid">
-      <!-- cases:auto:start（tools/build-cases.mjs が content/cases/ の最新3件から自動生成。ここは手で編集しない） -->
-      <a data-reveal id="case-main" href="cases/20261023-iphone-battery-mito/" style="position:relative;display:flex;height:100%;border-radius:4px;overflow:hidden;color:#fff">
+      <!-- cases:cards:start（tools/build-cases.mjs が content/cases/ から自動生成。ここは手で編集しない）：最新3件 -->
+      <div data-reveal id="case-main" style="position:relative;display:flex;height:100%;border-radius:4px;overflow:hidden;color:#fff">
         <img loading="lazy" decoding="async" src="optimized/uploads/iphone-battery-replacement-repair.webp" srcset="optimized/uploads/iphone-battery-replacement-repair-343w.webp 343w, optimized/uploads/iphone-battery-replacement-repair.webp 687w" sizes="(max-width:759px) 100vw, 680px" width="687" height="1536" alt="iPhoneのバッテリー交換" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(1.085) contrast(1.08) saturate(1.068) sepia(0.06)">
         <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,43,70,0) 40%,rgba(15,43,70,.9) 100%)"></div>
         <span style="position:absolute;top:20px;left:20px;z-index:1;display:flex;align-items:baseline;gap:8px">
@@ -1167,10 +1167,9 @@ if(!('IntersectionObserver' in window)){go();return}phase();var io=new Intersect
           <span style="align-self:flex-start;background:#FF6A00;color:#fff;font-size:12px;font-weight:900;padding:4px 9px;border-radius:3px;letter-spacing:.02em">水戸市からご来店</span>
           <span style="font-size:clamp(22px,2.6vw,28px);font-weight:900;line-height:1.35">iPhone｜バッテリー交換</span>
           <span style="font-size:16px;color:rgba(255,255,255,.85);font-weight:500;line-height:1.8;max-width:32em">充電がすぐ減る・突然電源が落ちる症状。当日中にお返ししました。</span>
-          <span style="font-size:13.5px;font-weight:900;color:#FFB37A;letter-spacing:.04em">事例を詳しく見る →</span>
         </div>
-      </a>
-      <a data-reveal id="case-sub-1" href="cases/20261023-android-screen-ibarakimachi/" style="position:relative;display:flex;height:100%;border-radius:4px;overflow:hidden;color:#fff">
+      </div>
+      <div data-reveal id="case-sub-1" style="position:relative;display:flex;height:100%;border-radius:4px;overflow:hidden;color:#fff">
         <img loading="lazy" decoding="async" src="optimized/uploads/android-screen-repair-disassembly.webp" srcset="optimized/uploads/android-screen-repair-disassembly-480w.webp 480w, optimized/uploads/android-screen-repair-disassembly-768w.webp 768w, optimized/uploads/android-screen-repair-disassembly.webp 960w" sizes="(max-width:759px) 100vw, 500px" width="960" height="1280" alt="Androidスマートフォンの内部と画面パーツを分解している修理作業" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:60% 45%;filter:brightness(1.06) contrast(1.07) saturate(1.008) sepia(0.02)">
         <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,43,70,0) 40%,rgba(15,43,70,.9) 100%)"></div>
         <span style="position:absolute;top:18px;left:18px;z-index:1;display:flex;align-items:baseline;gap:7px">
@@ -1181,10 +1180,9 @@ if(!('IntersectionObserver' in window)){go();return}phase();var io=new Intersect
           <span style="align-self:flex-start;background:#FF6A00;color:#fff;font-size:12px;font-weight:900;padding:4px 9px;border-radius:3px;letter-spacing:.02em">茨城町からご来店</span>
           <span style="font-size:17px;font-weight:900;line-height:1.35">Android｜画面交換</span>
           <span style="font-size:14px;color:rgba(255,255,255,.85);font-weight:500;line-height:1.7">画面の不具合でご相談。内部を開けて画面パーツを交換しました。</span>
-          <span style="font-size:12.5px;font-weight:900;color:#FFB37A;letter-spacing:.04em">詳しく見る →</span>
         </div>
-      </a>
-      <a data-reveal id="case-sub-2" href="cases/20261023-switch-joycon-ibarakimachi/" style="position:relative;display:flex;height:100%;border-radius:4px;overflow:hidden;color:#fff">
+      </div>
+      <div data-reveal id="case-sub-2" style="position:relative;display:flex;height:100%;border-radius:4px;overflow:hidden;color:#fff">
         <img loading="lazy" decoding="async" src="optimized/uploads/nintendo-switch-joycon-repair.webp" srcset="optimized/uploads/nintendo-switch-joycon-repair-480w.webp 480w, optimized/uploads/nintendo-switch-joycon-repair-768w.webp 768w, optimized/uploads/nintendo-switch-joycon-repair.webp 1152w" sizes="(max-width:759px) 100vw, 500px" width="1152" height="1536" alt="Nintendo Switchのジョイコン修理" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(1.065) contrast(1.07) saturate(1.035) sepia(0.02)">
         <div style="position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,43,70,0) 40%,rgba(15,43,70,.9) 100%)"></div>
         <span style="position:absolute;top:18px;left:18px;z-index:1;display:flex;align-items:baseline;gap:7px">
@@ -1195,14 +1193,15 @@ if(!('IntersectionObserver' in window)){go();return}phase();var io=new Intersect
           <span style="align-self:flex-start;background:#FF6A00;color:#fff;font-size:12px;font-weight:900;padding:4px 9px;border-radius:3px;letter-spacing:.02em">茨城町からご来店</span>
           <span style="font-size:17px;font-weight:900;line-height:1.35">Nintendo Switch｜Joy-Con修理</span>
           <span style="font-size:14px;color:rgba(255,255,255,.85);font-weight:500;line-height:1.7">スティックが勝手に動く症状。動作確認してお渡し。</span>
-          <span style="font-size:12.5px;font-weight:900;color:#FFB37A;letter-spacing:.04em">詳しく見る →</span>
         </div>
-      </a>
-      <!-- cases:auto:end -->
+      </div>
+      <!-- cases:cards:end -->
     </div>
-    <div data-reveal style="display:flex;justify-content:center;margin-top:4px">
-      <a href="cases/" class="hv-cta-dark" style="display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 28px;background:#FF6A00;border-radius:999px;color:#fff;font-weight:900;font-size:15px">修理・対応事例をもっと見る →</a>
+    <!-- cases:more:start（tools/build-cases.mjs が content/cases/ から自動生成。ここは手で編集しない）：公開中の事例があるときだけボタンを表示 -->
+    <div data-reveal hidden data-link-pending="cases-list" style="display:flex;justify-content:center;margin-top:4px">
+      <a data-link-pending="cases-list" class="hv-cta-dark" style="display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:0 28px;background:#FF6A00;border-radius:999px;color:#fff;font-weight:900;font-size:15px">修理事例をもっと見る →</a>
     </div>
+    <!-- cases:more:end -->
   </div>
 </section>
 
@@ -1811,7 +1810,8 @@ if(!('IntersectionObserver' in window)){go();return}phase();var io=new Intersect
         <a href="#discount" style="color:rgba(255,255,255,.84);font-size:14.5px;font-weight:500">セット割</a>
         <a href="#battery" style="color:rgba(255,255,255,.84);font-size:14.5px;font-weight:500">バッテリー</a>
         <a href="#cases" style="color:rgba(255,255,255,.84);font-size:14.5px;font-weight:500">修理事例</a>
-        <a href="cases/" style="color:rgba(255,255,255,.84);font-size:14.5px;font-weight:500">修理・対応事例一覧</a>
+        <!-- cases:footer:start（tools/build-cases.mjs が content/cases/ から自動生成。ここは手で編集しない）：公開中の事例があるときだけ一覧へのリンクを出す -->
+        <!-- cases:footer:end -->
         <a href="#support" style="color:rgba(255,255,255,.84);font-size:14.5px;font-weight:500">相談・サポート</a>
         <a href="#used" style="color:rgba(255,255,255,.84);font-size:14.5px;font-weight:500">中古iPhone販売</a>
       </div>

@@ -1,7 +1,7 @@
 {
   "slug": "20261023-switch-joycon-ibarakimachi",
-  "status": "published",
-  "indexable": false,
+  "status": "review",
+  "legacyTopCard": true,
   "date": "2026-10-23",
   "seq": 1,
   "category": "switch",
@@ -11,12 +11,6 @@
   "work": "Joy-Con修理",
   "symptom": "スティックが勝手に動く",
   "summary": "スティックが勝手に動く症状。動作確認してお渡し。",
-  "consultation": "Joy-Conのスティックが勝手に動く症状でご相談いただきました。",
-  "diagnosis": "",
-  "treatment": "Joy-Conの修理を行いました。",
-  "result": "動作確認をしてからお渡ししました。",
-  "episode": "",
-  "staffComment": "",
   "photos": [
     {
       "src": "optimized/uploads/nintendo-switch-joycon-repair.webp",
@@ -29,11 +23,20 @@
       "height": 1536,
       "alt": "Nintendo Switchのジョイコン修理",
       "caption": "",
-      "filter": "brightness(1.065) contrast(1.07) saturate(1.035) sepia(0.02)"
+      "filter": "brightness(1.065) contrast(1.07) saturate(1.035) sepia(0.02)",
+      "check": "ng",
+      "checkNote": "右上に大きなQRコード、左側にバーコード付きのラベルが写っている。この事例の作業写真かどうかも未確認"
     }
   ],
+  "verification": {
+    "facts": "unconfirmed",
+    "photos": "unconfirmed",
+    "by": "",
+    "date": "",
+    "note": "トップページの掲載文（2026-10-23 公開）だけをもとにしています\n実際の修理日・修理の詳しい内容（交換した部品など）は未確認です\n掲載日はトップページへの掲載日で、修理を行った日ではありません\n写真にQRコードとバーコード付きのラベルが写っているため、事例ページでは表示していません"
+  },
   "source": {
     "type": "existing-site",
-    "note": "2026-10-23 公開のトップページ「最新の修理事例」CASE 03 の掲載文をもとに作成。作業日・修理の詳しい内容は未記入（店舗で確認後に追記）。"
+    "note": "トップページ「最新の修理事例」CASE 03 の掲載文"
   }
 }
