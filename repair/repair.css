@@ -16,3 +16,76 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid #0f
 @media(min-width:651px){.hero .buttons .btn{min-width:245px}}
 @media(max-width:1120px){.menu{display:none}.menubtn{display:block;border:1px solid #ffffff52;color:#fff;background:#ffffff25;font-family:inherit;font-size:15px;font-weight:800;line-height:1.3;border-radius:10px;padding:12px 13px;cursor:pointer;min-width:106px;min-height:44px}.head-inner{gap:10px;flex-wrap:wrap}.menu.open{display:flex;flex:1 0 100%;flex-wrap:wrap;gap:8px 16px;padding:8px 0 14px}.menu.open a{font-size:15px;padding:3px}}
 @media(max-width:650px){.brand b{font-size:clamp(13.2px,3.8vw,15.5px)}.menubtn{min-width:92px;padding:10px 8px}.btn,.buttons .btn{min-height:58px;font-size:16px}.btn svg{width:24px;height:24px}.sticky .btn{min-height:58px}.head-inner{flex-wrap:wrap}.card h3{line-height:1.45}}
+
+
+/* -------------------------------------------------------
+   v1.2: オシスマトップページに近づけた共通ヘッダー・フッター
+   修理メニュー5ページで共通管理
+------------------------------------------------------- */
+.head{background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid rgba(15,43,70,.09);box-shadow:0 2px 16px rgba(15,43,70,.05);transition:background .2s,color .2s}
+.head.is-scrolled{background:#ff6a00;border-bottom-color:rgba(255,255,255,.15)}
+.head-inner{min-height:62px;padding:9px clamp(14px,3vw,32px);gap:14px}
+.brand{color:var(--navy);display:flex;align-items:center;gap:12px;line-height:1.35;text-decoration:none}
+.brand:hover{color:var(--navy)}
+.brand .hdr-bar{flex:none;width:3px;height:29px;background:var(--or);border-radius:2px}
+.brand .brand-words{display:flex;flex-direction:column;min-width:0;gap:3px}
+.brand small{font-size:clamp(10.5px,2.1vw,11.5px);font-weight:700;color:#4a5663;line-height:1.15}
+.brand b{font-size:clamp(14.5px,2.8vw,17px);font-weight:900;letter-spacing:.01em}
+.menu{gap:clamp(9px,1.25vw,18px)}
+.menu a{color:var(--navy);font-size:13.5px;font-weight:800;min-height:40px;display:inline-flex;align-items:center}
+.menu a:hover,.menu a[aria-current="page"]{color:var(--or)}
+.menu .nav-home{font-weight:900}
+.head.is-scrolled .brand,.head.is-scrolled .brand:hover,.head.is-scrolled .brand small,.head.is-scrolled .menu a{color:#fff}
+.head.is-scrolled .brand .hdr-bar{background:#fff}
+.head.is-scrolled .menu a:hover{color:#fff;text-decoration:underline}
+.menubtn{border:1px solid rgba(15,43,70,.2);color:var(--navy);background:rgba(15,43,70,.05);font-size:15px;font-family:inherit;font-weight:900}
+.head.is-scrolled .menubtn{color:#fff;background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)}
+@media(max-width:1120px){
+ .menubtn{display:inline-flex;gap:6px;align-items:center;justify-content:center;min-height:44px;min-width:105px;border-radius:9px;padding:8px 12px;color:var(--navy);background:rgba(15,43,70,.06)}
+ .menu{display:none}
+ .menu.open{display:flex;flex-basis:100%;width:100%;flex-wrap:wrap;gap:7px 14px;padding:12px 0;border-top:1px solid rgba(15,43,70,.1)}
+ .menu.open a{min-height:44px;padding:7px 9px;font-size:16px}
+}
+@media(max-width:650px){.head-inner{min-height:62px}.brand .hdr-bar{height:25px}.brand b{font-size:clamp(13.4px,3.9vw,16px)}.brand small{font-size:10.5px}.menubtn{min-width:94px;font-size:14px}}
+/* LINE 表示：小さなSVG内文字が潰れる問題を避け、表示上の可読性を優先 */
+.line-logo{display:inline-flex;align-items:center;justify-content:center;position:relative;flex:none;width:29px;height:26px;background:#fff;border-radius:60% 60% 60% 60%;color:#06c755;font:900 9px/1 Arial,Helvetica,sans-serif;letter-spacing:-.03em;transform:scale(.96)}
+.line-logo::after{content:"";position:absolute;left:6px;bottom:-4px;border:5px solid transparent;border-top-color:#fff;transform:rotate(16deg)}
+.line-logo span{position:relative;z-index:1}
+.btn.line .line-logo{margin-right:2px}
+@media(max-width:650px){.line-logo{width:25px;height:23px;font-size:8px}}
+/* 目で追いやすい修理情報 */
+.section{padding-top:clamp(40px,5.1vw,64px);padding-bottom:clamp(40px,5.1vw,64px)}
+.section h2{font-size:clamp(28px,3.4vw,39px);letter-spacing:.008em}
+.section .intro{font-size:clamp(17px,1.65vw,19px);line-height:1.85}
+.card{border-color:rgba(15,43,70,.12);box-shadow:0 2px 15px rgba(15,43,70,.055);padding:clamp(20px,2.2vw,28px)}
+.card h3{font-size:clamp(20px,2.15vw,24px);line-height:1.45}
+.card .sym{font-size:17px;font-weight:700;color:#2b3a4a}
+.card .treat,.device-cards .card p{font-size:16.5px;line-height:1.82;color:#34404c;font-weight:500}
+.card-label{font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--or);margin:14px 0 3px}
+.card-label.repair-way{margin-top:16px;padding-top:11px;border-top:1px solid rgba(15,43,70,.09)}
+.jump-to{display:inline-flex;gap:7px;align-items:center;min-height:43px;color:var(--navy);font-size:15.5px;font-weight:900;text-decoration:underline;text-underline-offset:4px;margin-top:15px}
+.jump-to:hover{color:var(--or)}
+.mbox h3{font-size:22px}
+.faq summary{font-size:clamp(17px,1.8vw,20px);line-height:1.5}
+.faq details{padding:17px 21px}
+.faq p{font-size:16.5px;line-height:1.8}
+.faq summary::marker{color:var(--or)}
+/* フッター：ホームページのネイビーとカラム構成を継承 */
+.foot{background:#0b2137;color:rgba(255,255,255,.9);padding:clamp(42px,5vw,66px) 0 26px}
+.footer-cols{display:grid;grid-template-columns:minmax(250px,1.5fr) repeat(2,minmax(140px,1fr)) minmax(160px,1fr);gap:clamp(22px,3vw,48px)}
+.footer-shop{display:flex;flex-direction:column;gap:7px}
+.footer-tag{font-size:13px;font-weight:700;opacity:.88}
+.footer-shop strong{font-size:clamp(17px,1.6vw,21px);line-height:1.45;color:#fff}
+.footer-shop p{font-size:14.5px;line-height:1.65}
+.footer-map{font-size:15px;font-weight:900;display:inline-flex;margin-top:10px}
+.footer-links,.footer-contact{display:flex;flex-direction:column;gap:9px}
+.footer-links b,.footer-contact b{font-size:14.5px;font-weight:900;color:var(--or);margin-bottom:4px}
+.footer-links a,.footer-contact a{font-size:14.5px;color:rgba(255,255,255,.88);font-weight:600;text-decoration:none}
+.footer-links a:hover,.footer-contact a:hover,.footer-map:hover{color:#fff;text-decoration:underline}
+.footer-contact .footer-tel{font-size:16px;font-weight:900;white-space:nowrap}
+.footer-contact .footer-line{font-weight:900}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.15);margin-top:38px;padding-top:20px;display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;font-size:13px}
+.footer-bottom a{color:rgba(255,255,255,.84)}
+@media(max-width:1000px){.footer-cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.footer-cols{grid-template-columns:1fr 1fr;gap:28px 16px}.footer-shop{grid-column:1/-1}.footer-shop strong{font-size:19px}.footer-links a,.footer-contact a{font-size:14px}.footer-contact .footer-tel{font-size:14px;white-space:normal}.section .intro{font-size:16.5px}.card .sym{font-size:16px}.card .treat,.device-cards .card p{font-size:15.8px}.faq summary{font-size:18px}}
+@media(max-width:370px){.footer-cols{grid-template-columns:1fr}.footer-shop{grid-column:auto}}
