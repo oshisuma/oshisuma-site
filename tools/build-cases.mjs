@@ -183,6 +183,13 @@ function headline(c) {
   const sym = str(c.symptom) && [...c.symptom].length <= 20 ? `｜${c.symptom}` : "";
   return `【${c.area}】${deviceName(c)}の${c.work}${sym}`;
 }
+// 記事の h1：症状は2行目に小さく出す（区切りの「｜」は画面には出さず、文字としては残す）
+function h1Html(c) {
+  const h = headline(c);
+  const i = str(c.title) ? -1 : h.indexOf("｜");
+  if (i < 0) return esc(h);
+  return `${esc(h.slice(0, i))}<span class="cs-h1-sep">｜</span><span class="cs-h1-sym">${esc(h.slice(i + 1))}</span>`;
+}
 function pageTitle(c) {
   return `${headline(c)}｜${groupLabel[catByKey.get(c.category).group]}｜${STORE_SHORT}`;
 }
@@ -466,7 +473,7 @@ function renderArticle(c) {
     .join("\n    ");
   const voice = c.customerComment ? `<aside class="cs-voice"><span>お客様からいただいた言葉</span>${paras(c.customerComment.text)}</aside>` : "";
   const gallery = rest.length
-    ? `<ul class="cs-photos">${rest.map((p) => `<li><figure style="margin:0">${img(p, { sizes: "(max-width:759px) 50vw, 260px" })}${str(p.caption) ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure></li>`).join("")}</ul>`
+    ? `<ul class="cs-photos">${rest.map((p) => `<li><figure style="margin:0">${img(p, { sizes: "(max-width:1023px) 50vw, 250px" })}${str(p.caption) ? `<figcaption>${esc(p.caption)}</figcaption>` : ""}</figure></li>`).join("")}</ul>`
     : "";
   const rel = review ? [] : related(c);
   const v = c.verification || {};
@@ -479,32 +486,43 @@ function renderArticle(c) {
     : "";
   const dates = `<time datetime="${c.date}">${jpDate(c.date)} 掲載</time>${c.updated && c.updated > c.date ? `<span>${jpDate(c.updated)} 更新</span>` : ""}`;
 
-  const main = `<article class="cs-wrap cs-narrow cs-article">
+  const main = `<article class="cs-article"><div class="cs-wrap">
   ${crumbs(trail)}
   ${banner}
-  <div class="cs-meta">${review ? `<span class="cs-tag">${esc(cat.label)}</span>` : `<a class="cs-tag" href="${catUrl(cat.key)}">${esc(cat.label)}</a>`}${dates}</div>
-  <h1>${esc(h1)}</h1>
-  <p class="cs-lead">${esc(c.summary)}</p>
-  ${hero ? `<figure class="cs-hero">${img(hero, { sizes: "(max-width:807px) 100vw, 760px", eager: true })}${str(hero.caption) ? `<figcaption>${esc(hero.caption)}</figcaption>` : ""}</figure>` : ""}
-  ${hidden ? `<p class="cs-photo-pending">写真は、写り込みの確認が終わるまで表示していません。</p>` : ""}
-  <div class="cs-facts"><dl>${facts.map(([k, val]) => `<dt>${k}</dt><dd>${esc(val)}</dd>`).join("")}</dl></div>
-  <div class="cs-body">
+  <header class="cs-art-head">
+    <div class="cs-meta">${review ? `<span class="cs-tag">${esc(cat.label)}</span>` : `<a class="cs-tag" href="${catUrl(cat.key)}">${esc(cat.label)}</a>`}${dates}</div>
+    <h1>${h1Html(c)}</h1>
+    <p class="cs-lead">${esc(c.summary)}</p>
+  </header>
+  <div class="cs-art-grid${hero || secs || voice || gallery ? "" : " is-short"}">
+    ${
+      hero
+        ? `<figure class="cs-hero">${img(hero, { sizes: "(max-width:1023px) 100vw, 760px", eager: true })}${str(hero.caption) ? `<figcaption>${esc(hero.caption)}</figcaption>` : ""}</figure>`
+        : hidden
+          ? `<p class="cs-photo-pending">写真は、写り込みの確認が終わるまで表示していません。</p>`
+          : ""
+    }
+    <div class="cs-body">
     ${secs}
+    ${voice}
+    ${gallery}
+    </div>
+    <div class="cs-art-side">
+      <section class="cs-facts" aria-label="この事例の概要"><p class="cs-facts-title">この事例の概要</p><dl>${facts.map(([k, val]) => `<dt>${k}</dt><dd>${esc(val)}</dd>`).join("")}</dl></section>
+      <aside class="cs-ask">
+        <p class="cs-ask-title">同じような症状でお困りですか？</p>
+        <p>修理するか迷っている段階でも大丈夫です。料金は機種や状態によって変わるため、修理の前にご説明します。<span class="cs-ask-sp">画面下のボタンから、お電話・LINEでご相談いただけます。</span></p>
+        <div class="cs-ask-row"><a class="cs-btn cs-btn-tel" href="tel:${TEL}">${ICON_TEL}${TEL_LABEL}</a><a class="cs-btn cs-btn-line" href="${LINE_URL}">${ICON_LINE}LINEで相談</a></div>
+        <p class="cs-hours">${HOURS}</p>
+      </aside>
+    </div>
+    <nav class="cs-next" aria-label="ほかのページへ">${
+      review
+        ? `<a class="cs-btn cs-btn-sub" href="/cases/review/">← 確認用ページの一覧へ</a>`
+        : `<a class="cs-btn cs-btn-sub" href="${catUrl(cat.key)}">${esc(cat.label)}の事例をもっと見る →</a><a class="cs-btn cs-btn-sub" href="/cases/">← 事例一覧へ</a>`
+    }</nav>
   </div>
-  ${voice}
-  ${gallery}
-  <aside class="cs-ask">
-    <p class="cs-ask-title">同じような症状でお困りですか？</p>
-    <p>修理するか迷っている段階でも、お気軽にご相談ください。料金は機種や状態によって変わるため、修理の前にご説明します。<span class="cs-ask-sp">画面下のボタンから、お電話・LINEでご相談いただけます。</span></p>
-    <div class="cs-ask-row"><a class="cs-btn cs-btn-tel" href="tel:${TEL}">${ICON_TEL}${TEL_LABEL}</a><a class="cs-btn cs-btn-line" href="${LINE_URL}">${ICON_LINE}LINEで相談</a></div>
-    <p style="font-size:13px;color:var(--muted)">${HOURS}</p>
-  </aside>
-  <div class="cs-next">${
-    review
-      ? `<a class="cs-btn cs-btn-sub" href="/cases/review/">← 確認用ページの一覧へ</a>`
-      : `<a class="cs-btn cs-btn-sub" href="${catUrl(cat.key)}">${esc(cat.label)}の事例をもっと見る</a><a class="cs-btn cs-btn-sub" href="/cases/">← 事例一覧へ</a>`
-  }</div>
-</article>
+</div></article>
 ${rel.length ? `<section class="cs-related"><div class="cs-wrap"><span class="cs-label">RELATED <b>/ ほかの事例</b></span><h2>ほかの事例も見る</h2><ul class="cs-grid">
 ${rel.map(card).join("\n")}
 </ul></div></section>` : ""}`;

@@ -1,24 +1,24 @@
-/* 修理・対応事例ページ（/cases/）の共通スタイル。基準はトップページ（index.html）の配色・書体・ボタン */
-:root{--or:#FF6A00;--or-dk:#e65e00;--or-lt:#FFF1E4;--or-bg:#FFFBF4;--navy:#0F2B46;--navy-dk:#0B2137;--text:#34404C;--muted:#5B6672;--line:rgba(15,43,70,.1);--green:#06C755;--hdr:56px}
+/* 修理・対応事例ページ（/cases/）の共通スタイル。
+   基準はトップページ（index.html）：幅 1180px、本文 16〜17.5px・太さ500・#2b3a4a、見出し 900、ラベルは Archivo Black＋オレンジの線 */
+:root{--or:#FF6A00;--or-dk:#e65e00;--or-lt:#FFF1E4;--or-bg:#FFFAF4;--or-line:rgba(255,106,0,.22);--navy:#0F2B46;--navy-dk:#0B2137;--text:#2b3a4a;--muted:#4A5663;--line:rgba(15,43,70,.1);--green:#06C755;--hdr:56px;--gut:16px}
+@media (min-width:760px){:root{--gut:clamp(24px,4vw,48px)}}
 *,*::before,*::after{box-sizing:border-box}
 [hidden]{display:none !important}
-html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--hdr) + 12px)}
-body{margin:0;background:#fff;color:var(--navy);font-family:"Zen Kaku Gothic New",-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;-webkit-font-smoothing:antialiased;font-size:16px;line-height:1.75;word-break:auto-phrase;line-break:strict;overflow-x:hidden}
+html{-webkit-text-size-adjust:100%;scroll-padding-top:calc(var(--hdr) + 16px)}
+body{margin:0;background:#fff;color:var(--navy);font-family:"Zen Kaku Gothic New",-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;-webkit-font-smoothing:antialiased;font-size:16px;font-weight:500;line-height:1.75;word-break:auto-phrase;line-break:strict;overflow-x:hidden}
 a{color:var(--or);text-decoration:none}
 a:hover{color:#d95a00}
 img{display:block;max-width:100%;height:auto}
 p{margin:0;text-wrap:pretty}
-h1,h2,h3{text-wrap:balance}
-.cs-wrap{width:100%;max-width:1180px;margin:0 auto;padding:0 16px}
-.cs-narrow{max-width:760px}
-@media (min-width:760px){.cs-wrap{padding:0 clamp(24px,4vw,48px)}.cs-narrow{max-width:808px}}
+h1,h2,h3{margin:0;font-weight:900;color:var(--navy);text-wrap:balance}
+.cs-wrap{width:100%;max-width:calc(1180px + var(--gut) * 2);margin:0 auto;padding:0 var(--gut)}
 
-/* ヘッダー：トップと同じオレンジの帯 */
+/* ---------- ヘッダー：トップと同じオレンジの帯 ---------- */
 .cs-header{position:sticky;top:0;z-index:60;background:var(--or);color:#fff}
 .cs-header-in{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:16px;height:var(--hdr);padding:0 clamp(14px,3vw,32px)}
 .cs-brand{display:flex;flex-direction:column;gap:2px;color:#fff;margin-right:auto;min-width:0;line-height:1.3}
 .cs-brand:hover{color:#fff}
-.cs-brand-tag{font-size:clamp(10.5px,2.1vw,11.5px);font-weight:700;color:rgba(255,255,255,.85);letter-spacing:.03em;white-space:nowrap}
+.cs-brand-tag{font-size:clamp(10.5px,2.1vw,11.5px);font-weight:700;color:rgba(255,255,255,.88);letter-spacing:.03em;white-space:nowrap}
 .cs-brand-name{font-size:clamp(14.5px,2.8vw,17px);font-weight:900;letter-spacing:.01em;white-space:nowrap}
 .cs-nav{display:none;gap:clamp(13px,1.25vw,22px);font-size:13.5px;font-weight:700;white-space:nowrap}
 .cs-nav a{color:#fff;padding:4px 6px;margin:-4px -6px;border-radius:6px}
@@ -36,125 +36,189 @@ h1,h2,h3{text-wrap:balance}
 .cs-menu-panel a[aria-current="page"]{color:var(--or)}
 @media (min-width:1024px){.cs-nav{display:flex}.cs-menu{display:none}}
 
-/* パンくず：1行に収め、長いときは省略 */
-.cs-crumbs{padding-top:14px;font-size:13px;color:var(--muted)}
+/* ---------- パンくず：1行、長いときは最後だけ省略 ---------- */
+.cs-crumbs{padding-top:16px;font-size:13.5px;font-weight:500;color:var(--muted)}
 .cs-crumbs ol{list-style:none;margin:0;padding:0;display:flex;gap:8px;white-space:nowrap;overflow:hidden}
 .cs-crumbs li{flex:none;display:flex;gap:8px;align-items:center}
 .cs-crumbs li:last-child{flex:1 1 auto;min-width:0}
 .cs-crumbs li:last-child>*{min-width:0;overflow:hidden;text-overflow:ellipsis}
-.cs-crumbs li+li::before{content:"›";color:#b9c3cc;flex:none}
+.cs-crumbs li+li::before{content:"›";color:#9aa6b2;flex:none}
 .cs-crumbs a{color:var(--muted)}
 .cs-crumbs a:hover{color:var(--or)}
+.cs-crumbs [aria-current]{color:var(--navy);font-weight:700}
 
-/* 見出し（トップの「07 · CASES / 最新の修理事例」と同じ表現） */
-.cs-label{display:block;font-family:"Archivo Black",sans-serif;font-size:12.5px;letter-spacing:.2em;color:var(--or);line-height:1.4}
-.cs-label b{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;letter-spacing:.08em}
-.cs-head{padding:18px 0 4px}
-.cs-head h1{margin:8px 0 0;font-size:clamp(26px,6.6vw,40px);font-weight:900;line-height:1.3}
-.cs-head p{margin-top:8px;font-size:15px;color:var(--text);line-height:1.8}
+/* ---------- ラベル（トップの「— 10 · USED iPHONE / 厳選中古iPhone」と同じ表現） ---------- */
+.cs-label{display:flex;align-items:center;gap:10px;font-family:"Archivo Black",sans-serif;font-size:13px;letter-spacing:.2em;color:var(--or);line-height:1.4}
+.cs-label::before{content:"";flex:none;width:22px;height:2px;background:var(--or)}
+.cs-label b{font-family:"Zen Kaku Gothic New",sans-serif;font-weight:700;letter-spacing:.1em}
 
-/* カテゴリー：横スクロール（PC は折り返し）。件数0の分類は出さない */
-.cs-cats{position:relative;margin:14px -16px 0}
+/* ---------- 一覧ページ ---------- */
+.cs-head{padding:22px 0 0}
+.cs-head h1{margin-top:12px;font-size:clamp(28px,7.2vw,46px);line-height:1.3;letter-spacing:.01em}
+.cs-head h1 small{font-size:.55em;font-weight:700;margin-left:.4em;color:var(--muted)}
+.cs-head p{margin-top:10px;font-size:16px;font-weight:500;color:var(--text);line-height:1.8}
+@media (min-width:1024px){.cs-head{padding-top:34px}.cs-head p{font-size:17px}}
+
+/* 分類：スマホは横スクロール（右端をぼかして続きがあると分かるように）、タブレット以上は折り返し */
+.cs-cats{position:relative;margin:16px calc(var(--gut) * -1) 0}
 .cs-cats::after{content:"";position:absolute;top:0;right:0;bottom:0;width:28px;background:linear-gradient(90deg,rgba(255,255,255,0),#fff);pointer-events:none}
-.cs-cats-track{display:flex;gap:8px;overflow-x:auto;padding:4px 28px 8px 16px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.cs-cats-track{display:flex;gap:8px;overflow-x:auto;padding:4px 28px 6px var(--gut);scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .cs-cats-track::-webkit-scrollbar{display:none}
-@media (min-width:760px){.cs-cats{margin:16px 0 0}.cs-cats::after{display:none}.cs-cats-track{flex-wrap:wrap;overflow:visible;padding:4px 0 8px}}
-.cs-chip{flex:none;display:inline-flex;align-items:center;gap:6px;height:38px;padding:0 15px;border:1.5px solid rgba(15,43,70,.14);border-radius:999px;background:#fff;color:var(--navy);font-size:14px;font-weight:700;white-space:nowrap;transition:border-color .2s,color .2s,background .2s}
+@media (min-width:760px){.cs-cats{margin:22px 0 0}.cs-cats::after{display:none}.cs-cats-track{flex-wrap:wrap;overflow:visible;padding:4px 0 6px}}
+.cs-chip{flex:none;display:inline-flex;align-items:center;gap:6px;height:40px;padding:0 16px;border:1.5px solid rgba(15,43,70,.16);border-radius:999px;background:#fff;color:var(--navy);font-size:14.5px;font-weight:700;white-space:nowrap;transition:border-color .2s,color .2s,background .2s}
 .cs-chip:hover{border-color:var(--or);color:var(--or)}
 .cs-chip[aria-current="page"]{background:var(--or);border-color:var(--or);color:#fff}
-.cs-chip small{font-size:12px;font-weight:700;opacity:.75}
-.cs-count{margin:10px 0 12px;font-size:13.5px;font-weight:700;color:var(--muted)}
+.cs-chip small{font-size:12.5px;font-weight:700;opacity:.8}
+.cs-count{margin:14px 0 12px;font-size:14px;font-weight:700;color:var(--muted)}
 
-/* 一覧カード：写真＋「機種｜作業」＋症状。スマホは横長写真で縦に間延びさせない */
-.cs-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
-@media (min-width:600px){.cs-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}}
-@media (min-width:1024px){.cs-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}}
-.cs-card>a{display:flex;flex-direction:column;height:100%;background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;color:var(--navy);box-shadow:0 1px 0 rgba(15,43,70,.04),0 6px 18px rgba(15,43,70,.06);transition:transform .2s,box-shadow .2s,border-color .2s}
-.cs-card>a:hover{color:var(--navy);transform:translateY(-2px);border-color:rgba(255,106,0,.4);box-shadow:0 16px 34px rgba(15,43,70,.12)}
+/* 一覧カード：スマホは「写真｜文字」の横並び、600px 以上は写真が上 */
+.cs-grid{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+@media (min-width:600px){.cs-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}}
+@media (min-width:1024px){.cs-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}}
+.cs-card>a{display:flex;flex-direction:column;height:100%;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;color:var(--navy);box-shadow:0 1px 0 rgba(15,43,70,.04),0 6px 18px rgba(15,43,70,.06);transition:transform .2s,box-shadow .2s,border-color .2s}
+.cs-card>a:hover{color:var(--navy);transform:translateY(-2px);border-color:rgba(255,106,0,.45);box-shadow:0 16px 34px rgba(15,43,70,.12)}
 .cs-card-img{position:relative;display:block;aspect-ratio:16/10;background:#EEF1F4;overflow:hidden}
-.cs-card-img img{width:100%;height:100%;object-fit:cover}
-.cs-card-img .cs-noimg{display:flex;align-items:center;justify-content:center;height:100%;font-size:13px;font-weight:700;color:#8b97a3}
-.cs-card-area{position:absolute;left:10px;top:10px;background:var(--or);color:#fff;font-size:12px;font-weight:900;padding:3px 9px;border-radius:3px;letter-spacing:.02em}
-.cs-card-body{display:flex;flex-direction:column;gap:6px;padding:14px 16px 14px;flex:1}
-.cs-card-cat{font-size:12.5px;font-weight:700;color:var(--or)}
-.cs-card-title{font-size:17.5px;font-weight:900;line-height:1.45}
-.cs-card-sym{font-size:14.5px;color:var(--text);line-height:1.65;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.cs-card-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:6px;font-size:12.5px;color:var(--muted)}
-.cs-card-more{color:var(--or);font-weight:900;font-size:13.5px}
+.cs-card-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+.cs-card>a:hover .cs-card-img img{transform:scale(1.03)}
+.cs-card-img .cs-noimg{display:flex;align-items:center;justify-content:center;height:100%;padding:8px;text-align:center;font-size:13px;font-weight:700;color:var(--muted)}
+.cs-card-area{position:absolute;left:10px;top:10px;background:var(--or);color:#fff;font-size:12px;font-weight:900;padding:4px 9px;border-radius:3px;letter-spacing:.02em}
+.cs-card-body{display:flex;flex-direction:column;gap:6px;padding:16px 18px 16px;flex:1}
+.cs-card-cat{font-size:13px;font-weight:900;color:var(--or);letter-spacing:.02em}
+.cs-card-title{font-size:18.5px;font-weight:900;line-height:1.45}
+.cs-card-sym{font-size:15px;font-weight:500;color:var(--text);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cs-card-foot{margin-top:auto;display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:8px;font-size:13px;font-weight:500;color:var(--muted)}
+.cs-card-more{color:var(--or);font-weight:900;font-size:14px}
+@media (min-width:1024px){.cs-card-title{font-size:19.5px}.cs-card-body{padding:18px 20px 18px}}
 @media (max-width:599px){
-  .cs-grid{gap:12px}
-  .cs-card>a{display:grid;grid-template-columns:clamp(112px,34vw,140px) minmax(0,1fr);border-radius:12px}
-  .cs-card-img{aspect-ratio:auto;height:100%;min-height:136px}
-  .cs-card-area{left:6px;top:6px;font-size:11px;padding:2px 7px}
-  .cs-card-body{gap:4px;padding:12px 14px 12px}
-  .cs-card-cat{font-size:12px}
-  .cs-card-title{font-size:16px;line-height:1.4}
-  .cs-card-sym{font-size:13.5px;line-height:1.6}
-  .cs-card-foot{padding-top:4px;font-size:12px}
-  .cs-card-more{font-size:12.5px}
+  .cs-card>a{display:grid;grid-template-columns:clamp(116px,35vw,150px) minmax(0,1fr);border-radius:14px}
+  .cs-card-img{aspect-ratio:auto;height:100%;min-height:128px}
+  .cs-card-img img{position:absolute;inset:0}
+  .cs-card-area{left:6px;top:6px;font-size:11.5px;padding:2px 7px}
+  .cs-card-body{gap:3px;padding:12px 14px}
+  .cs-card-cat{font-size:12.5px}
+  .cs-card-title{font-size:16.5px;line-height:1.4}
+  .cs-card-sym{font-size:14px;line-height:1.6}
+  .cs-card-foot{padding-top:6px;font-size:12.5px}
+  .cs-card-more{font-size:13px}
 }
-.cs-empty{margin-top:16px;padding:28px 20px;border:1.5px dashed rgba(15,43,70,.16);border-radius:14px;text-align:center;color:var(--text);font-size:15px;line-height:1.9}
-.cs-empty a{font-weight:900}
-.cs-pager{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:28px 0 0}
-.cs-pager a,.cs-pager span{display:inline-flex;align-items:center;justify-content:center;min-width:44px;height:44px;padding:0 14px;border-radius:999px;border:1.5px solid rgba(15,43,70,.14);font-weight:700;color:var(--navy)}
+.cs-empty{margin-top:20px;padding:30px 20px;border:1.5px dashed rgba(15,43,70,.18);border-radius:16px;text-align:center;color:var(--text);font-size:16px;line-height:1.85}
+.cs-empty a{display:inline-block;margin-top:6px;font-weight:900}
+.cs-pager{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:32px 0 0}
+.cs-pager a,.cs-pager span{display:inline-flex;align-items:center;justify-content:center;min-width:46px;height:46px;padding:0 16px;border-radius:999px;border:1.5px solid rgba(15,43,70,.16);font-weight:700;color:var(--navy)}
+.cs-pager a:hover{border-color:var(--or);color:var(--or)}
 .cs-pager [aria-current]{background:var(--navy);border-color:var(--navy);color:#fff}
-.cs-foot-note{margin-top:24px;font-size:13px;color:var(--muted);line-height:1.8}
+.cs-foot-note{margin-top:28px;font-size:14px;font-weight:500;color:var(--muted);line-height:1.8}
 
-/* 個別記事 */
-.cs-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:16px;font-size:13px;color:var(--muted)}
-.cs-tag{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:999px;background:var(--or);color:#fff;font-size:12.5px;font-weight:900}
+/* ---------- 個別記事 ----------
+   スマホ：写真 → 概要 → 本文 → ご相談 の1列。
+   PC（1024px〜）：左に本文（1行およそ40字）、右に概要とご相談の欄（スクロールしても見える） */
+.cs-article{padding-bottom:8px}
+.cs-art-head{padding-top:18px}
+.cs-meta{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;font-size:13.5px;font-weight:500;color:var(--muted)}
+.cs-tag{display:inline-flex;align-items:center;height:28px;padding:0 12px;border-radius:999px;background:var(--or);color:#fff;font-size:13px;font-weight:900}
 .cs-tag:hover{color:#fff;background:var(--or-dk)}
-.cs-article h1{margin:10px 0 0;font-size:clamp(23px,5.8vw,32px);font-weight:900;line-height:1.45}
-.cs-lead{margin-top:12px;font-size:16.5px;line-height:1.9;color:var(--navy);font-weight:500}
-.cs-hero{margin:20px 0 0}
-.cs-hero img{width:100%;max-height:min(70vh,620px);object-fit:cover;border-radius:14px;background:#EEF1F4}
-.cs-hero figcaption,.cs-photos figcaption{margin-top:6px;font-size:13px;color:var(--muted);line-height:1.6}
-.cs-photo-pending{margin:20px 0 0;padding:18px;border-radius:14px;background:#F3F5F7;color:var(--muted);font-size:14px;text-align:center}
-.cs-facts{margin:18px 0 0;padding:4px 16px;border-radius:14px;background:var(--or-bg);border:1px solid rgba(255,106,0,.22)}
+.cs-art-head h1{margin-top:12px;font-size:clamp(25px,6.6vw,28px);line-height:1.45;letter-spacing:.01em}
+.cs-h1-sep{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.cs-h1-sym{display:block;margin-top:6px;font-size:.68em;font-weight:900;line-height:1.5;color:var(--or)}
+/* 長い文章は行末まで詰めて流す（語のまとまりで折り返すのは見出しと短い文だけ） */
+.cs-sec p,.cs-voice p,.cs-ask p,.cs-review,.cs-empty,.cs-foot-note,.cs-lead{word-break:normal}
+.cs-lead{margin-top:12px;font-size:17px;font-weight:700;line-height:1.8;color:var(--navy)}
+.cs-art-grid{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"hero" "facts" "body" "ask" "next";margin-top:20px}
+.cs-art-side{display:contents}
+.cs-hero{grid-area:hero;margin:0}
+.cs-hero img{width:100%;max-height:min(78vh,640px);object-fit:cover;border-radius:16px;background:#EEF1F4;box-shadow:0 10px 28px rgba(15,43,70,.10)}
+.cs-hero figcaption,.cs-photos figcaption{margin-top:8px;font-size:14px;font-weight:500;color:var(--muted);line-height:1.65}
+.cs-photo-pending{grid-area:hero;margin:0;padding:18px;border-radius:14px;background:#F3F5F7;color:var(--muted);font-size:14.5px;font-weight:500;text-align:center}
+.cs-facts{grid-area:facts;margin-top:16px;padding:6px 18px;border-radius:16px;background:var(--or-bg);border:1px solid var(--or-line)}
+.cs-facts-title{display:none}
 .cs-facts dl{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr)}
-.cs-facts dt,.cs-facts dd{padding:10px 0;font-size:15px;line-height:1.6}
-.cs-facts dt{font-weight:900;color:#8a4a12;padding-right:16px;white-space:nowrap}
-.cs-facts dd{margin:0;font-weight:700}
+.cs-facts dt,.cs-facts dd{padding:11px 0;line-height:1.6}
+.cs-facts dt{font-size:14px;font-weight:900;color:#9a4a0b;padding-right:18px;white-space:nowrap}
+.cs-facts dd{margin:0;font-size:16px;font-weight:700;color:var(--navy)}
 .cs-facts dt+dd~dt,.cs-facts dt+dd~dd{border-top:1px solid rgba(255,106,0,.16)}
+.cs-body{grid-area:body;counter-reset:sec}
 .cs-sec{margin-top:36px}
-.cs-sec h2{margin:0 0 12px;padding-left:14px;border-left:5px solid var(--or);font-size:clamp(19px,4.8vw,23px);font-weight:900;line-height:1.45}
-.cs-sec p{font-size:16px;line-height:2;color:var(--text)}
-.cs-sec p+p{margin-top:1em}
-.cs-sec--episode .cs-sec-body{padding:18px 18px;border-radius:14px;background:#FFFBEA;border:1px solid rgba(251,188,5,.35)}
-.cs-sec--staffComment .cs-sec-body{padding:18px 18px;border-radius:14px;background:#F5F8FA;border:1px solid var(--line)}
-.cs-voice{margin:36px 0 0;padding:20px 20px 18px;border-radius:14px;background:#fff;border:1.5px solid rgba(255,106,0,.3)}
-.cs-voice span{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;color:var(--or)}
-.cs-voice p{margin-top:8px;font-size:16px;line-height:1.95;color:var(--navy)}
+.cs-sec h2{display:flex;align-items:baseline;gap:12px;font-size:21px;line-height:1.45}
+.cs-sec h2::before{counter-increment:sec;content:counter(sec,decimal-leading-zero);flex:none;font-family:"Archivo Black",sans-serif;font-size:.8em;font-weight:400;color:var(--or);letter-spacing:.02em}
+.cs-sec h3{margin-top:22px;font-size:18px;line-height:1.5}
+.cs-sec-body{margin-top:12px}
+.cs-sec p{font-size:16.5px;font-weight:500;line-height:1.9;color:var(--text)}
+.cs-sec p+p{margin-top:.85em}
+.cs-sec--episode .cs-sec-body{padding:18px 20px;border-radius:16px;background:#FFFBEA;border:1px solid rgba(251,188,5,.38)}
+.cs-sec--staffComment .cs-sec-body{padding:18px 20px;border-radius:16px;background:#F4F7FA;border:1px solid var(--line)}
+.cs-voice{margin-top:36px;padding:20px 22px;border-radius:16px;background:#fff;border:1.5px solid rgba(255,106,0,.35);box-shadow:0 6px 18px rgba(255,106,0,.06)}
+.cs-voice span{display:block;font-size:13.5px;font-weight:900;letter-spacing:.08em;color:var(--or)}
+.cs-voice p{margin-top:8px;font-size:17px;font-weight:700;line-height:1.85;color:var(--navy)}
 .cs-photos{list-style:none;margin:36px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .cs-photos li:only-child{grid-column:1/-1}
-.cs-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px;background:#EEF1F4}
-@media (min-width:760px){.cs-photos{grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}}
+.cs-photos img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:#EEF1F4}
+@media (min-width:760px){.cs-photos{gap:14px}}
 
-/* 記事末の案内：スマホは画面下の固定ボタンに任せ、文だけ添える */
-.cs-ask{margin:40px 0 0;padding:20px;border-radius:14px;background:var(--or-bg);border:1px solid rgba(255,106,0,.22)}
-.cs-ask-title{font-size:17px;font-weight:900;line-height:1.5}
-.cs-ask p{margin-top:6px;font-size:14.5px;color:var(--text);line-height:1.8}
-.cs-ask-row{display:none;flex-wrap:wrap;gap:12px;margin:14px 0 8px}
-.cs-ask-sp{display:block;margin-top:6px;font-weight:700;color:var(--navy)}
-@media (min-width:1024px){.cs-ask-row{display:flex}.cs-ask-sp{display:none}}
-.cs-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:52px;padding:0 24px;border-radius:12px;font-size:16px;font-weight:900;color:#fff;white-space:nowrap;transition:filter .2s,transform .2s}
+/* 記事内のご相談：スマホは画面下の固定ボタンに任せて文だけ、PC はボタンを出す */
+.cs-ask{grid-area:ask;margin-top:36px;padding:20px;border-radius:16px;background:var(--navy);color:#fff}
+.cs-ask-title{font-size:18px;font-weight:900;line-height:1.5;color:#fff}
+.cs-ask p{margin-top:8px;font-size:15px;font-weight:500;color:rgba(255,255,255,.88);line-height:1.8}
+.cs-ask-sp{display:block;margin-top:8px;font-weight:700;color:#fff}
+.cs-ask-row{display:none;flex-direction:column;gap:10px;margin:16px 0 10px}
+.cs-ask .cs-hours{margin-top:4px;font-size:13.5px;color:rgba(255,255,255,.75)}
+.cs-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:54px;padding:0 24px;border-radius:12px;font-size:16.5px;font-weight:900;color:#fff;white-space:nowrap;transition:filter .2s,transform .2s}
 .cs-btn:hover{color:#fff;transform:translateY(-1px);filter:brightness(.96)}
-.cs-btn-tel{background:var(--or);box-shadow:0 6px 18px rgba(255,106,0,.25)}
+.cs-btn-tel{background:var(--or);box-shadow:0 6px 18px rgba(255,106,0,.28)}
 .cs-btn-line{background:var(--green);box-shadow:0 6px 18px rgba(6,199,85,.25)}
-.cs-btn-sub{height:48px;background:#fff;color:var(--navy);border:1.5px solid rgba(15,43,70,.16);box-shadow:none}
-.cs-btn-sub:hover{color:var(--navy);border-color:var(--navy)}
+.cs-btn-sub{height:50px;border-radius:999px;background:#fff;color:var(--navy);border:1.5px solid rgba(15,43,70,.18);box-shadow:none;font-size:15.5px}
+.cs-btn-sub:hover{color:var(--or);border-color:var(--or)}
+.cs-next{grid-area:next;margin-top:28px;display:flex;flex-wrap:wrap;gap:10px}
 
-/* 記事の後の移動先 */
-.cs-next{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px}
-.cs-related{margin-top:48px;padding:36px 0 0;border-top:1px solid var(--line)}
-.cs-related h2{margin:6px 0 16px;font-size:clamp(21px,5vw,26px);font-weight:900}
+@media (min-width:1024px){
+  .cs-art-head{padding-top:30px;max-width:900px}
+  .cs-art-head h1{margin-top:14px;font-size:clamp(32px,2.9vw,40px);line-height:1.4}
+  .cs-lead{margin-top:16px;font-size:19px;line-height:1.8;max-width:42em}
+  .cs-art-grid{grid-template-columns:minmax(0,1fr) 340px;grid-template-areas:"hero side" "body side" "next side";column-gap:56px;margin-top:32px;align-items:start}
+  .cs-art-side{display:flex;flex-direction:column;gap:20px;grid-area:side;position:sticky;top:calc(var(--hdr) + 24px)}
+  .cs-facts,.cs-ask{margin-top:0}
+  .cs-facts{padding:18px 22px 10px}
+  .cs-facts-title{display:block;margin-bottom:4px;font-size:13px;font-weight:900;letter-spacing:.14em;color:var(--or)}
+  .cs-facts dl{grid-template-columns:minmax(0,1fr)}
+  .cs-facts dt{padding:12px 0 0;border-top:1px solid rgba(255,106,0,.16)}
+  .cs-facts dt:first-of-type{border-top:0}
+  .cs-facts dd{padding:2px 0 12px;font-size:16.5px}
+  .cs-facts dt+dd~dd{border-top:0}
+  .cs-ask{padding:24px}
+  .cs-ask-row{display:flex}
+  .cs-ask-sp{display:none}
+  .cs-ask .cs-btn{width:100%}
+  .cs-sec{margin-top:48px}
+  .cs-sec:first-child{margin-top:44px}
+  .cs-sec h2{font-size:27px}
+  .cs-sec p{font-size:17.5px;line-height:1.95}
+  .cs-voice p{font-size:18px}
+  .cs-photos{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cs-photos li:only-child{grid-column:auto}
+  .cs-hero img{max-height:560px}
+  .cs-next{margin-top:40px}
+  /* 本文のない短い記事：右の欄を作らず、概要とご相談を横に並べて間延びさせない */
+  .cs-art-grid.is-short{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"hero hero" "facts ask" "next next";column-gap:24px;row-gap:24px}
+  .cs-art-grid.is-short .cs-art-side{display:contents}
+  .cs-art-grid.is-short .cs-body{display:none}
+  .cs-art-grid.is-short .cs-facts,.cs-art-grid.is-short .cs-ask{align-self:stretch}
+  .cs-art-grid.is-short .cs-facts dl{grid-template-columns:auto minmax(0,1fr)}
+  .cs-art-grid.is-short .cs-facts dt{padding:12px 18px 12px 0}
+  .cs-art-grid.is-short .cs-facts dd{padding:12px 0}
+  .cs-art-grid.is-short .cs-facts dt+dd~dd{border-top:1px solid rgba(255,106,0,.16)}
+  .cs-art-grid.is-short .cs-next{margin-top:8px}
+}
+.cs-photo-pending+.cs-facts{margin-top:16px}
+
+/* 関連事例 */
+.cs-related{margin-top:56px;padding:40px 0 0;border-top:1px solid var(--line);background:linear-gradient(180deg,#FBF9F6 0,#fff 220px)}
+.cs-related h2{margin:12px 0 20px;font-size:clamp(23px,5.6vw,32px);line-height:1.35}
 
 /* 確認用ページの帯 */
-.cs-review{margin:16px 0 0;padding:14px 16px;border-radius:12px;background:#FFF8D6;border:1.5px solid #F5C400;color:#5a4500;font-size:14px;line-height:1.8}
-.cs-review b{display:block;font-size:15px;color:#3d2f00}
+.cs-review{margin:16px 0 0;padding:14px 18px;border-radius:12px;background:#FFF8D6;border:1.5px solid #F0C000;color:#4d3b00;font-size:14.5px;font-weight:500;line-height:1.8}
+.cs-review b{display:block;font-size:15.5px;font-weight:900;color:#3d2f00}
 .cs-review ul{margin:6px 0 0;padding-left:1.2em}
 
-/* 画面下の固定ボタン（トップと同じ：電話＝オレンジ、LINE＝緑） */
+/* 画面下の固定ボタン（トップと同じ：電話＝オレンジ、LINE＝緑）。本文が隠れないよう下に余白を取る */
 .cs-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;display:flex;gap:10px;padding:10px clamp(12px,3vw,20px) calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.94);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-top:1px solid var(--line)}
 .cs-bar a{flex:1 1 0;min-width:0;display:flex;align-items:center;justify-content:center;gap:8px;height:58px;padding:0 8px;border-radius:12px;color:#fff;font-weight:900;font-size:17px;line-height:1;white-space:nowrap}
 .cs-bar a:hover{color:#fff}
@@ -164,16 +228,16 @@ body{padding-bottom:calc(79px + env(safe-area-inset-bottom))}
 @media (min-width:1024px){.cs-bar{display:none}body{padding-bottom:0}}
 
 /* フッター：トップと同じ紺・同じ並び */
-.cs-footer{margin-top:64px;background:var(--navy-dk);padding:clamp(40px,6vw,64px) 0 clamp(20px,3vw,30px)}
+.cs-footer{margin-top:72px;background:var(--navy-dk);padding:clamp(40px,6vw,64px) 0 clamp(20px,3vw,30px)}
 .cs-footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px 20px;align-items:start}
 .cs-footer-grid>div:first-child{grid-column:1/-1}
 @media (min-width:760px){.cs-footer-grid{grid-template-columns:1.4fr 1fr 1fr 1fr;gap:clamp(28px,4.4vw,56px)}.cs-footer-grid>div:first-child{grid-column:auto}}
 .cs-footer-col{display:flex;flex-direction:column;gap:9px}
 .cs-footer-col>span{color:var(--or);font-size:13px;font-weight:900;letter-spacing:.1em;margin-bottom:4px}
-.cs-footer a{color:rgba(255,255,255,.84);font-size:14.5px;font-weight:500}
+.cs-footer a{color:rgba(255,255,255,.86);font-size:14.5px;font-weight:500}
 .cs-footer a:hover{color:#fff}
-.cs-footer-id{display:flex;flex-direction:column;gap:6px;color:rgba(255,255,255,.84)}
+.cs-footer-id{display:flex;flex-direction:column;gap:6px;color:rgba(255,255,255,.86)}
 .cs-footer-id span:first-child{font-size:14.5px;font-weight:700}
 .cs-footer-id span:last-child{font-size:17px;font-weight:900;letter-spacing:.01em;white-space:nowrap}
-.cs-footer-bottom{margin-top:clamp(28px,4vw,40px);border-top:1px solid rgba(255,255,255,.08);padding-top:18px;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;font-size:13px;color:rgba(255,255,255,.68)}
-.cs-footer-bottom a{font-size:13px;color:rgba(255,255,255,.68)}
+.cs-footer-bottom{margin-top:clamp(28px,4vw,40px);border-top:1px solid rgba(255,255,255,.1);padding-top:18px;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;font-size:13px;color:rgba(255,255,255,.72)}
+.cs-footer-bottom a{font-size:13px;color:rgba(255,255,255,.72)}
