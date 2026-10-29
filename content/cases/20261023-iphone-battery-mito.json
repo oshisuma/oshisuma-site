@@ -1,0 +1,38 @@
+{
+  "slug": "20261023-iphone-battery-mito",
+  "status": "published",
+  "indexable": false,
+  "date": "2026-10-23",
+  "seq": 3,
+  "category": "iphone",
+  "area": "水戸市",
+  "device": "iPhone",
+  "model": "",
+  "work": "バッテリー交換",
+  "symptom": "充電がすぐ減る・突然電源が落ちる",
+  "summary": "充電がすぐ減る・突然電源が落ちる症状。当日中にお返ししました。",
+  "consultation": "充電がすぐ減る・突然電源が落ちる症状でご来店いただきました。",
+  "diagnosis": "",
+  "treatment": "iPhoneのバッテリーを交換しました。",
+  "result": "当日中にお返ししました。",
+  "episode": "",
+  "staffComment": "",
+  "photos": [
+    {
+      "src": "optimized/uploads/iphone-battery-replacement-repair.webp",
+      "srcset": [
+        ["optimized/uploads/iphone-battery-replacement-repair-343w.webp", 343],
+        ["optimized/uploads/iphone-battery-replacement-repair.webp", 687]
+      ],
+      "width": 687,
+      "height": 1536,
+      "alt": "iPhoneのバッテリー交換",
+      "caption": "",
+      "filter": "brightness(1.085) contrast(1.08) saturate(1.068) sepia(0.06)"
+    }
+  ],
+  "source": {
+    "type": "existing-site",
+    "note": "2026-10-23 公開のトップページ「最新の修理事例」CASE 01 の掲載文をもとに作成。機種名・作業日・詳しい経緯は未記入（店舗で確認後に追記）。"
+  }
+}

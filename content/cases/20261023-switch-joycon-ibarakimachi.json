@@ -1,0 +1,39 @@
+{
+  "slug": "20261023-switch-joycon-ibarakimachi",
+  "status": "published",
+  "indexable": false,
+  "date": "2026-10-23",
+  "seq": 1,
+  "category": "switch",
+  "area": "茨城町",
+  "device": "Nintendo Switch",
+  "model": "",
+  "work": "Joy-Con修理",
+  "symptom": "スティックが勝手に動く",
+  "summary": "スティックが勝手に動く症状。動作確認してお渡し。",
+  "consultation": "Joy-Conのスティックが勝手に動く症状でご相談いただきました。",
+  "diagnosis": "",
+  "treatment": "Joy-Conの修理を行いました。",
+  "result": "動作確認をしてからお渡ししました。",
+  "episode": "",
+  "staffComment": "",
+  "photos": [
+    {
+      "src": "optimized/uploads/nintendo-switch-joycon-repair.webp",
+      "srcset": [
+        ["optimized/uploads/nintendo-switch-joycon-repair-480w.webp", 480],
+        ["optimized/uploads/nintendo-switch-joycon-repair-768w.webp", 768],
+        ["optimized/uploads/nintendo-switch-joycon-repair.webp", 1152]
+      ],
+      "width": 1152,
+      "height": 1536,
+      "alt": "Nintendo Switchのジョイコン修理",
+      "caption": "",
+      "filter": "brightness(1.065) contrast(1.07) saturate(1.035) sepia(0.02)"
+    }
+  ],
+  "source": {
+    "type": "existing-site",
+    "note": "2026-10-23 公開のトップページ「最新の修理事例」CASE 03 の掲載文をもとに作成。作業日・修理の詳しい内容は未記入（店舗で確認後に追記）。"
+  }
+}

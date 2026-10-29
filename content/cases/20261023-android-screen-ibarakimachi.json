@@ -1,0 +1,40 @@
+{
+  "slug": "20261023-android-screen-ibarakimachi",
+  "status": "published",
+  "indexable": false,
+  "date": "2026-10-23",
+  "seq": 2,
+  "category": "android",
+  "area": "茨城町",
+  "device": "Android",
+  "model": "",
+  "work": "画面交換",
+  "symptom": "画面の不具合",
+  "summary": "画面の不具合でご相談。内部を開けて画面パーツを交換しました。",
+  "consultation": "画面の不具合でご相談いただきました。",
+  "diagnosis": "",
+  "treatment": "内部を開けて画面パーツを交換しました。",
+  "result": "",
+  "episode": "",
+  "staffComment": "",
+  "photos": [
+    {
+      "src": "optimized/uploads/android-screen-repair-disassembly.webp",
+      "srcset": [
+        ["optimized/uploads/android-screen-repair-disassembly-480w.webp", 480],
+        ["optimized/uploads/android-screen-repair-disassembly-768w.webp", 768],
+        ["optimized/uploads/android-screen-repair-disassembly.webp", 960]
+      ],
+      "width": 960,
+      "height": 1280,
+      "alt": "Androidスマートフォンの内部と画面パーツを分解している修理作業",
+      "caption": "",
+      "objectPosition": "60% 45%",
+      "filter": "brightness(1.06) contrast(1.07) saturate(1.008) sepia(0.02)"
+    }
+  ],
+  "source": {
+    "type": "existing-site",
+    "note": "2026-10-23 公開のトップページ「最新の修理事例」CASE 02 の掲載文をもとに作成。機種名・作業日・結果・詳しい経緯は未記入（店舗で確認後に追記）。"
+  }
+}

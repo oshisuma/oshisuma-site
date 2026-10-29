@@ -1,0 +1,16 @@
+{
+  "groups": [
+    { "key": "repair", "label": "修理", "kind": "修理事例" },
+    { "key": "support", "label": "相談・サポート", "kind": "対応事例" }
+  ],
+  "categories": [
+    { "key": "iphone", "label": "iPhone修理", "short": "iPhone", "group": "repair" },
+    { "key": "android", "label": "Android修理", "short": "Android", "group": "repair" },
+    { "key": "ipad", "label": "iPad修理", "short": "iPad", "group": "repair" },
+    { "key": "switch", "label": "Switch修理", "short": "Switch", "group": "repair" },
+    { "key": "other-repair", "label": "その他の修理", "short": "その他の修理", "group": "repair" },
+    { "key": "consult", "label": "スマホ相談・料金見直し", "short": "スマホ相談", "group": "support" },
+    { "key": "data-transfer", "label": "データ移行・設定", "short": "データ移行・設定", "group": "support" },
+    { "key": "used", "label": "中古販売", "short": "中古販売", "group": "support" }
+  ]
+}
