@@ -1373,3 +1373,85 @@ html{scroll-padding-top:122px}
 @media(prefers-reduced-motion:reduce){
   .repair-subnav a{transition:none}
 }
+
+
+/* v2.7 2026-10-31: minimal five-link repair header, homepage-sized shop details. */
+/* The brand itself is the homepage link; no second header menu or home button. */
+.head .menubtn,.head .menu,.head .head-home-link{display:none!important}
+.head-inner{justify-content:flex-start}
+.head .brand{min-width:0;max-width:100%}
+@media(max-width:650px){
+  .head-inner{padding:9px clamp(12px,3vw,18px)}
+  .head .brand b{font-size:clamp(17px,4.6vw,18px);letter-spacing:-.01em;white-space:nowrap}
+  .head .brand small{font-size:clamp(10px,2.9vw,12px)}
+}
+@media(max-width:350px){
+  .head .brand b{font-size:16px}
+  .head-inner{padding-left:10px;padding-right:10px}
+}
+
+/* The access-section shop information uses the homepage's 16px name,
+   14.5px key/value rows, restrained dividers and 13px orange section labels. */
+.home-style-access .repair-store-info{display:flex;flex-direction:column;gap:11px;min-width:0}
+.home-style-access .repair-store-info .access-subheading{
+  margin:0;color:#ff6a00;font-size:13px;font-weight:900;letter-spacing:.14em;line-height:1.6
+}
+.home-style-access .repair-store-main{
+  display:flex;flex-direction:column;gap:3px;padding-bottom:11px;
+  border-bottom:1px solid rgba(255,255,255,.1);min-width:0
+}
+.home-style-access .repair-store-name{
+  display:flex;flex-direction:column;color:#fff;font-size:16px;font-weight:900;line-height:1.55
+}
+.home-style-access .repair-store-name span{display:block}
+.home-style-access .repair-store-address{
+  margin:0;color:rgba(255,255,255,.84);font-size:16px;
+  font-weight:600;line-height:1.7;white-space:nowrap;letter-spacing:-.02em
+}
+.home-style-access .repair-store-info .repair-store-dl{display:grid;gap:0;margin:0;min-width:0}
+.home-style-access .repair-store-info .repair-store-dl>div{
+  display:grid;grid-template-columns:88px minmax(0,1fr);gap:14px;
+  padding:11px 0;border-bottom:1px solid rgba(255,255,255,.13)
+}
+.home-style-access .repair-store-info .repair-store-dl dt{
+  color:rgba(255,255,255,.78);font-size:14.5px;font-weight:700;line-height:1.65;white-space:nowrap
+}
+.home-style-access .repair-store-info .repair-store-dl dd{
+  color:#fff;font-size:14.5px;font-weight:800;line-height:1.65;min-width:0
+}
+.home-style-access .repair-store-payment{display:flex;flex-direction:column;gap:5px}
+.home-style-access .repair-store-info .repair-store-payment small{
+  display:block;color:rgba(255,255,255,.84);font-size:13.5px;
+  font-weight:700;line-height:1.6;overflow-wrap:anywhere
+}
+.home-style-access .access-right{min-width:0;gap:22px}
+.home-style-access .access-contact{padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}
+.home-style-access .access-contact .access-subheading{
+  font-size:13px;font-weight:900;letter-spacing:.14em;line-height:1.6;color:#ff6a00
+}
+.home-style-access .access-contact-label{margin-top:3px;font-size:13px;font-weight:700;color:rgba(255,255,255,.8)}
+.home-style-access .access-phone-number{
+  font-family:'Archivo Black','Zen Kaku Gothic New',sans-serif;
+  font-size:clamp(24px,3.4vw,30px);letter-spacing:.02em;line-height:1.3;margin:2px 0 12px
+}
+.home-style-access .access-actions{gap:10px}
+.home-style-access .access-actions .access-action{min-height:58px;font-size:17px;padding:8px;border-radius:12px}
+.home-style-access .access-actions .access-action svg{width:22px;height:22px;flex-basis:22px}
+/* The original homepage footer has a two-column mobile grid and 17px shop name. */
+@media(max-width:759px){
+  .home-style-access .repair-store-address{
+    font-size:clamp(11.5px,3.5vw,16px);letter-spacing:-.035em;white-space:nowrap
+  }
+  .home-style-access .repair-store-info .repair-store-dl>div{grid-template-columns:88px minmax(0,1fr)}
+  .home-style-access .access-actions .access-action{height:46px;min-height:46px;font-size:13.5px}
+  .home-style-footer #footer-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:28px 20px!important
+  }
+  .home-style-footer #footer-grid>div:first-child{grid-column:1/-1}
+  .home-style-footer #footer-brand-name{font-size:17px!important;white-space:nowrap}
+}
+@media(max-width:350px){
+  .home-style-access .repair-store-address{font-size:11.5px;letter-spacing:-.04em}
+  .home-style-access .repair-store-info .repair-store-dl>div{gap:9px}
+  .home-style-footer #footer-grid{gap:24px 14px!important}
+}
