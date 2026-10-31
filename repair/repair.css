@@ -332,3 +332,126 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .repair-footer .footer-cols{grid-template-columns:1fr}
  .repair-footer .footer-shop{grid-column:auto}
 }
+
+
+/* v1.5 オシスマカラーとメインページへの統一：下記はv1.4からの意図した上書き。
+   白を基本にオレンジ・ネイビーを鮮やかに。メインページの店舗情報・SNS配置に合わせる。 */
+:root{--or:#ff6a00;--navy:#0f2b46;--text:#192d40;--muted:#35465a}
+.kicker,.section .kicker,.repair-access .kicker{color:#ff6a00;font-weight:900;letter-spacing:.09em}
+.section .kicker{font-size:clamp(16px,1.55vw,19px)}
+.section h2{color:#0f2b46}
+/* 電話・LINE：文言と番号が視覚的に中央へ揃い、トップページと同じ大きなアイコンで見せる */
+.repair-cta-group{max-width:890px;gap:16px}
+.repair-cta-group .btn{display:flex;justify-content:center;align-items:center;gap:16px;padding:15px 20px;min-height:105px}
+.repair-cta-group .btn .cta-copy{display:flex;align-items:center;text-align:center;justify-content:center;white-space:normal;gap:4px}
+.repair-cta-group .cta-copy strong{font-size:clamp(21px,2vw,25px);line-height:1.3;letter-spacing:.015em}
+.repair-cta-group .btn.tel .pc-contact-sub{font-size:clamp(27px,2.65vw,33px);line-height:1.25;font-weight:900;letter-spacing:.01em}
+.repair-cta-group .btn.line .pc-contact-sub{font-size:clamp(17px,1.7vw,20px);line-height:1.3}
+.repair-cta-group .btn svg{display:block;width:43px;height:43px;flex:0 0 43px}
+.hero-hours{font-size:clamp(18px,1.8vw,21px);line-height:1.6;color:#0f2b46;font-weight:800;margin-top:20px}
+.hero-visit-note{font-size:clamp(17px,1.5vw,19px);line-height:1.75;color:#293f53;font-weight:700;margin-top:7px;max-width:880px}
+.hero .note{font-size:18px}
+.hero:not(.repair-hero) .repair-contact-wrap{margin-top:22px}
+.hero:not(.repair-hero) .hero-visit-note{margin-top:16px}
+/* 4ステップ：カードの枠は白＋明るいオレンジとネイビー、矢印は次のカードへ接続 */
+.process-section .step,.process-section .step:first-child{background:#fff;border:2px solid #d1dbe5;border-top:7px solid #ff6a00;box-shadow:0 9px 23px rgba(15,43,70,.09);border-radius:15px}
+.process-section .step:nth-child(even){border-top-color:#0f2b46}
+.process-section .step:first-child{border-color:#ff6a00;border-top-width:7px}
+.process-section .step b{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border-radius:9px;background:#ff6a00;color:white;font-size:18px;font-weight:900;padding:6px 15px}
+.process-section .step:nth-child(even) b{background:#0f2b46}
+.process-section .step h3{color:#0f2b46;font-size:clamp(22px,2vw,26px)}
+.process-section .step p{color:#20384c;font-size:clamp(17px,1.5vw,19px);font-weight:600}
+@media(min-width:1101px){
+ .process-section .step:not(:last-child)::after{content:"→";position:absolute;right:-25px;top:calc(50% - 22px);background:#ff6a00;color:#fff;border:3px solid #fff;display:grid;place-items:center;width:44px;height:44px;border-radius:50%;font-size:30px;line-height:1;box-shadow:0 3px 8px rgba(15,43,70,.12);z-index:2}
+}
+/* 重要な安全注意：茶色・ベージュを使わず、オシスマのオレンジを主体に */
+.safety-alert{background:#fff;border-top:5px solid #ff6a00;border-bottom:5px solid #ff6a00;padding:clamp(28px,4vw,42px) 0}
+.safety-icon{background:#ff6a00;color:#fff;border-radius:13px}
+.safety-alert h2{color:#0f2b46;font-size:clamp(26px,2.8vw,36px)}
+.safety-alert p{color:#1f3347;font-size:clamp(19px,1.8vw,23px);font-weight:800}
+/* メニューカード：背景を白で保ち、オレンジ見出しと濃紺の区切りで判読性を上げる */
+.repair-symptom-card{border:2px solid #ccd6e0}
+.repair-card-head{background:#fff;border-bottom:2px solid #ebf0f4}
+.repair-card-head h3{color:#0f2b46}
+.repair-approach strong{color:#e65a00;font-size:18px}
+.device-cards .card,.conditions-section .card{background:#fff;border:2px solid #e1e7ed;border-left:7px solid #ff6a00;box-shadow:0 7px 18px rgba(15,43,70,.07)}
+.device-cards .card:nth-child(even),.conditions-section .card:nth-child(even){border-left-color:#0f2b46}
+.device-cards .card h3,.conditions-section .card h3{display:flex;align-items:center;gap:12px;color:#0f2b46;font-size:clamp(23px,2.3vw,28px)}
+.device-cards .card h3::before,.conditions-section .card h3::before{content:"";width:11px;height:30px;flex:0 0 11px;border-radius:10px;background:#ff6a00}
+.device-cards .card:nth-child(even) h3::before,.conditions-section .card:nth-child(even) h3::before{background:#0f2b46}
+.device-cards .card p,.conditions-section .card p{font-weight:600;color:#263c50}
+.other a{background:#fff;border:2px solid #ff6a00;color:#0f2b46;box-shadow:0 4px 12px rgba(15,43,70,.05)}
+.other a:nth-child(even){border-color:#0f2b46}
+.other a:hover{background:#fff3e9;border-color:#ff6a00;color:#0f2b46}
+/* 店舗情報・アクセスをトップページの2列構成と外観写真まで再現 */
+.home-style-access{background:#0f2b46;color:white;padding:clamp(45px,6.5vw,78px) 0 clamp(35px,5vw,62px)}
+.home-style-access .access-heading{margin-bottom:21px}
+.home-style-access .access-heading h2{font-size:clamp(30px,5vw,45px);line-height:1.34}
+.home-style-access .access-intro{font-size:clamp(18px,1.6vw,20px);max-width:100%;line-height:1.7;margin-bottom:26px}
+.home-style-access .access-map{width:88%;height:auto;aspect-ratio:16/7;max-height:380px;min-height:240px;border:0;border-radius:5px;margin:0 auto 36px}
+.home-style-access .access-bottom{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,33px);align-items:stretch;margin-top:0}
+.home-style-access .access-shop-photo{margin:0;display:block;max-width:none;min-height:0;width:100%;height:auto;aspect-ratio:3/4;align-self:end;box-shadow:0 16px 40px rgba(0,0,0,.28);border-radius:10px}
+.home-style-access .access-shop-photo img{width:100%;height:100%;max-height:none;object-fit:cover;object-position:50% 40%}
+.home-style-access .access-right{display:flex;flex-direction:column;gap:23px}
+.home-style-access .access-subheading{font-size:16px;font-weight:900;color:#ff913e;letter-spacing:.09em}
+.home-style-access .access-details h3{color:#fff;font-size:clamp(20px,2vw,25px);line-height:1.5;margin:7px 0 8px}
+.home-style-access .access-address{font-size:17px;font-weight:650;color:#fff}
+.home-style-access .access-details dl{margin:17px 0 0}
+.home-style-access .access-details dl div{grid-template-columns:125px minmax(0,1fr);gap:12px;padding:9px 0}
+.home-style-access .access-details dt{font-size:17px;color:#dbe5ef}
+.home-style-access .access-details dd{font-size:18px;color:#fff;font-weight:750;line-height:1.65}
+.home-style-access .access-details dd small{font-size:15px;font-weight:600}
+.home-style-access .access-contact{padding-top:20px;border-top:1px solid rgba(255,255,255,.22)}
+.home-style-access .access-contact-label{font-size:16px;color:#fff;font-weight:700;margin-top:11px}
+.home-style-access .access-phone-number{font-size:clamp(27px,3.1vw,36px);letter-spacing:.02em;line-height:1.3;margin:4px 0 13px;color:#fff}
+.home-style-access .access-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:0}
+.home-style-access .access-action{min-height:63px;font-size:17px;font-weight:900;border-radius:12px;line-height:1.3;padding:9px 8px;color:#fff;display:flex;align-items:center;justify-content:center;gap:9px;white-space:normal;text-align:center}
+.home-style-access .access-action svg{width:26px;height:26px;flex:0 0 26px}
+.home-style-access .access-action.instagram{background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af)}
+.home-style-access .access-action.maps{background:#fff;color:#0f2b46;border:2px solid #d9e2e8}
+.home-style-access .access-action.maps span:first-child,.home-style-access .access-action.instagram span:first-child{font-size:24px;line-height:1}
+.home-style-access .access-shop-exterior{margin:auto 0 0;aspect-ratio:16/6.5;overflow:hidden;border-radius:10px;box-shadow:0 10px 24px rgba(0,0,0,.22)}
+.home-style-access .access-shop-exterior img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 45%}
+.home-style-access .access-contact .repair-guide-trigger{display:none;margin-top:12px;width:100%;min-height:53px;white-space:normal}
+.home-style-footer{background:#0b2137!important}
+.home-style-footer a:hover{text-decoration:underline}
+/* 元トップページのフッターはインライン4列指定なので、修理ページ側で画面幅に応じて制御 */
+@media(max-width:970px){
+ .home-style-footer #footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:29px!important}
+ .home-style-access .access-bottom{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:760px){
+ .home-style-access .access-map{width:100%;aspect-ratio:4/3;height:auto;max-height:none;min-height:250px}
+ .home-style-access .access-bottom{grid-template-columns:1fr}
+ .home-style-access .access-shop-photo{display:block;max-width:none;aspect-ratio:16/10;max-height:420px}
+ .home-style-access .access-right{gap:25px}
+ .home-style-access .access-shop-exterior{margin-top:12px}
+ .home-style-access .access-contact .repair-guide-trigger{display:inline-flex}
+}
+@media(max-width:650px){
+ .repair-cta-group{grid-template-columns:1fr;gap:11px}
+ .repair-cta-group .btn{min-height:90px;padding:11px 12px;gap:13px}
+ .repair-cta-group .btn svg{width:37px;height:37px;flex-basis:37px}
+ .repair-cta-group .cta-copy strong{font-size:21px}
+ .repair-cta-group .btn.tel .pc-contact-sub{font-size:25px;display:block}
+ .repair-cta-group .btn.line .pc-contact-sub{font-size:17px;display:block}
+ .hero-hours{font-size:18px}
+ .hero-visit-note{font-size:17px;line-height:1.7}
+ .process-section .step{background:#fff;border-top-width:6px}
+ .safety-alert{border-top-width:4px;border-bottom-width:4px}
+ .safety-alert h2{font-size:24px}
+ .safety-alert p{font-size:19px}
+ .device-cards .card,.conditions-section .card{border-left-width:6px}
+ .home-style-access .access-intro{font-size:18px}
+ .home-style-access .access-details h3{font-size:23px}
+ .home-style-access .access-details dt{font-size:16px}
+ .home-style-access .access-details dd{font-size:17px}
+ .home-style-access .access-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .home-style-access .access-action{font-size:15px;min-height:60px;padding:8px 5px}
+ .home-style-footer #footer-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:24px 14px!important}
+ .home-style-footer #footer-grid>div:first-child{grid-column:1/-1}
+}
+@media(max-width:380px){
+ .home-style-footer #footer-grid{grid-template-columns:1fr!important}
+ .home-style-footer #footer-grid>div:first-child{grid-column:auto}
+}
