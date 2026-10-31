@@ -1459,8 +1459,18 @@ html{scroll-padding-top:122px}
 
 /* 2026-11-01: Align repair-page access buttons with the homepage.
    Keep Google Maps on a single line with the same red pin; visually enlarge repair LINE bubbles to match the homepage. */
-.home-style-access .access-actions .access-action.line svg{
+/* All 5 repair pages share the approved 30px LINE icon size in
+   desktop CTA, mobile CTA, access panel and fixed bottom CTA. */
+.repair-contact-wrap .repair-cta-pc .repair-contact-line .repair-large-icon svg,
+.repair-contact-wrap .repair-cta-mobile a.repair-mobile-line svg,
+.home-style-access .access-actions .access-action.line svg,
+.sticky a.btn.line svg{
   width:30px;height:30px;flex:0 0 30px;max-width:none;max-height:none;
+}
+@media(max-width:1023px){
+  .repair-contact-wrap > .repair-cta-mobile a.repair-mobile-line > span{
+    flex:0 0 30px;width:30px;height:30px;
+  }
 }
 .home-style-access .access-actions .access-action.maps{
   white-space:nowrap;min-width:0;gap:8px;
