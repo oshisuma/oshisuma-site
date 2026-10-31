@@ -472,3 +472,68 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .process-section .steps{gap:19px}
  .process-section .step{border-top-width:7px}
 }
+
+
+/* v1.6 2026-10-31: 統一カラー。色交互による優先度の誤認をなくし、ホバー/操作を明確に。
+   既存の構造を変えず、修理関連5ページに共通適用。 */
+:root{--or:#ff6a00;--navy:#0f2b46}
+.repair-hero .hero-claim{color:#ff6a00;font-weight:900;letter-spacing:0;text-shadow:none}
+.hero .eyebrow{color:#ff6a00}
+.section .kicker{color:#f26300}
+.process-section .step,
+.process-section .step:first-child,
+.process-section .step:nth-child(even){
+  border:2px solid #f1d7c7;border-top:7px solid #ff6a00;background:#fff;box-shadow:0 5px 17px rgba(255,106,0,.07)
+}
+.process-section .step b,
+.process-section .step:first-child b,
+.process-section .step:nth-child(even) b{background:#ff6a00;color:#fff}
+@media(min-width:1101px){
+ .process-section .step:not(:last-child)::after,
+ .process-section .step:nth-child(even):not(:last-child)::after{background:#ff6a00}
+}
+.device-cards .card,.device-cards .card:nth-child(even),
+.conditions-section .card,.conditions-section .card:nth-child(even){
+ border:2px solid #e3e7ea;border-left:7px solid #ff6a00;background:#fff;box-shadow:0 5px 15px rgba(15,43,70,.055)
+}
+.device-cards .card h3::before,.device-cards .card:nth-child(even) h3::before,
+.conditions-section .card h3::before,.conditions-section .card:nth-child(even) h3::before{background:#ff6a00}
+.device-cards .card h3,.conditions-section .card h3{color:#0f2b46}
+.other a,.other a:nth-child(even){
+ border:2px solid #ff6a00;background:#fff;color:#0f2b46;
+ transition:background .2s ease,color .2s ease,box-shadow .2s ease,transform .2s ease
+}
+.other a:hover,.other a:focus-visible{background:#ff6a00;color:#fff;box-shadow:0 9px 22px rgba(255,106,0,.18);transform:translateY(-2px)}
+/* FAQ：すべての質問を同じ優先度。回答を開いた状態はオレンジで明確に */
+.faq details{border-color:#d6dde3;background:#fff}
+.faq summary::after{background:#ff6a00;color:#fff}
+.faq summary:hover{background:#fff2e7;color:#0f2b46}
+.faq details[open]{border-color:#ff6a00;background:#fffaf6}
+.faq details[open] summary{background:#ff6a00;color:#fff}
+.faq details[open] summary::after{content:"−";background:#fff;color:#e85e00}
+.faq details[open] summary:hover{background:#ed6100;color:#fff}
+.faq details p{background:#fff;color:#1c3144}
+/* 修理一覧ページ：4サービスを同じ重要度・同じデザインで表示 */
+.repair-hub-services .intro{font-size:clamp(20px,1.95vw,23px);font-weight:700}
+.repair-hub-services .cards{gap:22px;margin-top:33px}
+.repair-hub-services .hub-device-card{padding:clamp(25px,3vw,36px);border:2px solid #e0e5ea;border-top:6px solid #ff6a00;background:#fff;border-radius:16px;box-shadow:0 7px 21px rgba(15,43,70,.07);display:flex;flex-direction:column;min-width:0}
+.repair-hub-services .hub-device-card .small-label{font-size:clamp(15px,1.35vw,17px);font-weight:900;color:#ff6a00;letter-spacing:.04em;margin:0 0 10px}
+.repair-hub-services .hub-device-card h3{font-size:clamp(28px,2.9vw,36px);line-height:1.35;margin-bottom:15px;color:#0f2b46}
+.repair-hub-services .hub-device-card>p:not(.small-label){font-size:clamp(19px,1.75vw,21px);font-weight:650;line-height:1.82;color:#273b4e}
+.repair-hub-services .hub-device-card>p:last-child{margin-top:auto!important;padding-top:22px}
+.repair-hub-services .repair-menu-link{display:inline-flex;min-height:68px;padding:15px 22px;border:2px solid #ff6a00;background:#fff;color:#e85b00;font-size:clamp(19px,1.75vw,22px);font-weight:900;line-height:1.4;text-align:center;white-space:normal;transition:transform .17s ease,background .17s ease,color .17s ease,box-shadow .17s ease}
+.repair-hub-services .repair-menu-link:hover,.repair-hub-services .repair-menu-link:focus-visible{background:#ff6a00;color:#fff;transform:translateY(-2px);box-shadow:0 8px 23px rgba(255,106,0,.23)}
+.repair-hub-services .repair-menu-link:active{transform:translateY(0) scale(.98);background:#e95900;color:#fff}
+.repair-hub-guide .intro{font-size:clamp(19px,1.75vw,21px);font-weight:650}
+@media(max-width:650px){
+ .repair-hero .hero-claim{font-size:clamp(23px,5.7vw,30px)}
+ .repair-hub-services .hub-device-card{padding:24px;border-top-width:5px}
+ .repair-hub-services .hub-device-card h3{font-size:28px}
+ .repair-hub-services .hub-device-card>p:not(.small-label){font-size:19px}
+ .repair-hub-services .repair-menu-link{width:100%;font-size:19px}
+ .device-cards .card,.conditions-section .card{border-left-width:6px}
+}
+@media(prefers-reduced-motion:reduce){
+ .repair-hub-services .repair-menu-link,.other a{transition:none}
+ .repair-hub-services .repair-menu-link:hover,.other a:hover{transform:none}
+}
