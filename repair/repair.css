@@ -1455,3 +1455,29 @@ html{scroll-padding-top:122px}
   .home-style-access .repair-store-info .repair-store-dl>div{gap:9px}
   .home-style-footer #footer-grid{gap:24px 14px!important}
 }
+
+
+/* 2026-11-01: Align repair-page access buttons with the homepage.
+   Keep Google Maps on a single line with the same red pin; size LINE to 24px. */
+.home-style-access .access-actions .access-action.line svg{
+  width:24px;height:24px;flex:0 0 24px;
+}
+.home-style-access .access-actions .access-action.maps{
+  white-space:nowrap;min-width:0;gap:8px;
+}
+.home-style-access .access-actions .access-action.maps svg{
+  width:16px;height:16px;flex:0 0 16px;display:block;
+}
+.home-style-access .access-actions .access-action.maps > span{
+  white-space:nowrap;
+}
+@media(max-width:759px){
+  .home-style-access .access-actions .access-action.maps{
+    padding-left:4px;padding-right:4px;
+  }
+}
+@media(max-width:350px){
+  .home-style-access .access-actions .access-action.maps{
+    gap:5px;font-size:12.5px;
+  }
+}
