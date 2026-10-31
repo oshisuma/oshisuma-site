@@ -109,3 +109,38 @@ document.querySelectorAll(".faq-section .faq-more-toggle").forEach(function(butt
   button.textContent=next?"閉じる ↑":"よくある質問をもっと見る →";
  });
 });
+
+
+/* Repair section chips: accessible click-based horizontal navigation. */
+(function(){
+  "use strict";
+  const nav=document.querySelector(".repair-page-nav");
+  if(!nav)return;
+  const track=nav.querySelector(".repair-page-nav-track");
+  const left=nav.querySelector('[data-repair-direction="-1"]');
+  const right=nav.querySelector('[data-repair-direction="1"]');
+  if(!track||!left||!right)return;
+  function update(){
+    left.disabled=track.scrollLeft<=2;
+    right.disabled=track.scrollLeft+track.clientWidth>=track.scrollWidth-2;
+  }
+  [left,right].forEach(function(button){
+    button.addEventListener("click",function(){
+      const direction=Number(button.getAttribute("data-repair-direction"));
+      track.scrollBy({
+        left:direction*Math.max(160,Math.round(track.clientWidth*.72)),
+        behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"
+      });
+    });
+  });
+  track.addEventListener("scroll",update,{passive:true});
+  window.addEventListener("resize",update,{passive:true});
+  requestAnimationFrame(function(){
+    const active=track.querySelector('[aria-current="page"]');
+    if(active){
+      const leftPos=active.offsetLeft-track.offsetLeft-(track.clientWidth-active.clientWidth)/2;
+      track.scrollLeft=Math.max(0,leftPos);
+    }
+    update();
+  });
+})();
