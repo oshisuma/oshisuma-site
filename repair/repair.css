@@ -537,3 +537,45 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .repair-hub-services .repair-menu-link,.other a{transition:none}
  .repair-hub-services .repair-menu-link:hover,.other a:hover{transform:none}
 }
+
+
+/* v1.7: メインページHEROと同じ電話・LINE CTA。PC縦2段、スマホ横2ボタン。
+   PCはQRモーダル、スマホは直接LINEアプリに接続。1024pxでモード切替統一。 */
+.repair-contact-wrap{width:100%;max-width:100%}
+.repair-cta-pc{display:flex;flex-direction:column;gap:16px;width:min(100%,560px);margin-top:23px}
+.repair-contact-large{height:105px;display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;border-radius:14px;color:#fff;text-decoration:none;padding:0 20px;border:0;transition:transform .18s ease,box-shadow .18s ease}
+.repair-contact-phone{background:#ff6a00;box-shadow:0 10px 24px rgba(255,106,0,.26)}
+.repair-contact-line{background:#06c755;box-shadow:0 10px 24px rgba(6,199,85,.26)}
+.repair-contact-large:hover,.repair-contact-large:focus-visible{color:#fff;transform:translateY(-2px);box-shadow:0 14px 30px rgba(15,43,70,.18)}
+.repair-large-inner{display:flex;align-items:center;gap:18px;width:min(100%,380px);min-width:0}
+.repair-large-icon{width:56px;height:56px;flex:0 0 56px;display:grid;place-items:center}
+.repair-large-icon svg{width:50px;height:50px;display:block;flex:none}
+.repair-large-icon svg text{font-family:Arial,Helvetica,sans-serif}
+.repair-large-copy{display:flex;flex-direction:column;align-items:flex-start;gap:7px;line-height:1.15;min-width:0;text-align:left}
+.repair-large-copy strong{color:#fff;font-size:clamp(23px,2.3vw,28px);font-weight:900}
+.repair-contact-phone .repair-large-copy strong{font-size:20px}
+.repair-large-phone-number{font-size:clamp(28px,2.7vw,36px);font-weight:900;letter-spacing:.01em;line-height:1.1;white-space:nowrap;color:#fff;font-variant-numeric:tabular-nums}
+.repair-large-sub{font-size:17px;font-weight:800;color:#fff}
+.repair-cta-mobile{display:none}
+.repair-cta-pc + .repair-cta-mobile + .repair-guide-trigger{display:none}
+/* フッターや店舗情報内の既存LINE CTAもcontact.jsのdata-line-ctaを引き継ぐ */
+@media(max-width:1023px){
+ .repair-cta-pc{display:none}
+ .repair-cta-mobile{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:min(100%,620px);margin-top:18px}
+ .repair-cta-mobile a{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;min-height:62px;padding:8px 10px;color:#fff;border-radius:12px;text-decoration:none;font-size:clamp(15px,3.5vw,18px);font-weight:900;text-align:center}
+ .repair-mobile-phone{background:#ff6a00}
+ .repair-mobile-line{background:#06c755}
+ .repair-cta-mobile a span{display:grid;place-items:center;flex:none;width:28px;height:28px}
+ .repair-cta-mobile a svg{width:27px;height:27px;display:block}
+ .repair-cta-mobile a strong{color:#fff;font-weight:900;white-space:normal}
+ .repair-cta-mobile + .repair-guide-trigger{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;min-height:52px;font-size:16px}
+}
+@media(max-width:420px){
+ .repair-cta-mobile a{font-size:15px;gap:5px;padding-inline:5px}
+ .repair-cta-mobile a svg{width:24px;height:24px}
+ .repair-cta-mobile a span{width:25px;height:25px}
+}
+@media(prefers-reduced-motion:reduce){
+ .repair-contact-large{transition:none}
+ .repair-contact-large:hover{transform:none}
+}
