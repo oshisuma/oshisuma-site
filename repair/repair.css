@@ -804,3 +804,14 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .head-inner{gap:5px}
  .menubtn{min-width:75px}
 }
+
+/* Navigation now has one more link: switch to compact menu before crowding. */
+@media(max-width:1240px) and (min-width:1121px){
+  .menu{display:none}
+  .menubtn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    min-height:44px;min-width:100px;padding:8px 10px;border-radius:9px;cursor:pointer}
+  .menu.open{display:flex;flex:1 0 100%;width:100%;flex-wrap:wrap;
+    gap:7px 14px;padding:12px 0;border-top:1px solid rgba(15,43,70,.12)}
+  .menu.open a{min-height:44px;padding:8px 9px;font-size:15px}
+  .head-inner{flex-wrap:wrap}
+}
