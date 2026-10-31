@@ -579,3 +579,35 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .repair-contact-large{transition:none}
  .repair-contact-large:hover{transform:none}
 }
+
+/* v1.8 : タイトルを主役にする余白。4機種共通、PC/スマホでサイズを調整。
+   情報は減らさず、タイトル→補足→CTAの視線誘導を整える。 */
+.repair-hero .hero-inner{max-width:1100px}
+.repair-hero h1{
+ margin-top:clamp(22px,3.4vw,42px);
+ margin-bottom:clamp(18px,2.6vw,32px);
+}
+.repair-hero .hero-claim{
+ margin-top:0;
+ margin-bottom:clamp(36px,4.3vw,60px);
+ line-height:1.55;
+}
+.repair-hero .lead{margin-top:0;line-height:1.7}
+.repair-hero .hero-hint{margin-top:clamp(15px,2vw,25px)}
+.repair-hero .hero-contact-title{margin-top:clamp(30px,4.5vw,52px)}
+.process-section{padding-top:clamp(60px,7.5vw,105px);padding-bottom:clamp(55px,6.4vw,88px)}
+.process-section .kicker{margin-bottom:clamp(15px,2.2vw,24px)}
+.process-section h2{margin-bottom:clamp(32px,4.3vw,54px);line-height:1.5}
+.process-section .steps{margin-top:0;row-gap:25px}
+.process-section .step{padding-top:clamp(25px,2.5vw,34px);padding-bottom:clamp(25px,2.5vw,34px)}
+.safety-alert{padding-top:clamp(32px,4vw,52px);padding-bottom:clamp(32px,4vw,52px)}
+@media(max-width:650px){
+ .repair-hero h1{margin-top:22px;margin-bottom:18px}
+ .repair-hero .hero-claim{margin-bottom:34px;line-height:1.45}
+ .repair-hero .lead{line-height:1.65}
+ .repair-hero .hero-contact-title{margin-top:30px}
+ .process-section{padding-top:55px;padding-bottom:56px}
+ .process-section h2{margin-bottom:27px}
+ .process-section .steps{row-gap:17px}
+ .process-section .step{padding-top:25px;padding-bottom:25px}
+}
