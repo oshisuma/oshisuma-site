@@ -1242,3 +1242,25 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 /* v2.9: Text-only line break spans must never inherit the green LINE CTA background.
    Their class is intentionally distinct from .repair-mobile-line (the LINE button). */
 .repair-text-break{background:transparent;color:inherit;border:0;box-shadow:none;}
+
+/* Mobile contact callout: one line, centered above balanced phone/LINE CTAs. */
+@media (max-width:650px){
+  .repair-hero .hero-contact-title{
+    box-sizing:border-box;
+    width:100%;
+    max-width:100%;
+    margin:30px 0 13px;
+    padding:0;
+    font-size:clamp(13px,3.65vw,16px);
+    font-weight:900;
+    line-height:1.5;
+    letter-spacing:-.035em;
+    text-align:center;
+    white-space:nowrap;
+    overflow-wrap:normal;
+    word-break:keep-all;
+  }
+  .repair-hero .hero-contact-title + .repair-contact-wrap > .repair-cta-mobile{
+    margin-top:0;
+  }
+}
