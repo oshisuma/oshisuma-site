@@ -1120,7 +1120,7 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 }
 .repair-mobile-guide-overlay .repair-modal-close{
   min-height:44px;border-radius:999px;background:#eef1f4;
-  color:#0f2b46;font:800 16px/1.2 inherit;white-space:nowrap;
+  color:#0f2b46;font-family:inherit;font-size:16px;font-weight:800;line-height:1.2;white-space:nowrap;
 }
 .repair-mobile-guide-overlay .repair-guide-image{
   display:block;width:100%;height:auto;
