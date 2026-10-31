@@ -1131,3 +1131,49 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
   font-size:17px;font-weight:700;line-height:1.7;color:#0f2b46;
 }
 .repair-mobile-guide-overlay .repair-modal-panel > p strong{color:#15803d;font-weight:900}
+
+/* v2.6 2026-10-31: Center standalone action buttons on mobile without
+   changing the left alignment of FAQ question/answer text or desktop layout. */
+@media (max-width:760px){
+  /* The FAQ "more questions" button is a solitary section action. */
+  .faq-section .wrap > .faq-more-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+    width:max-content;
+    max-width:100%;
+    min-height:48px;
+    margin:24px auto 0;
+    padding:11px 18px;
+    line-height:1.5;
+    text-align:center;
+    white-space:normal;
+  }
+  /* Full-width device-card buttons: center their labels, not only their box. */
+  .repair-hub-services .hub-device-card .repair-menu-link{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  /* The single LINE open action in the mobile instruction dialog. */
+  .repair-mobile-guide-overlay .repair-guide-direct{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:max-content;
+    max-width:100%;
+    margin:15px auto 0;
+    text-align:center;
+  }
+}
+/* Three cross-links form two columns + a solitary third. Keep the third
+   visually centered instead of leaving a lonely link at bottom-left. */
+@media (max-width:650px){
+  .final-contact-section .other > a:last-child:nth-child(odd){
+    grid-column:1 / -1;
+    justify-self:center;
+    width:min(100%,270px);
+  }
+}
