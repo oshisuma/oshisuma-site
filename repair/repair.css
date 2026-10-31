@@ -1318,3 +1318,140 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 @media(max-width:650px){
   .repair-hero .hero-hint + .repair-contact-wrap{margin-top:30px}
 }
+
+/* v2.6 2026-10-31: homepage-style secondary navigation and bigger store name. */
+/* Match the homepage's orange header, with room for a more prominent shop name. */
+.head-inner{min-height:64px;padding-top:8px;padding-bottom:8px}
+.head .brand b{font-size:clamp(16px,2.15vw,19px);letter-spacing:0;white-space:nowrap}
+.head .brand-words{flex:0 1 auto;min-width:0}
+@media(max-width:650px){
+  .head-inner{min-height:64px;padding:8px 14px;gap:9px}
+  .head .brand{min-width:0;gap:9px}
+  .head .brand b{font-size:clamp(13.5px,4.15vw,16px);line-height:1.3;letter-spacing:-.012em}
+  /* The shop name itself already links home; avoid crowding it with a second home icon. */
+  .head .head-home-link{display:none}
+  .head .menubtn{margin-left:auto;min-width:82px}
+}
+@media(max-width:360px){
+  .head-inner{padding-left:10px;padding-right:10px;gap:6px}
+  .head .brand b{font-size:14.5px}
+  .head .menubtn{min-width:77px;padding-left:5px;padding-right:5px}
+}
+/* Secondary chips echo the homepage's nav below its orange main header.
+   All links are normal anchors, so they work without JavaScript. */
+.repair-subnav{
+  position:sticky;top:64px;z-index:19;
+  background:rgba(255,255,255,.97);
+  border-bottom:1px solid rgba(15,43,70,.10);
+  box-shadow:0 3px 14px rgba(15,43,70,.055);
+  backdrop-filter:blur(12px);
+}
+.repair-subnav-track{
+  max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:7px;
+  padding:7px clamp(12px,3vw,32px);overflow-x:auto;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.repair-subnav-track::-webkit-scrollbar{display:none}
+.repair-subnav a{
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  min-height:34px;padding:0 13px;border:1px solid rgba(15,43,70,.15);
+  border-radius:999px;background:#fff;color:#0f2b46;
+  font-size:13px;line-height:1.2;font-weight:800;white-space:nowrap;
+  text-decoration:none;transition:color .16s,border-color .16s,background-color .16s;
+}
+.repair-subnav a:hover,
+.repair-subnav a:focus-visible{color:#d95500;background:#fff7ee;border-color:rgba(255,106,0,.55)}
+.repair-subnav a[aria-current="page"]{
+  color:#d95500;border-color:rgba(255,106,0,.65);background:#fff7ee
+}
+html{scroll-padding-top:122px}
+@media(max-width:650px){
+  .repair-subnav-track{gap:6px;padding:7px 12px}
+  .repair-subnav a{min-height:34px;padding:0 12px;font-size:12.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .repair-subnav a{transition:none}
+}
+
+
+/* v2.7 2026-10-31: minimal five-link repair header, homepage-sized shop details. */
+/* The brand itself is the homepage link; no second header menu or home button. */
+.head .menubtn,.head .menu,.head .head-home-link{display:none!important}
+.head-inner{justify-content:flex-start}
+.head .brand{min-width:0;max-width:100%}
+@media(max-width:650px){
+  .head-inner{padding:9px clamp(12px,3vw,18px)}
+  .head .brand b{font-size:clamp(17px,4.6vw,18px);letter-spacing:-.01em;white-space:nowrap}
+  .head .brand small{font-size:clamp(10px,2.9vw,12px)}
+}
+@media(max-width:350px){
+  .head .brand b{font-size:16px}
+  .head-inner{padding-left:10px;padding-right:10px}
+}
+
+/* The access-section shop information uses the homepage's 16px name,
+   14.5px key/value rows, restrained dividers and 13px orange section labels. */
+.home-style-access .repair-store-info{display:flex;flex-direction:column;gap:11px;min-width:0}
+.home-style-access .repair-store-info .access-subheading{
+  margin:0;color:#ff6a00;font-size:13px;font-weight:900;letter-spacing:.14em;line-height:1.6
+}
+.home-style-access .repair-store-main{
+  display:flex;flex-direction:column;gap:3px;padding-bottom:11px;
+  border-bottom:1px solid rgba(255,255,255,.1);min-width:0
+}
+.home-style-access .repair-store-name{
+  display:flex;flex-direction:column;color:#fff;font-size:16px;font-weight:900;line-height:1.55
+}
+.home-style-access .repair-store-name span{display:block}
+.home-style-access .repair-store-address{
+  margin:0;color:rgba(255,255,255,.84);font-size:16px;
+  font-weight:600;line-height:1.7;white-space:nowrap;letter-spacing:-.02em
+}
+.home-style-access .repair-store-info .repair-store-dl{display:grid;gap:0;margin:0;min-width:0}
+.home-style-access .repair-store-info .repair-store-dl>div{
+  display:grid;grid-template-columns:88px minmax(0,1fr);gap:14px;
+  padding:11px 0;border-bottom:1px solid rgba(255,255,255,.13)
+}
+.home-style-access .repair-store-info .repair-store-dl dt{
+  color:rgba(255,255,255,.78);font-size:14.5px;font-weight:700;line-height:1.65;white-space:nowrap
+}
+.home-style-access .repair-store-info .repair-store-dl dd{
+  color:#fff;font-size:14.5px;font-weight:800;line-height:1.65;min-width:0
+}
+.home-style-access .repair-store-payment{display:flex;flex-direction:column;gap:5px}
+.home-style-access .repair-store-info .repair-store-payment small{
+  display:block;color:rgba(255,255,255,.84);font-size:13.5px;
+  font-weight:700;line-height:1.6;overflow-wrap:anywhere
+}
+.home-style-access .access-right{min-width:0;gap:22px}
+.home-style-access .access-contact{padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}
+.home-style-access .access-contact .access-subheading{
+  font-size:13px;font-weight:900;letter-spacing:.14em;line-height:1.6;color:#ff6a00
+}
+.home-style-access .access-contact-label{margin-top:3px;font-size:13px;font-weight:700;color:rgba(255,255,255,.8)}
+.home-style-access .access-phone-number{
+  font-family:'Archivo Black','Zen Kaku Gothic New',sans-serif;
+  font-size:clamp(24px,3.4vw,30px);letter-spacing:.02em;line-height:1.3;margin:2px 0 12px
+}
+.home-style-access .access-actions{gap:10px}
+.home-style-access .access-actions .access-action{min-height:58px;font-size:17px;padding:8px;border-radius:12px}
+.home-style-access .access-actions .access-action svg{width:22px;height:22px;flex-basis:22px}
+/* The original homepage footer has a two-column mobile grid and 17px shop name. */
+@media(max-width:759px){
+  .home-style-access .repair-store-address{
+    font-size:clamp(11.5px,3.5vw,16px);letter-spacing:-.035em;white-space:nowrap
+  }
+  .home-style-access .repair-store-info .repair-store-dl>div{grid-template-columns:88px minmax(0,1fr)}
+  .home-style-access .access-actions .access-action{height:46px;min-height:46px;font-size:13.5px}
+  .home-style-footer #footer-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:28px 20px!important
+  }
+  .home-style-footer #footer-grid>div:first-child{grid-column:1/-1}
+  .home-style-footer #footer-brand-name{font-size:17px!important;white-space:nowrap}
+}
+@media(max-width:350px){
+  .home-style-access .repair-store-address{font-size:11.5px;letter-spacing:-.04em}
+  .home-style-access .repair-store-info .repair-store-dl>div{gap:9px}
+  .home-style-footer #footer-grid{gap:24px 14px!important}
+}
