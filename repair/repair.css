@@ -1304,3 +1304,17 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .head .brand-words small{display:block!important;font-size:9px!important}
  .head .brand-words b{font-size:11px}
 }
+
+/* 2026-10-31: Removed the redundant "まずは電話・LINEで…" heading from
+   the four device pages. Give the explanation and CTA distinct breathing room. */
+.repair-hero .hero-hint + .repair-contact-wrap{
+  margin-top:clamp(26px,3.4vw,40px);
+}
+@media(max-width:1023px){
+  .repair-hero .hero-hint + .repair-contact-wrap > .repair-cta-mobile{
+    margin-top:0;
+  }
+}
+@media(max-width:650px){
+  .repair-hero .hero-hint + .repair-contact-wrap{margin-top:30px}
+}
