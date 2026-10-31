@@ -1190,3 +1190,22 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 @media(prefers-reduced-motion:reduce){
   .repair-page-nav-track{scroll-behavior:auto}
 }
+/* v2.9 2026-10-31: スマホ版の改行を「意味のまとまり」に。
+   HTML内の <wbr> は tools/repair-linebreak.mjs が文節ごとに入れる改行ポイント。
+   スマホ幅（650px以下）だけ keep-all にして、その位置でだけ改行する（PC・タブレットの見た目は変えない）。
+   .sp-line …スマホでこの単位ごとに改行（指定のあった2行見出しなど）
+   .sp-one  …スマホで少し小さくして1行に収める見出し */
+.sp-line{display:inline}
+@media(max-width:650px){
+ .hero,main,.repair-access{word-break:keep-all;overflow-wrap:anywhere}
+ /* 個別に word-break:normal / overflow-wrap:normal を指定している要素も、スマホでは文節改行にそろえる */
+ :is(.hero,main,.repair-access) :is(h1,h2,h3,p,summary,li,dt,dd,strong,b,span,a){word-break:keep-all!important;overflow-wrap:anywhere!important}
+ .sp-line{display:block}
+ .repair-step-line{display:inline-block}
+ .section h2.sp-one{font-size:min(var(--max,26px),calc((100vw - 30px) / var(--one,14.4)));line-height:1.45}
+ .repair-hero .hero-claim{font-size:min(25px,calc((100vw - 30px) / 13.4))}
+ .safety-alert h2.sp-one{font-size:min(23px,calc((100vw - 88px) / 13.4))}
+ .process-section .step h3{font-size:clamp(19px,5.3vw,21px)}
+ /* 見出し・質問文は、行の長さをそろえて最後の行が短くなりすぎないようにする */
+ :is(.hero,main,.repair-access) :is(h1,h2,h3,summary,.hero-claim,.hero-contact-title,.hero-hint,.hero-visit-note){text-wrap:balance}
+}
