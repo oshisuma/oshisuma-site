@@ -1073,3 +1073,61 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 @media(max-width:1049px){
   .android-device-intro-first{white-space:normal}
 }
+
+/* v2.0 2026-10-31: Top-page mobile CTA and LINE-guide visual parity.
+   Same layout on repair index, iPhone, Android, iPad and Switch. */
+@media (max-width:1023px){
+  .repair-contact-wrap > .repair-cta-mobile{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;width:100%;max-width:none;margin-top:4px;
+  }
+  .repair-contact-wrap > .repair-cta-mobile a{
+    display:flex;align-items:center;justify-content:center;
+    box-sizing:border-box;min-width:0;height:58px;min-height:58px;
+    padding:0 8px;border-radius:12px;gap:8px;
+    font-size:17px;line-height:1;white-space:nowrap;
+    text-align:center;text-decoration:none;font-weight:900;
+  }
+  .repair-contact-wrap > .repair-cta-mobile a span{
+    display:flex;align-items:center;justify-content:center;
+    flex:0 0 24px;width:24px;height:24px;
+  }
+  .repair-contact-wrap > .repair-cta-mobile a strong{font-weight:900;white-space:nowrap}
+  .repair-contact-wrap > .repair-cta-mobile .repair-mobile-phone svg{width:22px;height:22px}
+  .repair-contact-wrap > .repair-cta-mobile .repair-mobile-line svg{width:24px;height:24px}
+  .repair-contact-wrap > .repair-guide-trigger{
+    display:flex;align-items:center;justify-content:center;
+    box-sizing:border-box;width:100%;min-height:52px;
+    margin-top:10px;padding:10px 14px;
+    border:2px solid #06c755;border-radius:12px;
+    background:#fff;color:#15803d;
+    font-family:inherit;font-size:16px;font-weight:800;
+    line-height:1.4;text-align:center;cursor:pointer;
+  }
+}
+@media(max-width:350px){
+  .repair-contact-wrap > .repair-cta-mobile a{font-size:14px;gap:5px;padding-inline:5px}
+  .repair-contact-wrap > .repair-guide-trigger{font-size:14px;padding-inline:8px}
+}
+/* The mobile how-to dialog uses the same compact treatment as the main page. */
+.repair-mobile-guide-overlay .repair-modal-panel{
+  width:min(93vw,520px);max-height:calc(100dvh - 24px);
+  padding:18px 16px 20px;border-radius:18px;
+}
+.repair-mobile-guide-overlay .repair-modal-heading{gap:10px;margin-bottom:14px}
+.repair-mobile-guide-overlay .repair-modal-heading h2{
+  font-size:22px;line-height:1.35;font-weight:900;color:#0f2b46;
+}
+.repair-mobile-guide-overlay .repair-modal-close{
+  min-height:44px;border-radius:999px;background:#eef1f4;
+  color:#0f2b46;font:800 16px/1.2 inherit;white-space:nowrap;
+}
+.repair-mobile-guide-overlay .repair-guide-image{
+  display:block;width:100%;height:auto;
+  max-height:calc(100dvh - 250px);margin:0 0 14px;
+  object-fit:contain;border-radius:12px;
+}
+.repair-mobile-guide-overlay .repair-modal-panel > p{
+  font-size:17px;font-weight:700;line-height:1.7;color:#0f2b46;
+}
+.repair-mobile-guide-overlay .repair-modal-panel > p strong{color:#15803d;font-weight:900}
