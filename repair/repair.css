@@ -1005,3 +1005,61 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 @media(prefers-reduced-motion:reduce){
  .faq-section .faq-more-clip{transition:none}
 }
+
+/* v2.5 2026-10-31: FAQ aligned with left edge of each section, a little
+   larger than the homepage, with subtle open-state color. Applies to the
+   shared iPhone, Android, iPad and Switch repair CSS only. */
+.faq-section .faq{
+  max-width:min(100%,1040px);
+  margin:30px 0 0;
+}
+.faq-section .faq-more-toggle{
+  margin-left:0;
+}
+.faq-section .faq details.faq-item > summary{
+  padding:19px 12px;
+  min-height:68px;
+  text-align:left;
+  font-size:clamp(18px,1.75vw,20px);
+  font-weight:700;
+  line-height:1.6;
+  transition:background-color .18s ease;
+}
+.faq-section .faq details.faq-item > summary::before{
+  font-size:18px;
+}
+.faq-section .faq details.faq-item > p{
+  padding:4px 48px 22px 43px;
+  font-size:clamp(16px,1.55vw,18px);
+  line-height:1.85;
+  transition:background-color .18s ease;
+}
+.faq-section .faq details.faq-item[open],
+.faq-section .faq details.faq-item[open] > summary,
+.faq-section .faq details.faq-item[open] > p{
+  background:#fff7ef;
+  color:#0f2b46;
+}
+.faq-section .faq details.faq-item[open] > p{
+  color:#34404c;
+}
+.faq-section .faq details.faq-item:not([open]) > summary:hover{
+  background:#fffbf7;
+}
+@media(max-width:650px){
+  .faq-section .faq{max-width:100%;margin:24px 0 0}
+  .faq-section .faq details.faq-item > summary{
+    padding:17px 9px;
+    min-height:62px;
+    font-size:17.5px;
+    line-height:1.6;
+  }
+  .faq-section .faq details.faq-item > p{
+    padding:3px 27px 18px 33px;
+    font-size:16px;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .faq-section .faq details.faq-item > summary,
+  .faq-section .faq details.faq-item > p{transition:none}
+}
