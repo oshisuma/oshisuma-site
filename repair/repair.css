@@ -681,3 +681,87 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
   .repair-approach{margin:0 14px 15px;margin-top:auto;padding:14px}
   .repair-approach p{font-size:16px}
 }
+
+/* v2.0 2026-10-31: お客様がひと目で読める4機種共通デザイン。
+   STEPはオレンジ色の番号だけ強調し、安全欄の注意喚起とは競合させない。
+   修理メニューは入れ子の枠を排除し、タイトル / 症状 / ご案内を明快に整理。 */
+.process-section .step b,
+.process-section .step:first-child b,
+.process-section .step:nth-child(even) b{
+  display:inline-flex;justify-content:center;align-items:center;
+  min-height:35px;padding:6px 13px;
+  background:#ff6a00;color:#fff;border:1px solid #ff6a00;
+  border-radius:7px;font-size:15px;font-weight:900;
+  letter-spacing:.035em;line-height:1.25;
+}
+.process-section .step h3{font-size:clamp(19px,1.8vw,22px);line-height:1.53}
+.repair-step-line{display:block}
+.symptoms-section .cards{gap:20px;margin-top:30px;align-items:stretch}
+.symptoms-section .repair-symptom-card{
+  display:flex;flex-direction:column;min-width:0;
+  padding:clamp(23px,2.5vw,30px);
+  border:1px solid #dce4eb;background:#fff;border-radius:16px;
+  box-shadow:0 5px 20px rgba(15,43,70,.055);
+  overflow:visible;
+}
+.symptoms-section .repair-card-head{
+  display:flex;align-items:flex-start;gap:13px;
+  min-height:0;padding:0;margin:0;
+  border:0;background:transparent;
+}
+.symptoms-section .repair-card-number{
+  display:block;flex:0 0 auto;width:auto;height:auto;
+  padding:3px 0;border:0;border-radius:0;background:transparent;
+  color:#e46109;font-size:20px;font-weight:900;
+  font-variant-numeric:tabular-nums;line-height:1.4;
+}
+.symptoms-section .repair-card-head h3{
+  margin:0;color:#0f2b46;
+  font-size:clamp(22px,2.1vw,26px);line-height:1.45;
+  font-weight:900;letter-spacing:0;
+}
+.symptoms-section .repair-symptom{
+  display:block;margin:18px 0 0;padding:0;
+}
+.symptoms-section .repair-symptom-marker{
+  display:block;width:auto;height:auto;min-height:0;margin:0 0 7px;
+  padding:0;background:transparent;border:0;border-radius:0;
+  color:#667585;font-size:13px;line-height:1.5;letter-spacing:.02em;
+  font-weight:850;
+}
+.symptoms-section .repair-symptom p{
+  margin:0;color:#263b4b;
+  font-size:clamp(17px,1.55vw,19px);line-height:1.78;
+  font-weight:650;
+}
+.symptoms-section .repair-approach{
+  margin:20px 0 0;padding:17px 0 0;min-width:0;
+  background:transparent;border:0;border-top:1px solid #e3e9ee;
+  border-radius:0;
+}
+.symptoms-section .repair-approach strong{
+  display:block;margin:0 0 6px;color:#52687b;
+  font-size:13px;line-height:1.5;font-weight:900;
+}
+.symptoms-section .repair-approach p{
+  margin:0;color:#344b5d;
+  font-size:clamp(16.5px,1.43vw,18px);line-height:1.8;
+  font-weight:550;
+}
+@media(max-width:1100px) and (min-width:651px){
+  .process-section .step,
+  .process-section .step:first-child,
+  .process-section .step:nth-child(even){border-top-width:1px}
+}
+@media(max-width:650px){
+  .process-section .step h3{font-size:22px}
+  .symptoms-section .cards{gap:14px;margin-top:24px}
+  .symptoms-section .repair-symptom-card{padding:22px 19px;border-radius:14px}
+  .symptoms-section .repair-card-head{gap:11px}
+  .symptoms-section .repair-card-number{font-size:19px;padding-top:4px}
+  .symptoms-section .repair-card-head h3{font-size:21px;line-height:1.5}
+  .symptoms-section .repair-symptom{margin-top:15px}
+  .symptoms-section .repair-symptom p{font-size:16.5px;line-height:1.75}
+  .symptoms-section .repair-approach{margin-top:17px;padding-top:14px}
+  .symptoms-section .repair-approach p{font-size:16px}
+}
