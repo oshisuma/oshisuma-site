@@ -1073,3 +1073,120 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 @media(max-width:1049px){
   .android-device-intro-first{white-space:normal}
 }
+
+
+
+/* v2.8: Smartphone repair navigation and carefully grouped mobile copy.
+   The navigation follows the homepage's pill-strip language, with accessible
+   arrow buttons for people who do not know to swipe horizontally. */
+.repair-page-nav{display:none}
+.repair-sentence,.safety-sentence{display:inline}
+.repair-sentence+.repair-sentence::before,.safety-sentence+.safety-sentence::before{content:" "}
+
+@media(max-width:1240px){
+  .repair-page-nav{
+    display:grid;grid-template-columns:38px minmax(0,1fr) 38px;align-items:center;
+    gap:3px;padding:6px 8px;background:#fff;
+    border-top:1px solid #f1eee9;border-bottom:1px solid #e3e9ee;
+    box-shadow:0 2px 9px rgba(15,43,70,.07);
+  }
+  .repair-page-nav-track{
+    display:flex;align-items:center;gap:7px;min-width:0;
+    overflow-x:auto;overscroll-behavior-x:contain;scroll-behavior:smooth;
+    scrollbar-width:none;-webkit-overflow-scrolling:touch;
+    scroll-padding-inline:6px;padding:2px 1px;
+  }
+  .repair-page-nav-track::-webkit-scrollbar{display:none}
+  .repair-page-nav-track a{
+    display:inline-flex;flex:none;align-items:center;justify-content:center;
+    padding:8px 13px;min-height:38px;border-radius:999px;
+    border:1px solid #dce3e9;background:#fff;color:#253b4e;
+    font-size:13px;font-weight:800;white-space:nowrap;line-height:1.2;
+    text-decoration:none;
+  }
+  .repair-page-nav-track a[aria-current="page"]{
+    color:#df5900;background:#fff1e6;border-color:#f46a14;
+    font-weight:900;box-shadow:inset 0 0 0 1px #f46a14;
+  }
+  .repair-page-nav-track a:focus-visible,
+  .repair-nav-arrow:focus-visible{outline:3px solid #0f2b46;outline-offset:1px}
+  .repair-nav-arrow{
+    display:flex;align-items:center;justify-content:center;
+    width:38px;height:42px;padding:0;border:0;border-radius:8px;
+    background:#fff6ed;color:#dc5c00;font:900 26px/1 Arial,sans-serif;
+    cursor:pointer;
+  }
+  .repair-nav-arrow:disabled{opacity:.23;cursor:default}
+  html{scroll-padding-top:135px}
+  .section,.safety-alert,.hero,.repair-access{scroll-margin-top:135px}
+}
+@media(max-width:650px){
+  .repair-page-nav{grid-template-columns:32px minmax(0,1fr) 32px;padding:5px 6px;gap:2px}
+  .repair-nav-arrow{width:32px;height:40px;font-size:23px}
+  .repair-page-nav-track{gap:6px}
+  .repair-page-nav-track a{min-height:36px;padding:7px 11px;font-size:12.5px}
+  /* Four cards read top-to-bottom; the down arrow lives in the gap,
+     not on top of any text. */
+  .process-section .steps{
+    display:grid;grid-template-columns:minmax(0,1fr);
+    row-gap:38px;
+  }
+  .process-section .step,
+  .process-section .step:first-child,
+  .process-section .step:nth-child(even){
+    position:relative;min-width:0;padding:22px 20px 24px;
+  }
+  .process-section .step:not(:last-child)::after,
+  .process-section .step:nth-child(even):not(:last-child)::after{
+    content:"↓";position:absolute;left:calc(50% - 18px);right:auto;
+    top:auto;bottom:-36px;width:36px;height:34px;
+    display:grid;place-items:center;border:0;border-radius:0;
+    background:transparent;clip-path:none;box-shadow:none;
+    color:#f26500;font:900 27px/1 Arial,sans-serif;transform:none;
+    z-index:1;
+  }
+  .process-section h2{font-size:clamp(24px,6.6vw,29px);line-height:1.52;text-wrap:pretty}
+  .process-section .step h3{
+    font-size:clamp(19px,5.3vw,22px);line-height:1.55;
+    margin:16px 0 12px;text-wrap:pretty;word-break:normal;
+  }
+  .process-section .step p{
+    font-size:clamp(16px,4.35vw,18px);font-weight:600;
+    line-height:1.83;color:#273e50;
+    word-break:normal;overflow-wrap:normal;text-wrap:pretty;
+  }
+  .repair-sentence,.safety-sentence{display:block}
+  .repair-sentence+.repair-sentence::before,
+  .safety-sentence+.safety-sentence::before{content:none}
+  .repair-sentence+.repair-sentence{margin-top:6px}
+  /* Let the warning heading share the icon's row, but give the
+     actual advice the full width of the screen beneath it. */
+  .safety-inner{
+    display:grid;grid-template-columns:44px minmax(0,1fr);
+    column-gap:14px;row-gap:15px;align-items:start;
+  }
+  .safety-inner>div{display:contents}
+  .safety-inner .safety-icon{
+    grid-column:1;grid-row:1;width:44px;height:44px;
+    font-size:24px;align-self:center;
+  }
+  .safety-alert h2{
+    grid-column:2;grid-row:1;align-self:center;
+    margin:0;font-size:clamp(21px,5.6vw,25px);line-height:1.45;
+    text-wrap:pretty;word-break:normal;
+  }
+  .safety-alert p{
+    grid-column:1/-1;grid-row:2;margin:0;
+    font-size:clamp(16px,4.35vw,18px);font-weight:650;
+    line-height:1.9;letter-spacing:0;
+    word-break:normal;overflow-wrap:normal;text-wrap:pretty;
+  }
+  .safety-sentence+.safety-sentence{margin-top:9px}
+  .safety-alert{padding-top:30px;padding-bottom:32px}
+  .section .intro,.section .card p,.faq-section .faq details.faq-item>p{
+    overflow-wrap:normal;word-break:normal;text-wrap:pretty;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  .repair-page-nav-track{scroll-behavior:auto}
+}
