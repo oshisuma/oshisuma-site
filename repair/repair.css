@@ -568,7 +568,7 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .repair-cta-mobile a span{display:grid;place-items:center;flex:none;width:28px;height:28px}
  .repair-cta-mobile a svg{width:27px;height:27px;display:block}
  .repair-cta-mobile a strong{color:#fff;font-weight:900;white-space:normal}
- .repair-cta-mobile + .repair-guide-trigger{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;min-height:52px;font-size:16px}
+ .repair-cta-pc + .repair-cta-mobile + .repair-guide-trigger{display:inline-flex;align-items:center;justify-content:center;margin-top:12px;min-height:52px;font-size:16px}
 }
 @media(max-width:420px){
  .repair-cta-mobile a{font-size:15px;gap:5px;padding-inline:5px}
