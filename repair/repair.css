@@ -1073,3 +1073,58 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 @media(max-width:1049px){
   .android-device-intro-first{white-space:normal}
 }
+
+/* v2.6 2026-10-31: homepage-style secondary navigation and bigger store name. */
+/* Match the homepage's orange header, with room for a more prominent shop name. */
+.head-inner{min-height:64px;padding-top:8px;padding-bottom:8px}
+.head .brand b{font-size:clamp(16px,2.15vw,19px);letter-spacing:0;white-space:nowrap}
+.head .brand-words{flex:0 1 auto;min-width:0}
+@media(max-width:650px){
+  .head-inner{min-height:64px;padding:8px 14px;gap:9px}
+  .head .brand{min-width:0;gap:9px}
+  .head .brand b{font-size:clamp(13.5px,4.15vw,16px);line-height:1.3;letter-spacing:-.012em}
+  /* The shop name itself already links home; avoid crowding it with a second home icon. */
+  .head .head-home-link{display:none}
+  .head .menubtn{margin-left:auto;min-width:82px}
+}
+@media(max-width:360px){
+  .head-inner{padding-left:10px;padding-right:10px;gap:6px}
+  .head .brand b{font-size:13.5px}
+  .head .menubtn{min-width:77px;padding-left:5px;padding-right:5px}
+}
+/* Secondary chips echo the homepage's nav below its orange main header.
+   All links are normal anchors, so they work without JavaScript. */
+.repair-subnav{
+  position:sticky;top:64px;z-index:19;
+  background:rgba(255,255,255,.97);
+  border-bottom:1px solid rgba(15,43,70,.10);
+  box-shadow:0 3px 14px rgba(15,43,70,.055);
+  backdrop-filter:blur(12px);
+}
+.repair-subnav-track{
+  max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:7px;
+  padding:7px clamp(12px,3vw,32px);overflow-x:auto;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.repair-subnav-track::-webkit-scrollbar{display:none}
+.repair-subnav a{
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  min-height:34px;padding:0 13px;border:1px solid rgba(15,43,70,.15);
+  border-radius:999px;background:#fff;color:#0f2b46;
+  font-size:13px;line-height:1.2;font-weight:800;white-space:nowrap;
+  text-decoration:none;transition:color .16s,border-color .16s,background-color .16s;
+}
+.repair-subnav a:hover,
+.repair-subnav a:focus-visible{color:#d95500;background:#fff7ee;border-color:rgba(255,106,0,.55)}
+.repair-subnav a[aria-current="page"]{
+  color:#d95500;border-color:rgba(255,106,0,.65);background:#fff7ee
+}
+html{scroll-padding-top:122px}
+@media(max-width:650px){
+  .repair-subnav-track{gap:6px;padding:7px 12px}
+  .repair-subnav a{min-height:34px;padding:0 12px;font-size:12.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .repair-subnav a{transition:none}
+}
