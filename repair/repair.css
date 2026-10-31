@@ -1089,7 +1089,7 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 }
 @media(max-width:360px){
   .head-inner{padding-left:10px;padding-right:10px;gap:6px}
-  .head .brand b{font-size:13.5px}
+  .head .brand b{font-size:14.5px}
   .head .menubtn{min-width:77px;padding-left:5px;padding-right:5px}
 }
 /* Secondary chips echo the homepage's nav below its orange main header.
