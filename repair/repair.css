@@ -1063,3 +1063,13 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
   .faq-section .faq details.faq-item > summary,
   .faq-section .faq details.faq-item > p{transition:none}
 }
+
+/* Android device introduction: keep the requested first sentence on one
+   line on roomy desktop screens; retain readable wrapping on mobile. */
+@media(min-width:1050px){
+  .section .intro.android-device-intro{max-width:1160px}
+  .android-device-intro-first{white-space:nowrap}
+}
+@media(max-width:1049px){
+  .android-device-intro-first{white-space:normal}
+}
