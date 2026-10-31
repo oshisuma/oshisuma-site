@@ -865,3 +865,72 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .faq .faq-extra-list > details > summary{font-size:17px;padding:14px}
  .faq .faq-extra-list > details > p{font-size:16px;padding:16px 14px}
 }
+
+/* v2.3 always-orange header matching homepage (all five repair pages).
+   The homepage uses #FF6A00 even at scrollY=0; keep the repair header
+   consistent and ensure sufficient contrast on desktop and mobile. */
+.head,
+.head.is-scrolled{
+  background:#ff6a00;
+  border-bottom-color:rgba(255,255,255,.18);
+  box-shadow:0 2px 16px rgba(15,43,70,.08);
+}
+.head .brand,
+.head .brand:hover,
+.head.is-scrolled .brand,
+.head.is-scrolled .brand:hover{color:#fff}
+.head .brand small,
+.head.is-scrolled .brand small{color:rgba(255,255,255,.86)}
+.head .brand .hdr-bar,
+.head.is-scrolled .brand .hdr-bar{display:none}
+.head .menu:not(.open) a,
+.head.is-scrolled .menu:not(.open) a{color:#fff}
+.head .menu:not(.open) a:hover,
+.head.is-scrolled .menu:not(.open) a:hover{
+  color:#fff;text-decoration:underline;text-underline-offset:5px;
+}
+.head .menu:not(.open) a[aria-current="page"]{
+  color:#fff;text-decoration:underline;text-underline-offset:5px;
+}
+.head .menubtn,
+.head.is-scrolled .menubtn{
+  color:#fff;background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.5);
+}
+.head .menubtn:hover,
+.head .menubtn:focus-visible{background:rgba(255,255,255,.25)}
+.head .head-home-link,
+.head.is-scrolled .head-home-link{
+  color:#fff;background:transparent;
+  border-color:rgba(255,255,255,.55);
+}
+.head .head-home-link:hover,
+.head .head-home-link:focus-visible,
+.head.is-scrolled .head-home-link:hover{
+  color:#fff;background:rgba(255,255,255,.16);
+  border-color:#fff;
+}
+.head .head-home-link:focus-visible,
+.head .menubtn:focus-visible,
+.head .menu a:focus-visible{
+  outline:3px solid #0f2b46;outline-offset:3px;
+}
+@media(max-width:1240px){
+  /* Like the homepage, the opened mobile menu is a white sheet beneath
+     the orange header, rather than white links on orange. */
+  .head .menu.open,
+  .head.is-scrolled .menu.open{
+    background:#fff;border:1px solid #eee0d6;border-radius:12px;
+    padding:10px;box-shadow:0 12px 26px rgba(15,43,70,.13);
+  }
+  .head .menu.open a,
+  .head.is-scrolled .menu.open a{
+    color:#0f2b46;border-radius:7px;
+  }
+  .head .menu.open a:hover,
+  .head .menu.open a[aria-current="page"],
+  .head.is-scrolled .menu.open a:hover,
+  .head.is-scrolled .menu.open a[aria-current="page"]{
+    color:#d95100;background:#fff3e8;text-decoration:none;
+  }
+}
