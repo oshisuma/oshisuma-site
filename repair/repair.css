@@ -934,3 +934,74 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
     color:#d95100;background:#fff3e8;text-decoration:none;
   }
 }
+
+/* v2.4: same FAQ rows and "more" pill as the main homepage. */
+.faq-section .faq{
+ display:block;max-width:900px;margin:28px 0 0 clamp(0px,6vw,96px);
+ border-top:1px solid rgba(15,43,70,.12);
+}
+.faq-section .faq > details.faq-item,
+.faq-section .faq-more-inner > details.faq-item{
+ display:block;margin:0;padding:0;border:0;border-radius:0;
+ border-bottom:1px solid rgba(15,43,70,.12);
+ box-shadow:none;background:#fff;overflow:visible;
+}
+.faq-section .faq details.faq-item > summary{
+ display:flex;align-items:center;gap:14px;min-height:64px;
+ padding:18px 8px;color:#0f2b46;background:#fff;
+ font-size:clamp(16px,1.6vw,18px);font-weight:650;line-height:1.55;
+ list-style:none;cursor:pointer;
+}
+.faq-section .faq details.faq-item > summary::-webkit-details-marker{display:none}
+.faq-section .faq details.faq-item > summary::before{
+ content:"Q";flex:0 0 16px;color:#ff6a00;font-family:Arial,sans-serif;
+ font-size:17px;font-weight:900;line-height:1.5;
+}
+.faq-section .faq details.faq-item > summary::after{
+ content:"＋";flex:0 0 24px;width:24px;height:auto;
+ margin-left:auto;background:transparent;color:#dc630f;
+ border-radius:0;font-size:23px;font-weight:500;line-height:1;
+}
+.faq-section .faq details.faq-item[open],
+.faq-section .faq details.faq-item[open] > summary,
+.faq-section .faq details.faq-item > summary:hover{
+ background:#fff;color:#0f2b46;border-color:rgba(15,43,70,.12);
+}
+.faq-section .faq details.faq-item[open] > summary::after{
+ content:"−";background:transparent;color:#dc630f;
+}
+.faq-section .faq details.faq-item > p{
+ margin:0;padding:0 45px 18px 38px;background:#fff;
+ color:#34404c;font-size:clamp(15px,1.4vw,17px);
+ line-height:1.8;font-weight:500;
+}
+.faq-section .faq-more-clip{
+ display:grid;grid-template-rows:0fr;opacity:0;overflow:hidden;
+ transition:grid-template-rows .45s ease,opacity .35s ease;
+}
+.faq-section .faq-more-clip.open{grid-template-rows:1fr;opacity:1}
+.faq-section .faq-more-inner{min-height:0;overflow:hidden}
+.faq-section .faq-more-toggle{
+ display:inline-flex;align-items:center;justify-content:center;
+ margin:20px 0 0 clamp(0px,6vw,96px);padding:10px 20px;min-height:44px;
+ color:#0f2b46;background:#fff;border:1.5px solid #ff6a00;
+ border-radius:999px;font:800 14.5px/1.4 inherit;
+ font-family:inherit;font-size:14.5px;font-weight:800;
+ cursor:pointer;box-shadow:none;
+}
+.faq-section .faq-more-toggle:hover{background:#fff2e7;color:#0f2b46}
+.faq-section .faq-more-toggle:focus-visible,
+.faq-section .faq details.faq-item > summary:focus-visible{
+ outline:3px solid #ff6a00;outline-offset:3px;
+}
+@media(max-width:650px){
+ .faq-section .faq{margin:24px 0 0}
+ .faq-section .faq-more-toggle{margin-left:0}
+ .faq-section .faq details.faq-item > summary{
+  padding:16px 4px;min-height:56px;font-size:16px;gap:11px;
+ }
+ .faq-section .faq details.faq-item > p{font-size:15px;padding:0 30px 17px 27px}
+}
+@media(prefers-reduced-motion:reduce){
+ .faq-section .faq-more-clip{transition:none}
+}
