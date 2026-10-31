@@ -1211,26 +1211,26 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 
 /* v2.8 Mobile-first Japanese line-break rules for the four repair pages.
    On desktop the line fragments behave as ordinary inline text. */
-.repair-mobile-line{display:inline}
+.repair-text-break{display:inline}
 @media(max-width:650px){
  .repair-hero .hero-claim{font-size:clamp(21px,5.35vw,25px);line-height:1.52;letter-spacing:-.02em;word-break:normal;overflow-wrap:normal}
- .repair-hero .hero-claim>.repair-mobile-line{display:block;white-space:nowrap}
+ .repair-hero .hero-claim>.repair-text-break{display:block;white-space:nowrap}
  .repair-hero .lead{font-size:clamp(17px,4.55vw,19px);line-height:1.8;font-weight:750;letter-spacing:0}
  .repair-hero .hero-hint{font-size:clamp(16px,4.25vw,18px);line-height:1.85}
  .repair-hero .hero-contact-title{font-size:clamp(18px,4.8vw,20px);line-height:1.55;overflow-wrap:normal}
- .repair-h2-balanced>.repair-mobile-line{display:block;white-space:normal}
+ .repair-h2-balanced>.repair-text-break{display:block;white-space:normal}
  .section h2.repair-h2-balanced{font-size:clamp(25px,6.45vw,30px);line-height:1.5;letter-spacing:-.025em}
  .section h2.repair-h2-compact{font-size:clamp(23px,5.9vw,28px);line-height:1.5;letter-spacing:-.025em}
  .safety-alert h2.repair-h2-compact{font-size:clamp(20px,5.2vw,24px);line-height:1.5}
- .process-section .step h3>.repair-mobile-line{display:block}
+ .process-section .step h3>.repair-text-break{display:block}
  .process-section .step h3{font-size:clamp(19px,5.15vw,22px)}
- .symptoms-section .repair-card-head h3>.repair-mobile-line{display:block}
+ .symptoms-section .repair-card-head h3>.repair-text-break{display:block}
  .symptoms-section .repair-card-head h3{font-size:clamp(19px,5.2vw,21px);line-height:1.55}
  .device-cards .card h3{font-size:clamp(19px,5.15vw,22px);line-height:1.55}
  .device-cards .repair-card-title{display:block;min-width:0;flex:1}
- .device-cards .repair-card-title>.repair-mobile-line{display:block}
+ .device-cards .repair-card-title>.repair-text-break{display:block}
  .repair-hero h1.repair-h1-switch{font-size:clamp(36px,9.3vw,49px);line-height:1.24}
- .repair-hero h1.repair-h1-switch>.repair-mobile-line{display:block}
+ .repair-hero h1.repair-h1-switch>.repair-text-break{display:block}
 }
 @media(max-width:375px){
  .repair-hero .hero-claim{font-size:20px}
@@ -1238,3 +1238,7 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .safety-alert h2.repair-h2-compact{font-size:19px}
  .section h2.repair-h2-balanced{font-size:24px}
 }
+
+/* v2.9: Text-only line break spans must never inherit the green LINE CTA background.
+   Their class is intentionally distinct from .repair-mobile-line (the LINE button). */
+.repair-text-break{background:transparent;color:inherit;border:0;box-shadow:none;}
