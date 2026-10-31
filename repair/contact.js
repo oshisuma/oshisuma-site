@@ -89,3 +89,23 @@ document.addEventListener("keydown",function(e){
   }
 });
 })();
+/* Repair page FAQ: same expand/collapse motion and button copy as homepage. */
+document.querySelectorAll(".faq-section .faq-more-toggle").forEach(function(button){
+ const id=button.getAttribute("aria-controls");
+ const region=document.getElementById(id);
+ if(!region)return;
+ region.setAttribute("aria-hidden","true");
+ region.setAttribute("inert","");
+ button.addEventListener("click",function(){
+  const expanded=button.getAttribute("aria-expanded")==="true";
+  const next=!expanded;
+  button.setAttribute("aria-expanded",String(next));
+  region.classList.toggle("open",next);
+  region.setAttribute("aria-hidden",String(!next));
+  if(next)region.removeAttribute("inert");else{
+   region.setAttribute("inert","");
+   region.querySelectorAll("details[open]").forEach(function(d){d.open=false});
+  }
+  button.textContent=next?"閉じる ↑":"よくある質問をもっと見る →";
+ });
+});
