@@ -455,3 +455,20 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .home-style-footer #footer-grid{grid-template-columns:1fr!important}
  .home-style-footer #footer-grid>div:first-child{grid-column:auto}
 }
+
+
+/* v1.5a：矢印をカード端から次へつながるデザインに変更（浮いた円形を廃止） */
+@media(min-width:1101px){
+ .process-section .steps{gap:22px}
+ .process-section .step:not(:last-child)::after{
+  content:"";position:absolute;right:-19px;top:calc(50% - 22px);
+  width:28px;height:44px;display:block;background:#ff6a00;
+  clip-path:polygon(0 0,100% 50%,0 100%);
+  border:0;border-radius:0;box-shadow:none;transform:none;z-index:2;
+ }
+ .process-section .step:nth-child(even):not(:last-child)::after{background:#0f2b46}
+}
+@media(max-width:1100px) and (min-width:651px){
+ .process-section .steps{gap:19px}
+ .process-section .step{border-top-width:7px}
+}
