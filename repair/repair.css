@@ -815,3 +815,6 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
   .menu.open a{min-height:44px;padding:8px 9px;font-size:15px}
   .head-inner{flex-wrap:wrap}
 }
+
+/* A single visible home label on wide desktop; keep the menu item when expanded. */
+.menu:not(.open) .nav-home{display:none}
