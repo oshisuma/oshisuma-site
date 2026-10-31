@@ -1177,3 +1177,30 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
     width:min(100%,270px);
   }
 }
+
+/* v2.7 2026-10-31: structural mobile FAQ centering.
+   The entire action row centers its button; FAQ text stays left-aligned. */
+@media(max-width:760px){
+  .faq-section .faq-more-actions{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    margin-top:24px;
+    padding-inline:0;
+  }
+  .faq-section .faq-more-actions > .faq-more-toggle{
+    display:inline-flex;
+    flex:0 1 auto;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    max-width:100%;
+    margin:0;
+    padding:11px 20px;
+    min-height:48px;
+    line-height:1.5;
+    text-align:center;
+    white-space:normal;
+  }
+}
