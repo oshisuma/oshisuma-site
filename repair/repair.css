@@ -1458,9 +1458,9 @@ html{scroll-padding-top:122px}
 
 
 /* 2026-11-01: Align repair-page access buttons with the homepage.
-   Keep Google Maps on a single line with the same red pin; size LINE to 24px. */
+   Keep Google Maps on a single line with the same red pin; visually enlarge repair LINE bubbles to match the homepage. */
 .home-style-access .access-actions .access-action.line svg{
-  width:24px;height:24px;flex:0 0 24px;
+  width:30px;height:30px;flex:0 0 30px;max-width:none;max-height:none;
 }
 .home-style-access .access-actions .access-action.maps{
   white-space:nowrap;min-width:0;gap:8px;
