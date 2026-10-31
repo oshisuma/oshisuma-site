@@ -1168,13 +1168,17 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
     text-align:center;
   }
 }
-/* Three cross-links form two columns + a solitary third. Keep the third
-   visually centered instead of leaving a lonely link at bottom-left. */
+/* All cross-link buttons are equal-width full-row buttons on smartphones. */
 @media (max-width:650px){
-  .final-contact-section .other > a:last-child:nth-child(odd){
-    grid-column:1 / -1;
-    justify-self:center;
-    width:min(100%,270px);
+  .final-contact-section .other {
+    grid-template-columns:minmax(0,1fr);
+  }
+  .final-contact-section .other > a {
+    grid-column:auto;
+    justify-self:stretch;
+    box-sizing:border-box;
+    width:100%;
+    min-height:70px;
   }
 }
 
