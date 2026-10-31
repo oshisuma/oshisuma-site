@@ -611,3 +611,73 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
  .process-section .steps{row-gap:17px}
  .process-section .step{padding-top:25px;padding-bottom:25px}
 }
+
+/* v1.9 2026-10-31: 4機種の修理ページ共通。見出しのまとまり、自然な改行、
+   STEPの配色整理、症状と修理内容の読み分けを改善。安全案内の強調は維持。 */
+.repair-hero h1{margin-bottom:clamp(5px,.75vw,10px)}
+.repair-hero .hero-claim{margin-top:0;margin-bottom:clamp(42px,5vw,67px)}
+.repair-hero .lead{line-height:1.8;overflow-wrap:normal;word-break:normal}
+.repair-no-break{white-space:nowrap;display:inline}
+.process-section{padding-top:clamp(64px,7.7vw,105px)}
+.process-section .kicker{margin-bottom:12px}
+.process-section h2{margin-bottom:clamp(31px,3.7vw,46px)}
+.process-section .steps{row-gap:23px}
+.process-section .step,
+.process-section .step:first-child,
+.process-section .step:nth-child(even){
+  border:1px solid #dbe3ea;border-top:1px solid #dbe3ea;
+  border-radius:15px;background:#fff;
+  box-shadow:0 5px 18px rgba(15,43,70,.075);
+}
+.process-section .step b,
+.process-section .step:first-child b,
+.process-section .step:nth-child(even) b{
+  background:#edf3f7;color:#0f2b46;border:1px solid #dbe3ea;
+  font-size:15px;border-radius:8px;padding:5px 12px;
+}
+.process-section .step h3{margin-top:15px;color:#0f2b46}
+@media(min-width:1101px){
+  .process-section .step:not(:last-child)::after,
+  .process-section .step:nth-child(even):not(:last-child)::after{
+    content:"→";right:-21px;top:50%;transform:translateY(-50%);
+    width:28px;height:30px;line-height:29px;
+    clip-path:none;background:#fff;color:#8e9eac;
+    font-size:23px;box-shadow:none;border-radius:0;
+  }
+}
+.symptoms-section .cards{gap:22px;margin-top:29px}
+.repair-symptom-card{border:1px solid #dae3ea;border-radius:16px;box-shadow:0 7px 23px rgba(15,43,70,.07)}
+.repair-card-head{min-height:83px;background:#f8fafc;border-bottom:1px solid #e0e7ed;padding:18px 20px}
+.repair-card-head h3{color:#0f2b46;line-height:1.45;font-size:clamp(22px,2.25vw,27px)}
+.repair-card-number{width:43px;height:43px;border-radius:11px;background:#fff0e5;color:#b94b05;border:1px solid #ffd7b8;font-size:19px}
+.repair-symptom{display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:start;padding:19px 20px 23px}
+.repair-symptom-marker{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:auto;height:auto;min-height:27px;padding:3px 9px;margin-top:4px;
+  border-radius:6px;background:#fff0e5;color:#ac4500;
+  font-size:13px;font-weight:900;line-height:1.35;white-space:nowrap;
+}
+.repair-symptom p{font-size:clamp(18px,1.7vw,20px);font-weight:750;line-height:1.76}
+.repair-approach{
+  margin:0 18px 19px;margin-top:auto;padding:17px 17px;
+  background:#f5f8fb;border:1px solid #e0e7ef;border-left:4px solid #0f2b46;
+  border-radius:9px;
+}
+.repair-approach strong{color:#0f2b46;font-size:15px;margin-bottom:6px}
+.repair-approach p{font-size:clamp(17px,1.48vw,19px);line-height:1.8}
+@media(max-width:650px){
+  .repair-hero h1{margin-top:22px;margin-bottom:6px}
+  .repair-hero .hero-claim{margin-bottom:39px;line-height:1.45}
+  .repair-hero .lead{line-height:1.75;overflow-wrap:normal}
+  .process-section{padding-top:59px;padding-bottom:59px}
+  .process-section h2{margin-bottom:29px}
+  .process-section .steps{row-gap:15px}
+  .process-section .step{padding:22px 20px}
+  .symptoms-section .cards{gap:16px}
+  .repair-card-head{min-height:0;padding:16px 16px}
+  .repair-card-number{width:40px;height:40px;font-size:18px}
+  .repair-symptom{padding:17px 16px 20px;gap:10px}
+  .repair-symptom p{font-size:17px}
+  .repair-approach{margin:0 14px 15px;margin-top:auto;padding:14px}
+  .repair-approach p{font-size:16px}
+}
