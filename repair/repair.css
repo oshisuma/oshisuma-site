@@ -1073,3 +1073,421 @@ body{background:#fff;color:var(--text);font-size:18px;line-height:1.85}
 @media(max-width:1049px){
   .android-device-intro-first{white-space:normal}
 }
+
+/* v2.0 2026-10-31: Top-page mobile CTA and LINE-guide visual parity.
+   Same layout on repair index, iPhone, Android, iPad and Switch. */
+@media (max-width:1023px){
+  .repair-contact-wrap > .repair-cta-mobile{
+    display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:10px;width:100%;max-width:none;margin-top:4px;
+  }
+  .repair-contact-wrap > .repair-cta-mobile a{
+    display:flex;align-items:center;justify-content:center;
+    box-sizing:border-box;min-width:0;height:58px;min-height:58px;
+    padding:0 8px;border-radius:12px;gap:8px;
+    font-size:17px;line-height:1;white-space:nowrap;
+    text-align:center;text-decoration:none;font-weight:900;
+  }
+  .repair-contact-wrap > .repair-cta-mobile a span{
+    display:flex;align-items:center;justify-content:center;
+    flex:0 0 24px;width:24px;height:24px;
+  }
+  .repair-contact-wrap > .repair-cta-mobile a strong{font-weight:900;white-space:nowrap}
+  .repair-contact-wrap > .repair-cta-mobile .repair-mobile-phone svg{width:22px;height:22px}
+  .repair-contact-wrap > .repair-cta-mobile .repair-mobile-line svg{width:24px;height:24px}
+  .repair-contact-wrap > .repair-guide-trigger{
+    display:flex;align-items:center;justify-content:center;
+    box-sizing:border-box;width:100%;min-height:52px;
+    margin-top:10px;padding:10px 14px;
+    border:2px solid #06c755;border-radius:12px;
+    background:#fff;color:#15803d;
+    font-family:inherit;font-size:16px;font-weight:800;
+    line-height:1.4;text-align:center;cursor:pointer;
+  }
+}
+@media(max-width:350px){
+  .repair-contact-wrap > .repair-cta-mobile a{font-size:14px;gap:5px;padding-inline:5px}
+  .repair-contact-wrap > .repair-guide-trigger{font-size:14px;padding-inline:8px}
+}
+/* The mobile how-to dialog uses the same compact treatment as the main page. */
+.repair-mobile-guide-overlay .repair-modal-panel{
+  width:min(93vw,520px);max-height:calc(100dvh - 24px);
+  padding:18px 16px 20px;border-radius:18px;
+}
+.repair-mobile-guide-overlay .repair-modal-heading{gap:10px;margin-bottom:14px}
+.repair-mobile-guide-overlay .repair-modal-heading h2{
+  font-size:22px;line-height:1.35;font-weight:900;color:#0f2b46;
+}
+.repair-mobile-guide-overlay .repair-modal-close{
+  min-height:44px;border-radius:999px;background:#eef1f4;
+  color:#0f2b46;font-family:inherit;font-size:16px;font-weight:800;line-height:1.2;white-space:nowrap;
+}
+.repair-mobile-guide-overlay .repair-guide-image{
+  display:block;width:100%;height:auto;
+  max-height:calc(100dvh - 250px);margin:0 0 14px;
+  object-fit:contain;border-radius:12px;
+}
+.repair-mobile-guide-overlay .repair-modal-panel > p{
+  font-size:17px;font-weight:700;line-height:1.7;color:#0f2b46;
+}
+.repair-mobile-guide-overlay .repair-modal-panel > p strong{color:#15803d;font-weight:900}
+
+/* v2.6 2026-10-31: Center standalone action buttons on mobile without
+   changing the left alignment of FAQ question/answer text or desktop layout. */
+@media (max-width:760px){
+  /* The FAQ "more questions" button is a solitary section action. */
+  .faq-section .wrap > .faq-more-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-sizing:border-box;
+    width:max-content;
+    max-width:100%;
+    min-height:48px;
+    margin:24px auto 0;
+    padding:11px 18px;
+    line-height:1.5;
+    text-align:center;
+    white-space:normal;
+  }
+  /* Full-width device-card buttons: center their labels, not only their box. */
+  .repair-hub-services .hub-device-card .repair-menu-link{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+  }
+  /* The single LINE open action in the mobile instruction dialog. */
+  .repair-mobile-guide-overlay .repair-guide-direct{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:max-content;
+    max-width:100%;
+    margin:15px auto 0;
+    text-align:center;
+  }
+}
+/* All cross-link buttons are equal-width full-row buttons on smartphones. */
+@media (max-width:650px){
+  .final-contact-section .other {
+    grid-template-columns:minmax(0,1fr);
+  }
+  .final-contact-section .other > a {
+    grid-column:auto;
+    justify-self:stretch;
+    box-sizing:border-box;
+    width:100%;
+    min-height:70px;
+  }
+}
+
+/* v2.7 2026-10-31: structural mobile FAQ centering.
+   The entire action row centers its button; FAQ text stays left-aligned. */
+@media(max-width:760px){
+  .faq-section .faq-more-actions{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    margin-top:24px;
+    padding-inline:0;
+  }
+  .faq-section .faq-more-actions > .faq-more-toggle{
+    display:inline-flex;
+    flex:0 1 auto;
+    align-items:center;
+    justify-content:center;
+    width:auto;
+    max-width:100%;
+    margin:0;
+    padding:11px 20px;
+    min-height:48px;
+    line-height:1.5;
+    text-align:center;
+    white-space:normal;
+  }
+}
+
+/* v2.8 Mobile-first Japanese line-break rules for the four repair pages.
+   On desktop the line fragments behave as ordinary inline text. */
+.repair-text-break{display:inline}
+@media(max-width:650px){
+ .repair-hero .hero-claim{font-size:clamp(21px,5.35vw,25px);line-height:1.52;letter-spacing:-.02em;word-break:normal;overflow-wrap:normal}
+ .repair-hero .hero-claim>.repair-text-break{display:block;white-space:nowrap}
+ .repair-hero .lead{font-size:clamp(17px,4.55vw,19px);line-height:1.8;font-weight:750;letter-spacing:0}
+ .repair-hero .hero-hint{font-size:clamp(16px,4.25vw,18px);line-height:1.85}
+ .repair-hero .hero-contact-title{font-size:clamp(18px,4.8vw,20px);line-height:1.55;overflow-wrap:normal}
+ .repair-h2-balanced>.repair-text-break{display:block;white-space:normal}
+ .section h2.repair-h2-balanced{font-size:clamp(25px,6.45vw,30px);line-height:1.5;letter-spacing:-.025em}
+ .section h2.repair-h2-compact{font-size:clamp(23px,5.9vw,28px);line-height:1.5;letter-spacing:-.025em}
+ .safety-alert h2.repair-h2-compact{font-size:clamp(20px,5.2vw,24px);line-height:1.5}
+ .process-section .step h3>.repair-text-break{display:block}
+ .process-section .step h3{font-size:clamp(19px,5.15vw,22px)}
+ .symptoms-section .repair-card-head h3>.repair-text-break{display:block}
+ .symptoms-section .repair-card-head h3{font-size:clamp(19px,5.2vw,21px);line-height:1.55}
+ .device-cards .card h3{font-size:clamp(19px,5.15vw,22px);line-height:1.55}
+ .device-cards .repair-card-title{display:block;min-width:0;flex:1}
+ .device-cards .repair-card-title>.repair-text-break{display:block}
+ .repair-hero h1.repair-h1-switch{font-size:clamp(36px,9.3vw,49px);line-height:1.24}
+ .repair-hero h1.repair-h1-switch>.repair-text-break{display:block}
+}
+@media(max-width:375px){
+ .repair-hero .hero-claim{font-size:20px}
+ .section h2.repair-h2-compact{font-size:22px}
+ .safety-alert h2.repair-h2-compact{font-size:19px}
+ .section h2.repair-h2-balanced{font-size:24px}
+}
+
+/* v2.9: Text-only line break spans must never inherit the green LINE CTA background.
+   Their class is intentionally distinct from .repair-mobile-line (the LINE button). */
+.repair-text-break{background:transparent;color:inherit;border:0;box-shadow:none;}
+
+/* Mobile contact callout: one line, centered above balanced phone/LINE CTAs. */
+@media (max-width:650px){
+  .repair-hero .hero-contact-title{
+    box-sizing:border-box;
+    width:100%;
+    max-width:100%;
+    margin:30px 0 13px;
+    padding:0;
+    font-size:clamp(13px,3.65vw,16px);
+    font-weight:900;
+    line-height:1.5;
+    letter-spacing:-.035em;
+    text-align:center;
+    white-space:nowrap;
+    overflow-wrap:normal;
+    word-break:keep-all;
+  }
+  .repair-hero .hero-contact-title + .repair-contact-wrap > .repair-cta-mobile{
+    margin-top:0;
+  }
+}
+
+/* Unified homepage-style repair navigation, all five pages. */
+.head .brand-words small{display:block!important;font-size:clamp(10px,2.6vw,12px);line-height:1.3;white-space:nowrap;color:rgba(255,255,255,.88)}
+.head .brand-words b{display:block;line-height:1.32}
+.head .brand{min-width:0;flex:1}
+.head .menu .repair-nav-arrow,.head .menu .repair-nav-group-label{display:none}
+@media(max-width:1240px){
+ .head .menu.open{
+   flex:1 0 100%;width:100%;display:flex;flex-direction:column;
+   gap:0;max-height:min(70dvh,650px);overflow-y:auto;
+   overscroll-behavior:contain;
+   padding:10px 14px 16px;background:#fff;border:1px solid #eee0d6;
+   border-radius:12px;box-shadow:0 12px 26px rgba(15,43,70,.13);
+ }
+ .head .menu.open .repair-nav-group-label{
+   display:block;padding:14px 6px 5px;color:#e96500;
+   font-size:12px;font-weight:900;letter-spacing:.07em;line-height:1.5;
+ }
+ .head .menu.open a{
+   display:flex;align-items:center;justify-content:space-between;
+   width:100%;min-height:47px;padding:8px 6px;
+   border-radius:0;border-bottom:1px solid rgba(15,43,70,.10);
+   color:#0f2b46;font-size:16px;font-weight:750;
+   text-decoration:none;white-space:normal;
+ }
+ .head .menu.open a[aria-current="page"]{color:#d95100;background:#fff7ef}
+ .head .menu.open .repair-nav-arrow{display:inline;color:#ff6a00;font-size:23px;font-weight:500}
+}
+@media(max-width:650px){
+ .head-inner{gap:7px}
+ .head .brand-words{gap:2px}
+ .head .brand-words small{font-size:clamp(9px,2.65vw,11px)!important}
+ .head .brand-words b{font-size:clamp(11.5px,3.25vw,14px);white-space:nowrap}
+ .head .head-home-link{width:40px;min-width:40px}
+ .head .menubtn{min-width:78px}
+}
+@media(max-width:360px){
+ .head .brand-words small{display:block!important;font-size:9px!important}
+ .head .brand-words b{font-size:11px}
+}
+
+/* 2026-10-31: Removed the redundant "まずは電話・LINEで…" heading from
+   the four device pages. Give the explanation and CTA distinct breathing room. */
+.repair-hero .hero-hint + .repair-contact-wrap{
+  margin-top:clamp(26px,3.4vw,40px);
+}
+@media(max-width:1023px){
+  .repair-hero .hero-hint + .repair-contact-wrap > .repair-cta-mobile{
+    margin-top:0;
+  }
+}
+@media(max-width:650px){
+  .repair-hero .hero-hint + .repair-contact-wrap{margin-top:30px}
+}
+
+/* v2.6 2026-10-31: homepage-style secondary navigation and bigger store name. */
+/* Match the homepage's orange header, with room for a more prominent shop name. */
+.head-inner{min-height:64px;padding-top:8px;padding-bottom:8px}
+.head .brand b{font-size:clamp(16px,2.15vw,19px);letter-spacing:0;white-space:nowrap}
+.head .brand-words{flex:0 1 auto;min-width:0}
+@media(max-width:650px){
+  .head-inner{min-height:64px;padding:8px 14px;gap:9px}
+  .head .brand{min-width:0;gap:9px}
+  .head .brand b{font-size:clamp(13.5px,4.15vw,16px);line-height:1.3;letter-spacing:-.012em}
+  /* The shop name itself already links home; avoid crowding it with a second home icon. */
+  .head .head-home-link{display:none}
+  .head .menubtn{margin-left:auto;min-width:82px}
+}
+@media(max-width:360px){
+  .head-inner{padding-left:10px;padding-right:10px;gap:6px}
+  .head .brand b{font-size:14.5px}
+  .head .menubtn{min-width:77px;padding-left:5px;padding-right:5px}
+}
+/* Secondary chips echo the homepage's nav below its orange main header.
+   All links are normal anchors, so they work without JavaScript. */
+.repair-subnav{
+  position:sticky;top:64px;z-index:19;
+  background:rgba(255,255,255,.97);
+  border-bottom:1px solid rgba(15,43,70,.10);
+  box-shadow:0 3px 14px rgba(15,43,70,.055);
+  backdrop-filter:blur(12px);
+}
+.repair-subnav-track{
+  max-width:1240px;margin:0 auto;display:flex;align-items:center;gap:7px;
+  padding:7px clamp(12px,3vw,32px);overflow-x:auto;
+  overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.repair-subnav-track::-webkit-scrollbar{display:none}
+.repair-subnav a{
+  display:inline-flex;align-items:center;justify-content:center;flex:none;
+  min-height:34px;padding:0 13px;border:1px solid rgba(15,43,70,.15);
+  border-radius:999px;background:#fff;color:#0f2b46;
+  font-size:13px;line-height:1.2;font-weight:800;white-space:nowrap;
+  text-decoration:none;transition:color .16s,border-color .16s,background-color .16s;
+}
+.repair-subnav a:hover,
+.repair-subnav a:focus-visible{color:#d95500;background:#fff7ee;border-color:rgba(255,106,0,.55)}
+.repair-subnav a[aria-current="page"]{
+  color:#d95500;border-color:rgba(255,106,0,.65);background:#fff7ee
+}
+html{scroll-padding-top:122px}
+@media(max-width:650px){
+  .repair-subnav-track{gap:6px;padding:7px 12px}
+  .repair-subnav a{min-height:34px;padding:0 12px;font-size:12.5px}
+}
+@media(prefers-reduced-motion:reduce){
+  .repair-subnav a{transition:none}
+}
+
+
+/* v2.7 2026-10-31: minimal five-link repair header, homepage-sized shop details. */
+/* The brand itself is the homepage link; no second header menu or home button. */
+.head .menubtn,.head .menu,.head .head-home-link{display:none!important}
+.head-inner{justify-content:flex-start}
+.head .brand{min-width:0;max-width:100%}
+@media(max-width:650px){
+  .head-inner{padding:9px clamp(12px,3vw,18px)}
+  .head .brand b{font-size:clamp(17px,4.6vw,18px);letter-spacing:-.01em;white-space:nowrap}
+  .head .brand small{font-size:clamp(10px,2.9vw,12px)}
+}
+@media(max-width:350px){
+  .head .brand b{font-size:16px}
+  .head-inner{padding-left:10px;padding-right:10px}
+}
+
+/* The access-section shop information uses the homepage's 16px name,
+   14.5px key/value rows, restrained dividers and 13px orange section labels. */
+.home-style-access .repair-store-info{display:flex;flex-direction:column;gap:11px;min-width:0}
+.home-style-access .repair-store-info .access-subheading{
+  margin:0;color:#ff6a00;font-size:13px;font-weight:900;letter-spacing:.14em;line-height:1.6
+}
+.home-style-access .repair-store-main{
+  display:flex;flex-direction:column;gap:3px;padding-bottom:11px;
+  border-bottom:1px solid rgba(255,255,255,.1);min-width:0
+}
+.home-style-access .repair-store-name{
+  display:flex;flex-direction:column;color:#fff;font-size:16px;font-weight:900;line-height:1.55
+}
+.home-style-access .repair-store-name span{display:block}
+.home-style-access .repair-store-address{
+  margin:0;color:rgba(255,255,255,.84);font-size:16px;
+  font-weight:600;line-height:1.7;white-space:nowrap;letter-spacing:-.02em
+}
+.home-style-access .repair-store-info .repair-store-dl{display:grid;gap:0;margin:0;min-width:0}
+.home-style-access .repair-store-info .repair-store-dl>div{
+  display:grid;grid-template-columns:88px minmax(0,1fr);gap:14px;
+  padding:11px 0;border-bottom:1px solid rgba(255,255,255,.13)
+}
+.home-style-access .repair-store-info .repair-store-dl dt{
+  color:rgba(255,255,255,.78);font-size:14.5px;font-weight:700;line-height:1.65;white-space:nowrap
+}
+.home-style-access .repair-store-info .repair-store-dl dd{
+  color:#fff;font-size:14.5px;font-weight:800;line-height:1.65;min-width:0
+}
+.home-style-access .repair-store-payment{display:flex;flex-direction:column;gap:5px}
+.home-style-access .repair-store-info .repair-store-payment small{
+  display:block;color:rgba(255,255,255,.84);font-size:13.5px;
+  font-weight:700;line-height:1.6;overflow-wrap:anywhere
+}
+.home-style-access .access-right{min-width:0;gap:22px}
+.home-style-access .access-contact{padding-top:18px;border-top:1px solid rgba(255,255,255,.1)}
+.home-style-access .access-contact .access-subheading{
+  font-size:13px;font-weight:900;letter-spacing:.14em;line-height:1.6;color:#ff6a00
+}
+.home-style-access .access-contact-label{margin-top:3px;font-size:13px;font-weight:700;color:rgba(255,255,255,.8)}
+.home-style-access .access-phone-number{
+  font-family:'Archivo Black','Zen Kaku Gothic New',sans-serif;
+  font-size:clamp(24px,3.4vw,30px);letter-spacing:.02em;line-height:1.3;margin:2px 0 12px
+}
+.home-style-access .access-actions{gap:10px}
+.home-style-access .access-actions .access-action{min-height:58px;font-size:17px;padding:8px;border-radius:12px}
+.home-style-access .access-actions .access-action svg{width:22px;height:22px;flex-basis:22px}
+/* The original homepage footer has a two-column mobile grid and 17px shop name. */
+@media(max-width:759px){
+  .home-style-access .repair-store-address{
+    font-size:clamp(11.5px,3.5vw,16px);letter-spacing:-.035em;white-space:nowrap
+  }
+  .home-style-access .repair-store-info .repair-store-dl>div{grid-template-columns:88px minmax(0,1fr)}
+  .home-style-access .access-actions .access-action{height:46px;min-height:46px;font-size:13.5px}
+  .home-style-footer #footer-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:28px 20px!important
+  }
+  .home-style-footer #footer-grid>div:first-child{grid-column:1/-1}
+  .home-style-footer #footer-brand-name{font-size:17px!important;white-space:nowrap}
+}
+@media(max-width:350px){
+  .home-style-access .repair-store-address{font-size:11.5px;letter-spacing:-.04em}
+  .home-style-access .repair-store-info .repair-store-dl>div{gap:9px}
+  .home-style-footer #footer-grid{gap:24px 14px!important}
+}
+
+
+/* 2026-11-01: Align repair-page access buttons with the homepage.
+   Keep Google Maps on a single line with the same red pin; visually enlarge repair LINE bubbles to match the homepage. */
+/* All 5 repair pages share the approved 30px LINE icon size in
+   desktop CTA, mobile CTA, access panel and fixed bottom CTA. */
+.repair-contact-wrap .repair-cta-pc .repair-contact-line .repair-large-icon svg,
+.repair-contact-wrap .repair-cta-mobile a.repair-mobile-line svg,
+.home-style-access .access-actions .access-action.line svg,
+.sticky a.btn.line svg{
+  width:30px;height:30px;flex:0 0 30px;max-width:none;max-height:none;
+}
+@media(max-width:1023px){
+  .repair-contact-wrap > .repair-cta-mobile a.repair-mobile-line > span{
+    flex:0 0 30px;width:30px;height:30px;
+  }
+}
+.home-style-access .access-actions .access-action.maps{
+  white-space:nowrap;min-width:0;gap:8px;
+}
+.home-style-access .access-actions .access-action.maps svg{
+  width:16px;height:16px;flex:0 0 16px;display:block;
+}
+.home-style-access .access-actions .access-action.maps > span{
+  white-space:nowrap;
+}
+@media(max-width:759px){
+  .home-style-access .access-actions .access-action.maps{
+    padding-left:4px;padding-right:4px;
+  }
+}
+@media(max-width:350px){
+  .home-style-access .access-actions .access-action.maps{
+    gap:5px;font-size:12.5px;
+  }
+}
