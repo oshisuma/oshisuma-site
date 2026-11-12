@@ -1,4 +1,4 @@
-// 夜23時までの緊急電話受付（共通コンポーネント）を対象ページへ差し込む。
+// iPhone限定・夜23時までの緊急電話受付をトップとiPhoneページだけへ差し込む。
 // 使い方：node tools/build-night-emergency.mjs
 // 文章・デザインは components/night-emergency/ の2ファイルだけを編集し、このスクリプトを再実行する。
 // 目印コメントの間だけを書き換えるので、ほかの部分は変更しない。
@@ -16,10 +16,7 @@ const version = createHash('sha256').update(css).digest('hex').slice(0, 10);
 // 初回の差し込み位置（2回目以降は目印コメントの間を置き換える）
 const pages = [
   { file: 'index.html', before: '<section id="service" hidden' },  // ヒーロー・情報帯の直後
-  { file: 'repair/iphone/index.html', after: '<main>' },            // ヒーローの直後
-  { file: 'repair/android/index.html', after: '<main>' },
-  { file: 'repair/ipad/index.html', after: '<main>' },
-  { file: 'repair/switch/index.html', after: '<main>' }
+  { file: 'repair/iphone/index.html', after: '<main>' }             // ヒーローの直後
 ];
 
 const block = (name, body) =>
