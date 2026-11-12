@@ -1,5 +1,5 @@
 /* 夜23時までの緊急電話受付（共通コンポーネント）
-   トップ・iPhone・Android・iPad・Switch修理ページで共用。.osm-night 内だけに効く */
+   トップ・iPhone修理ページのみで共用。.osm-night 内だけに効く */
 .osm-night{--osm-or:#FF6A00;--osm-or-deep:#E85300;--osm-navy:#0F2B46;--osm-text:#22313f;--osm-cream:#FFF6ED;
   background:#fff;padding:clamp(30px,5.5vw,60px) clamp(14px,4vw,40px);
   font-family:'Zen Kaku Gothic New',system-ui,-apple-system,'Hiragino Sans',sans-serif;color:var(--osm-text);
