@@ -30,6 +30,9 @@
 .osm-night-made{font-size:clamp(34px,10vw,56px);margin-left:.06em}
 .osm-night-lead{display:block;font-size:clamp(20px,5.6vw,30px);letter-spacing:.03em;line-height:1.4;margin-top:0}
 
+/* 夜間の緊急受付はiPhone限定：目立つが過度に装飾しないラベル */
+.osm-night p.osm-night-iphone-only{display:inline-block;margin-top:clamp(14px,3.2vw,22px);padding:.28em 1.1em;border:2px solid #fff;border-radius:999px;background:#fff;color:var(--osm-or-deep);font-weight:900;font-size:clamp(18px,5vw,24px);line-height:1.45;letter-spacing:.08em}
+
 /* 本文 */
 .osm-night-body{padding:clamp(26px,5vw,52px) clamp(20px,5.5vw,72px) clamp(26px,4.5vw,48px)}
 .osm-night-quote{font-size:clamp(17px,4.5vw,22px);font-weight:700;color:#4a5866;text-align:center;line-height:1.6}
