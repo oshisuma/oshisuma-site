@@ -135,3 +135,39 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
 .case-page .home-style-footer{margin-top:0}
 .case-page .home-style-footer .footer-col a{color:rgba(255,255,255,.84)}
 .case-page .home-style-footer .footer-col a:hover{color:#fff}
+
+/* 2026-11-13: 修理事例を簡潔に。情報の重複と間延びを解消する */
+.case-page .case-masthead{padding:clamp(23px,3.4vw,43px) 0 clamp(17px,2.8vw,27px)}
+.case-page .case-masthead h1{font-size:clamp(26px,3.4vw,37px);line-height:1.45;letter-spacing:0}
+.case-page .case-masthead-desc{margin-top:8px;max-width:52em;line-height:1.7}
+.case-page .case-eyebrow{margin-bottom:8px;font-size:12px;letter-spacing:.13em}
+.case-page .case-masthead .case-article-tags{margin-top:13px}
+.case-page .case-tag{padding:4px 11px;font-size:13px}
+.case-page .case-article-summary{margin-bottom:25px;gap:clamp(18px,3vw,28px)}
+.case-page .case-feature-photo img{max-height:430px;max-width:100%;height:auto;object-fit:contain}
+.case-page .case-feature figcaption{margin-top:7px;font-size:12.5px}
+.case-page .case-facts{border-top:1px solid var(--case-border)}
+.case-page .case-facts div{padding:9px 2px}
+.case-page .case-facts dt{font-size:12px}
+.case-page .case-facts dd{font-size:clamp(15px,1.6vw,17px);line-height:1.5;margin-top:2px}
+.case-page .case-story-section{padding:17px 0}
+.case-page .case-story-head{gap:10px;margin-bottom:6px}
+.case-page .case-story h2{font-size:clamp(19px,2.1vw,23px)}
+.case-page .case-story p{font-size:clamp(15.5px,1.6vw,17px);line-height:1.85}
+.case-page .case-small-note{font-size:12.5px!important;margin-top:7px}
+.case-page .case-return-nav{margin-top:5px;padding-top:17px}
+.case-page .case-contact{padding:26px 0 8px}
+.case-page .case-list-body{gap:7px}
+.case-page .case-list-body p{font-size:15px;line-height:1.8}
+.case-page .case-list-date{font-size:12px}
+@media(max-width:730px){
+ .case-page .case-masthead h1{font-size:clamp(26px,7vw,33px)}
+ .case-page .case-title-break{display:none}
+ .case-page .case-article-summary{gap:17px}
+ .case-page .case-feature{width:100%;max-width:100%;display:flex;flex-direction:column;align-items:flex-start}
+ .case-page .case-feature-photo img{display:block;max-height:380px;width:auto;max-width:100%}
+ .case-page .case-facts{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--case-border);column-gap:18px}
+ .case-page .case-facts div{padding:9px 0}
+ .case-page .case-facts div:last-child{grid-column:1/-1}
+ .case-page .case-story-section{padding:16px 0}
+}
