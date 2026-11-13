@@ -1,0 +1,344 @@
+/* オシスマ修理事例：一覧・個別記事の共通デザイン
+   背景は白、区切りは薄い線。オレンジは見出しのアクセント・ラベル・ボタンだけに使う */
+:root{--case-orange:#ff6a00;--case-orange-text:#ff6a00;--case-navy:#0f2b46;--case-ink:#243242;--case-muted:#5b6878;--case-border:#e3e8ee}
+body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;overflow-wrap:break-word}
+.case-page a:focus-visible{outline:3px solid var(--case-orange);outline-offset:3px}
+.case-container{width:min(calc(100% - 40px),1100px);margin-inline:auto}
+
+/* ヘッダー・パンくず */
+.case-topbar{background:var(--case-orange);color:#fff}
+.case-topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px}
+.case-site-brand{display:flex;flex-direction:column;gap:3px;color:#fff;text-decoration:none;line-height:1.3}
+.case-site-brand small{font-size:12px;font-weight:800}
+.case-site-brand strong{font-size:clamp(16px,2vw,21px);font-weight:900}
+.case-top-link{color:#fff;text-decoration:none;font-size:14px;font-weight:800;white-space:nowrap}
+.case-crumb-wrap{background:#fff;border-bottom:1px solid var(--case-border)}
+.case-crumb{display:flex;align-items:center;gap:8px;min-height:52px;flex-wrap:wrap;font-size:13px;font-weight:800;color:var(--case-muted)}
+.case-crumb a{color:var(--case-muted);text-decoration:none}
+.case-crumb a:hover{color:var(--case-orange-text)}
+.case-crumb .case-crumb-current{color:var(--case-navy)}
+
+/* ページ見出し */
+.case-masthead{background:#fff;padding:clamp(32px,5vw,60px) 0 clamp(24px,3.5vw,40px)}
+.case-eyebrow{font-family:"Archivo Black","Zen Kaku Gothic New",sans-serif;font-size:12px;letter-spacing:.15em;color:var(--case-orange-text);margin-bottom:10px}
+.case-masthead h1{font-weight:900;line-height:1.42;color:var(--case-navy);font-size:clamp(28px,4.2vw,42px);letter-spacing:.01em;max-width:900px}
+/* 見出し・機種名を言葉の途中で折り返さない */
+.case-nb{display:inline-block}
+.case-nw{white-space:nowrap}
+.case-masthead-desc{margin-top:14px;font-size:clamp(15px,1.65vw,17px);line-height:1.9;color:var(--case-muted);max-width:760px}
+.case-masthead .case-article-tags{margin-top:20px}
+
+/* ラベル */
+.case-article-tags{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.case-tag{display:inline-flex;align-items:center;border:1px solid var(--case-border);background:#fff;color:var(--case-navy);padding:4px 12px;border-radius:999px;font-size:13px;font-weight:900;line-height:1.4}
+.case-tag.case-tag-orange{background:var(--case-orange);border-color:var(--case-orange);color:#fff}
+
+/* 一覧：写真付きカード（事例が増えても画面幅に応じて自動で列が増える） */
+.case-list-section{padding:0 0 clamp(16px,3vw,28px)}
+.case-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:clamp(18px,2.6vw,28px)}
+.case-list-card{display:flex;flex-direction:column;border:1px solid var(--case-border);border-radius:16px;background:#fff;overflow:hidden;transition:border-color .18s ease,box-shadow .18s ease}
+.case-list-card:hover{border-color:#ffc59a;box-shadow:0 10px 26px rgba(15,43,70,.08)}
+.case-list-card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;flex:1}
+.case-list-image{aspect-ratio:4/3;overflow:hidden;background:#fff;border-bottom:1px solid var(--case-border)}
+.case-list-image img{width:100%;height:100%;display:block;object-fit:cover}
+.case-list-body{display:flex;flex-direction:column;gap:10px;padding:clamp(18px,2.6vw,24px);flex:1}
+.case-list-date{font-size:13px;color:var(--case-muted);font-weight:800}
+.case-list-body h2{font-size:clamp(19px,2vw,22px);line-height:1.5;font-weight:900;color:var(--case-navy);margin:0}
+.case-list-body p{font-size:15.5px;line-height:1.85;color:#3b4c5b;flex:1}
+.case-list-more{font-size:15px;font-weight:900;color:var(--case-orange-text);padding-top:4px}
+
+/* 個別記事 */
+.case-article{max-width:900px}
+.case-section{padding:clamp(8px,2vw,16px) 0 clamp(16px,3vw,28px)}
+.case-article-summary{display:flex;align-items:flex-start;gap:clamp(20px,3.4vw,40px);margin-bottom:clamp(28px,4vw,44px)}
+.case-feature{margin:0;flex:0 1 auto;max-width:52%;min-width:0}
+.case-feature-photo img{display:block;width:auto;height:auto;max-width:100%;max-height:620px;border-radius:14px}
+.case-feature figcaption{font-size:13px;line-height:1.7;color:var(--case-muted);margin-top:10px}
+.case-facts{flex:1;min-width:0;margin:0;border-top:2px solid var(--case-navy)}
+.case-facts div{padding:14px 2px;border-bottom:1px solid var(--case-border)}
+.case-facts dt{font-size:13px;font-weight:900;color:var(--case-orange-text);line-height:1.5}
+.case-facts dd{margin:4px 0 0;font-size:clamp(16px,1.8vw,18px);line-height:1.6;font-weight:900;color:var(--case-navy)}
+.case-story-section{padding:clamp(22px,3vw,30px) 0;border-top:1px solid var(--case-border)}
+.case-story-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
+.case-step-number{font-family:"Archivo Black",sans-serif;font-size:15px;color:var(--case-orange);letter-spacing:.04em}
+.case-story h2{font-size:clamp(20px,2.2vw,24px);line-height:1.45;font-weight:900;color:var(--case-navy);margin:0}
+.case-story p{font-size:clamp(16px,1.6vw,17.5px);line-height:2;color:#33445a}
+.case-story p+p{margin-top:.6em}
+.case-small-note{margin-top:10px;font-size:14px!important;line-height:1.85!important;color:var(--case-muted)!important}
+
+/* 戻るボタン（白背景＋薄い枠線） */
+.case-return-nav{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;padding-top:24px;border-top:1px solid var(--case-border)}
+.case-return-link{min-height:50px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border:1px solid #d5dde6;border-radius:12px;background:#fff;color:var(--case-navy);font-size:15px;font-weight:900;text-decoration:none}
+.case-return-link:hover{border-color:var(--case-orange);color:var(--case-orange-text)}
+
+/* 電話・LINEボタン：トップページと同じ配色・大きさ（PC 高さ100px／スマホ 高さ58px） */
+.case-contact{padding:clamp(30px,4.5vw,52px) 0 8px}
+.case-contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:930px;margin:0 auto}
+.case-contact-button{display:flex;align-items:center;justify-content:center;min-width:0;height:100px;padding:0 20px;border-radius:14px;color:#fff!important;text-decoration:none!important}
+.case-contact-button.phone{background:#FF6A00;box-shadow:0 10px 24px rgba(255,106,0,.26)}
+.case-contact-button.line{background:#06C755;box-shadow:0 10px 24px rgba(6,199,85,.26)}
+.case-contact-inner{display:flex;align-items:center;gap:18px;width:min(100%,380px)}
+.case-contact-icon{display:flex;align-items:center;justify-content:center;width:56px;height:56px;flex-shrink:0}
+.case-contact-icon svg{display:block;width:42px;height:42px}
+.case-contact-button.line .case-contact-icon svg{width:56px;height:56px}
+.case-contact-copy{display:flex;flex-direction:column;gap:7px;line-height:1.1;align-items:flex-start;min-width:0}
+.case-contact-label{font-size:18px;font-weight:800}
+.case-contact-button.line .case-contact-label{font-size:clamp(24px,2.3vw,28px);font-weight:900}
+.case-contact-number{font-family:"Archivo Black",sans-serif;font-size:clamp(28px,2.7vw,36px);letter-spacing:.01em;white-space:nowrap}
+.case-contact-sp{display:none}
+
+/* フッター */
+.case-footer{margin-top:40px;background:#0b2137;color:#fff;padding:42px 0 38px}
+.case-footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px 30px}
+.case-footer strong{font-size:18px;color:#fff}
+.case-footer p{margin-top:9px;font-size:14px;color:#ffffffc8;line-height:1.8}
+.case-footer a{color:#fff}
+
+/* トップページと同じく 1024px 未満はスマホ用の電話・LINEボタン */
+@media(max-width:1023.98px){
+ .case-contact-grid{gap:10px}
+ .case-contact-button{height:58px;padding:0 8px;border-radius:12px;box-shadow:none!important}
+ .case-contact-inner{gap:8px;width:fit-content}
+ .case-contact-icon{width:24px;height:24px}
+ .case-contact-icon svg{width:22px;height:22px}
+ .case-contact-button.line .case-contact-icon svg{width:24px;height:24px}
+ .case-contact-copy{display:none}
+ .case-contact-sp{display:inline;font-size:17px;font-weight:900;line-height:1;white-space:nowrap}
+}
+@media(max-width:730px){
+ .case-article-summary{flex-direction:column;align-items:stretch}
+ .case-feature{max-width:100%}
+ .case-feature-photo{text-align:center}
+ .case-feature-photo img{display:inline-block;max-height:70vh}
+ .case-topbar-inner{min-height:64px}
+ .case-top-link{font-size:12px}
+ .case-return-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .case-return-link{font-size:14px;padding:10px 8px;min-height:48px}
+}
+@media(max-width:390px){
+ .case-container{width:min(calc(100% - 28px),1100px)}
+ .case-top-link{display:none}
+}
+@media(prefers-reduced-motion:reduce){.case-list-card{transition:none}}
+
+/* 2026-11-13 店舗情報・フッターをトップ/修理メニュー共通構造に統一。
+   トップページのLINEアイコンと同じ見やすいサイズへ調整。 */
+@media(max-width:1023.98px){
+  .case-page .case-contact-button.line .case-contact-icon{width:32px;height:32px;flex:0 0 32px}
+  .case-page .case-contact-button.line .case-contact-icon svg{width:32px;height:32px;max-width:none;max-height:none}
+  .case-page .case-contact-button.phone .case-contact-icon svg{width:27px;height:27px}
+  .case-page .case-contact-inner{gap:9px}
+}
+/* 下層ページにも店舗案内を共通配置。フッター前に余分な余白を加えない */
+.case-page .home-style-access{margin-top:0}
+.case-page .home-style-access .access-heading h2{color:#fff}
+.case-page .home-style-footer{margin-top:0}
+.case-page .home-style-footer .footer-col a{color:rgba(255,255,255,.84)}
+.case-page .home-style-footer .footer-col a:hover{color:#fff}
+
+/* 2026-11-13: 修理事例を簡潔に。情報の重複と間延びを解消する */
+.case-page .case-masthead{padding:clamp(23px,3.4vw,43px) 0 clamp(17px,2.8vw,27px)}
+.case-page .case-masthead h1{font-size:clamp(26px,3.4vw,37px);line-height:1.45;letter-spacing:0}
+.case-page .case-masthead-desc{margin-top:8px;max-width:52em;line-height:1.7}
+.case-page .case-eyebrow{margin-bottom:8px;font-size:12px;letter-spacing:.13em}
+.case-page .case-masthead .case-article-tags{margin-top:13px}
+.case-page .case-tag{padding:4px 11px;font-size:13px}
+.case-page .case-article-summary{margin-bottom:25px;gap:clamp(18px,3vw,28px)}
+.case-page .case-feature-photo img{max-height:430px;max-width:100%;height:auto;object-fit:contain}
+.case-page .case-feature figcaption{margin-top:7px;font-size:12.5px}
+.case-page .case-facts{border-top:1px solid var(--case-border)}
+.case-page .case-facts div{padding:9px 2px}
+.case-page .case-facts dt{font-size:12px}
+.case-page .case-facts dd{font-size:clamp(15px,1.6vw,17px);line-height:1.5;margin-top:2px}
+.case-page .case-story-section{padding:17px 0}
+.case-page .case-story-head{gap:10px;margin-bottom:6px}
+.case-page .case-story h2{font-size:clamp(19px,2.1vw,23px)}
+.case-page .case-story p{font-size:clamp(15.5px,1.6vw,17px);line-height:1.85}
+.case-page .case-small-note{font-size:12.5px!important;margin-top:7px}
+.case-page .case-return-nav{margin-top:5px;padding-top:17px}
+.case-page .case-contact{padding:26px 0 8px}
+.case-page .case-list-body{gap:7px}
+.case-page .case-list-body p{font-size:15px;line-height:1.8}
+.case-page .case-list-date{font-size:12px}
+@media(max-width:730px){
+ .case-page .case-masthead h1{font-size:clamp(26px,7vw,33px)}
+ .case-page .case-title-break{display:none}
+ .case-page .case-article-summary{gap:17px}
+ .case-page .case-feature{width:100%;max-width:100%;display:flex;flex-direction:column;align-items:flex-start}
+ .case-page .case-feature-photo img{display:block;max-height:380px;width:auto;max-width:100%}
+ .case-page .case-facts{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid var(--case-border);column-gap:18px}
+ .case-page .case-facts div{padding:9px 0}
+ .case-page .case-facts div:last-child{grid-column:1/-1}
+ .case-page .case-story-section{padding:16px 0}
+}
+
+/* 2026-11-13 PC版：字の強弱を明確にしつつ、縦の長さを抑える */
+@media(min-width:1024px){
+  .case-page .case-container{width:min(calc(100% - 56px),1100px)}
+  .case-page .case-crumb{font-size:15px;min-height:48px}
+  .case-page .case-eyebrow{font-size:14px;letter-spacing:.11em}
+  .case-page .case-masthead{padding:24px 0 23px}
+  .case-page .case-masthead h1{font-size:clamp(36px,3.5vw,43px);line-height:1.35}
+  .case-page .case-masthead-desc{font-size:17px;line-height:1.75;margin-top:10px}
+  .case-page .case-article-tags{gap:8px}
+  .case-page .case-tag{font-size:15px;padding:5px 12px;line-height:1.35}
+
+  /* 写真の存在感は残し、カードの総高を縮める */
+  .case-page .case-list{gap:20px}
+  .case-page .case-list-image{aspect-ratio:16/9;max-height:255px}
+  .case-page .case-list-body{padding:20px 22px 21px;gap:8px}
+  .case-page .case-list-date{font-size:15px;line-height:1.45;font-weight:800;color:#536273}
+  .case-page .case-list-body h2{font-size:clamp(23px,2.25vw,27px);line-height:1.35}
+  .case-page .case-list-body p{font-size:17px;line-height:1.66}
+  .case-page .case-list-more{font-size:18px;line-height:1.4;font-weight:900;padding-top:2px}
+  .case-page .case-list-section{padding-bottom:12px}
+  .case-page .case-contact{padding:26px 0 12px}
+
+  /* 個別記事：情報ラベル、文章、セクション見出しの最小文字を底上げ */
+  .case-page .case-article-summary{gap:27px;margin-bottom:18px}
+  .case-page .case-feature-photo img{max-height:390px}
+  .case-page .case-feature figcaption{font-size:14px;line-height:1.55}
+  .case-page .case-facts dt{font-size:15px}
+  .case-page .case-facts dd{font-size:19px;line-height:1.45}
+  .case-page .case-facts div{padding:11px 2px}
+  .case-page .case-story-section{padding:16px 0}
+  .case-page .case-story-head{margin-bottom:8px}
+  .case-page .case-step-number{font-size:16px}
+  .case-page .case-story h2{font-size:25px;line-height:1.4}
+  .case-page .case-story p{font-size:18px;line-height:1.7}
+  .case-page .case-small-note{font-size:15px!important;line-height:1.65!important}
+  .case-page .case-return-nav{padding-top:16px}
+  .case-page .case-return-link{font-size:16px}
+}
+
+/* 電話・LINE：アイコン＋文字をボタン全体の中央に揃える（PC/スマホ共通） */
+.case-page .case-contact-button{justify-content:center;text-align:center}
+.case-page .case-contact-inner{width:max-content;max-width:100%;margin-inline:auto;justify-content:center}
+.case-page .case-contact-button.line .case-contact-inner{
+  width:max-content;max-width:100%;gap:14px;justify-content:center;align-items:center
+}
+.case-page .case-contact-button.line .case-contact-copy{flex:0 1 auto;align-items:center}
+.case-page .case-contact-button.line .case-contact-label{text-align:center}
+@media(max-width:1023.98px){
+ .case-page .case-contact-button.line .case-contact-inner{gap:9px}
+ .case-page .case-contact-sp{text-align:center}
+}
+
+/* 2026-11-13 最終調整: 詳細ページの見出しと文章のメリハリを強化。
+   一覧は大きく崩さず、各画面の最小文字だけ底上げ。 */
+.case-page .case-crumb{font-size:clamp(14px,1.4vw,16px);line-height:1.5}
+.case-page .case-eyebrow{font-size:clamp(14px,1.35vw,16px);letter-spacing:.1em}
+.case-page .case-tag{font-size:clamp(14px,1.35vw,16px);padding:5px 13px}
+.case-page .case-masthead-desc{font-size:clamp(16px,1.65vw,18px)}
+/* 記事は「題名→実物写真・概要→作業の流れ」の優先順位を明確に */
+.case-page .case-article.case-masthead,
+.case-page .case-masthead:has(.case-article){padding-top:clamp(25px,3.3vw,43px);padding-bottom:clamp(19px,2.3vw,27px)}
+.case-page .case-masthead .case-article h1{font-size:clamp(32px,4.05vw,48px);line-height:1.34;letter-spacing:-.015em;font-weight:900}
+.case-page .case-masthead .case-article .case-article-tags{margin-top:16px}
+.case-page .case-article .case-feature figcaption{font-size:clamp(14px,1.35vw,16px);line-height:1.55}
+.case-page .case-article .case-facts dt{font-size:clamp(14px,1.5vw,17px);font-weight:900}
+.case-page .case-article .case-facts dd{font-size:clamp(17px,1.85vw,21px);font-weight:900;line-height:1.5}
+.case-page .case-article .case-facts div{padding:12px 2px}
+.case-page .case-article .case-story-section{padding:19px 0}
+.case-page .case-article .case-story-head{gap:12px;margin-bottom:9px}
+.case-page .case-article .case-step-number{font-size:clamp(17px,1.65vw,20px);font-weight:900}
+.case-page .case-article .case-story h2{font-size:clamp(23px,2.65vw,29px);line-height:1.35;font-weight:900}
+.case-page .case-article .case-story p{font-size:clamp(17px,1.9vw,20px);line-height:1.7}
+.case-page .case-article .case-small-note{font-size:clamp(14px,1.45vw,16px)!important;line-height:1.65!important}
+.case-page .case-article .case-return-link{font-size:clamp(14px,1.5vw,17px);font-weight:900}
+/* 一覧の文字は現在のレイアウトを維持し、ラベル・説明が小さくなりすぎない */
+.case-page .case-list-body h2{font-size:clamp(21px,2.3vw,28px);line-height:1.37}
+.case-page .case-list-body p{font-size:clamp(16px,1.7vw,18px);line-height:1.7}
+.case-page .case-list-date{font-size:clamp(14px,1.45vw,16px)}
+.case-page .case-list-more{font-size:clamp(16px,1.7vw,19px)}
+@media(max-width:730px){
+ .case-page .case-masthead .case-article h1{font-size:clamp(32px,8.3vw,36px);line-height:1.38}
+ .case-page .case-masthead .case-article .case-article-tags{margin-top:12px}
+ .case-page .case-article .case-facts dt{font-size:15px}
+ .case-page .case-article .case-facts dd{font-size:18px}
+ .case-page .case-article .case-facts div{padding:11px 0}
+ .case-page .case-article .case-story-section{padding:18px 0}
+ .case-page .case-article .case-story-head{margin-bottom:8px}
+ .case-page .case-article .case-story h2{font-size:25px}
+ .case-page .case-article .case-story p{font-size:18px;line-height:1.72}
+ .case-page .case-article .case-small-note{font-size:14.5px!important}
+ .case-page .case-list-body h2{font-size:22px}
+ .case-page .case-list-body p{font-size:16.5px}
+ .case-page .case-list-date{font-size:14px}
+}
+
+/* 2026-11-13: 色の役割を整理。白/ネイビー/グレーを主体、鮮やかなオレンジはポイントのみ */
+.case-page .case-eyebrow{color:#435a72;font-weight:900}
+.case-page .case-facts dt,
+.case-page .case-article .case-facts dt{color:#526477;font-weight:800}
+.case-page .case-list-more{color:#0f2b46;text-decoration:underline;text-decoration-color:#ff6a00;text-decoration-thickness:2px;text-underline-offset:5px}
+.case-page .case-list-card:hover .case-list-more{color:#ff6a00}
+.case-page .case-step-number{color:#ff6a00}
+.case-page .case-crumb a:hover{color:#0f2b46;text-decoration:underline;text-decoration-color:#ff6a00}
+.case-page .case-return-link:hover{color:#0f2b46;border-color:#ff6a00}
+.case-page .case-tag:not(.case-tag-orange){color:#0f2b46}
+
+/* 2026-11-13: 補助文字は「大きさを保ち、細めにする」。Archivo Blackは
+   固定極太フォントなので、英語の補助見出しも日本語と同じ可変ウェイトへ変更 */
+.case-page .case-eyebrow{
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  font-weight:600; letter-spacing:.095em; color:#536477;
+}
+.case-page .case-facts dt,
+.case-page .case-article .case-facts dt{
+  font-weight:500; color:#5e7082; letter-spacing:.025em;
+}
+/* 修理内容の日本語単語がスマホで途中分割されない表示 */
+.case-page .case-work-items{display:flex;flex-wrap:wrap;gap:3px 13px;align-items:center}
+.case-page .case-work-item{display:inline-block;white-space:nowrap}
+
+/* 修理事例の主役を機種・作業内容に。地域は検索に必要な補助情報として控えめに配置 */
+.case-page .case-list-meta{
+  display:flex;align-items:center;flex-wrap:wrap;gap:9px;
+  color:#607083;font-size:clamp(14px,1.4vw,16px);font-weight:500;line-height:1.5
+}
+.case-page .case-list-body h2{
+  display:flex;flex-direction:column;gap:4px;margin:1px 0 0;
+  color:var(--case-navy)
+}
+.case-page .case-title-device{
+  display:block;font-size:clamp(18px,1.9vw,22px);font-weight:700;line-height:1.42
+}
+.case-page .case-title-service{
+  display:block;font-size:clamp(22px,2.4vw,29px);font-weight:900;line-height:1.38
+}
+.case-page .case-list-body{gap:8px}
+@media(max-width:730px){
+ .case-page .case-title-device{font-size:19px}
+ .case-page .case-title-service{font-size:24px}
+}
+
+/* 記事概要：地域欄をなくした2項目（機種／対応）を余白なく表示 */
+@media(max-width:730px){
+ .case-page .case-article .case-facts{grid-template-columns:1fr}
+ .case-page .case-article .case-facts div:last-child{grid-column:auto}
+}
+
+/* 2026-11-13 見出しの統一ルール（一覧・記事共通。トップページの世界観に合わせる）
+   小見出し：オレンジ・細め・小さめ ／ 大見出し：ネイビー・大きめ ／ 説明文：ネイビー
+   グレー文字は使わず、控えめな文字も淡いネイビーにする */
+.case-page{--case-ink:#0f2b46;--case-muted:#3e5873}
+.case-page .case-masthead .case-eyebrow{
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  font-size:12px;font-weight:500;letter-spacing:.16em;line-height:1.5;color:#ff6a00;margin-bottom:10px
+}
+.case-page .case-masthead-desc{color:#0f2b46;font-weight:500}
+.case-page .case-list-title h1{font-size:clamp(36px,4.6vw,54px);line-height:1.25;margin-top:2px}
+.case-page .case-list-meta,
+.case-page .case-list-date,
+.case-page .case-feature figcaption,
+.case-page .case-facts dt,
+.case-page .case-article .case-facts dt,
+.case-page .case-crumb,
+.case-page .case-crumb a{color:#3e5873}
+.case-page .case-small-note{color:#3e5873!important}
+.case-page .case-list-body p,
+.case-page .case-story p{color:#0f2b46}
+@media(min-width:731px){
+ .case-page .case-masthead .case-eyebrow{font-size:13px}
+}
