@@ -266,3 +266,14 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
  .case-page .case-list-body p{font-size:16.5px}
  .case-page .case-list-date{font-size:14px}
 }
+
+/* 2026-11-13: 色の役割を整理。白/ネイビー/グレーを主体、鮮やかなオレンジはポイントのみ */
+.case-page .case-eyebrow{color:#435a72;font-weight:900}
+.case-page .case-facts dt,
+.case-page .case-article .case-facts dt{color:#526477;font-weight:800}
+.case-page .case-list-more{color:#0f2b46;text-decoration:underline;text-decoration-color:#ff6a00;text-decoration-thickness:2px;text-underline-offset:5px}
+.case-page .case-list-card:hover .case-list-more{color:#ff6a00}
+.case-page .case-step-number{color:#ff6a00}
+.case-page .case-crumb a:hover{color:#0f2b46;text-decoration:underline;text-decoration-color:#ff6a00}
+.case-page .case-return-link:hover{color:#0f2b46;border-color:#ff6a00}
+.case-page .case-tag:not(.case-tag-orange){color:#0f2b46}
