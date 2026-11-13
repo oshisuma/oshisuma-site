@@ -312,3 +312,9 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
  .case-page .case-title-device{font-size:19px}
  .case-page .case-title-service{font-size:24px}
 }
+
+/* 記事概要：地域欄をなくした2項目（機種／対応）を余白なく表示 */
+@media(max-width:730px){
+ .case-page .case-article .case-facts{grid-template-columns:1fr}
+ .case-page .case-article .case-facts div:last-child{grid-column:auto}
+}
