@@ -318,3 +318,27 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
  .case-page .case-article .case-facts{grid-template-columns:1fr}
  .case-page .case-article .case-facts div:last-child{grid-column:auto}
 }
+
+/* 2026-11-13 見出しの統一ルール（一覧・記事共通。トップページの世界観に合わせる）
+   小見出し：オレンジ・細め・小さめ ／ 大見出し：ネイビー・大きめ ／ 説明文：ネイビー
+   グレー文字は使わず、控えめな文字も淡いネイビーにする */
+.case-page{--case-ink:#0f2b46;--case-muted:#3e5873}
+.case-page .case-masthead .case-eyebrow{
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  font-size:12px;font-weight:500;letter-spacing:.16em;line-height:1.5;color:#ff6a00;margin-bottom:10px
+}
+.case-page .case-masthead-desc{color:#0f2b46;font-weight:500}
+.case-page .case-list-title h1{font-size:clamp(36px,4.6vw,54px);line-height:1.25;margin-top:2px}
+.case-page .case-list-meta,
+.case-page .case-list-date,
+.case-page .case-feature figcaption,
+.case-page .case-facts dt,
+.case-page .case-article .case-facts dt,
+.case-page .case-crumb,
+.case-page .case-crumb a{color:#3e5873}
+.case-page .case-small-note{color:#3e5873!important}
+.case-page .case-list-body p,
+.case-page .case-story p{color:#0f2b46}
+@media(min-width:731px){
+ .case-page .case-masthead .case-eyebrow{font-size:13px}
+}
