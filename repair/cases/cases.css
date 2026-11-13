@@ -120,3 +120,18 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
  .case-top-link{display:none}
 }
 @media(prefers-reduced-motion:reduce){.case-list-card{transition:none}}
+
+/* 2026-11-13 店舗情報・フッターをトップ/修理メニュー共通構造に統一。
+   トップページのLINEアイコンと同じ見やすいサイズへ調整。 */
+@media(max-width:1023.98px){
+  .case-page .case-contact-button.line .case-contact-icon{width:32px;height:32px;flex:0 0 32px}
+  .case-page .case-contact-button.line .case-contact-icon svg{width:32px;height:32px;max-width:none;max-height:none}
+  .case-page .case-contact-button.phone .case-contact-icon svg{width:27px;height:27px}
+  .case-page .case-contact-inner{gap:9px}
+}
+/* 下層ページにも店舗案内を共通配置。フッター前に余分な余白を加えない */
+.case-page .home-style-access{margin-top:0}
+.case-page .home-style-access .access-heading h2{color:#fff}
+.case-page .home-style-footer{margin-top:0}
+.case-page .home-style-footer .footer-col a{color:rgba(255,255,255,.84)}
+.case-page .home-style-footer .footer-col a:hover{color:#fff}
