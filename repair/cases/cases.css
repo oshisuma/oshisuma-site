@@ -171,3 +171,55 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
  .case-page .case-facts div:last-child{grid-column:1/-1}
  .case-page .case-story-section{padding:16px 0}
 }
+
+/* 2026-11-13 PC版：字の強弱を明確にしつつ、縦の長さを抑える */
+@media(min-width:1024px){
+  .case-page .case-container{width:min(calc(100% - 56px),1100px)}
+  .case-page .case-crumb{font-size:15px;min-height:48px}
+  .case-page .case-eyebrow{font-size:14px;letter-spacing:.11em}
+  .case-page .case-masthead{padding:24px 0 23px}
+  .case-page .case-masthead h1{font-size:clamp(36px,3.5vw,43px);line-height:1.35}
+  .case-page .case-masthead-desc{font-size:17px;line-height:1.75;margin-top:10px}
+  .case-page .case-article-tags{gap:8px}
+  .case-page .case-tag{font-size:15px;padding:5px 12px;line-height:1.35}
+
+  /* 写真の存在感は残し、カードの総高を縮める */
+  .case-page .case-list{gap:20px}
+  .case-page .case-list-image{aspect-ratio:16/9;max-height:255px}
+  .case-page .case-list-body{padding:20px 22px 21px;gap:8px}
+  .case-page .case-list-date{font-size:15px;line-height:1.45;font-weight:800;color:#536273}
+  .case-page .case-list-body h2{font-size:clamp(23px,2.25vw,27px);line-height:1.35}
+  .case-page .case-list-body p{font-size:17px;line-height:1.66}
+  .case-page .case-list-more{font-size:18px;line-height:1.4;font-weight:900;padding-top:2px}
+  .case-page .case-list-section{padding-bottom:12px}
+  .case-page .case-contact{padding:26px 0 12px}
+
+  /* 個別記事：情報ラベル、文章、セクション見出しの最小文字を底上げ */
+  .case-page .case-article-summary{gap:27px;margin-bottom:18px}
+  .case-page .case-feature-photo img{max-height:390px}
+  .case-page .case-feature figcaption{font-size:14px;line-height:1.55}
+  .case-page .case-facts dt{font-size:15px}
+  .case-page .case-facts dd{font-size:19px;line-height:1.45}
+  .case-page .case-facts div{padding:11px 2px}
+  .case-page .case-story-section{padding:16px 0}
+  .case-page .case-story-head{margin-bottom:8px}
+  .case-page .case-step-number{font-size:16px}
+  .case-page .case-story h2{font-size:25px;line-height:1.4}
+  .case-page .case-story p{font-size:18px;line-height:1.7}
+  .case-page .case-small-note{font-size:15px!important;line-height:1.65!important}
+  .case-page .case-return-nav{padding-top:16px}
+  .case-page .case-return-link{font-size:16px}
+}
+
+/* 電話・LINE：アイコン＋文字をボタン全体の中央に揃える（PC/スマホ共通） */
+.case-page .case-contact-button{justify-content:center;text-align:center}
+.case-page .case-contact-inner{width:max-content;max-width:100%;margin-inline:auto;justify-content:center}
+.case-page .case-contact-button.line .case-contact-inner{
+  width:max-content;max-width:100%;gap:14px;justify-content:center;align-items:center
+}
+.case-page .case-contact-button.line .case-contact-copy{flex:0 1 auto;align-items:center}
+.case-page .case-contact-button.line .case-contact-label{text-align:center}
+@media(max-width:1023.98px){
+ .case-page .case-contact-button.line .case-contact-inner{gap:9px}
+ .case-page .case-contact-sp{text-align:center}
+}
