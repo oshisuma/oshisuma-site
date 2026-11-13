@@ -1,9 +1,11 @@
-
-/* オシスマ修理事例：一覧・個別記事の共通デザイン */
-:root{--case-orange:#ff6a00;--case-navy:#0f2b46;--case-ink:#243242;--case-muted:#596879;--case-cream:#fff5ea;--case-border:#e6eaf0}
+/* オシスマ修理事例：一覧・個別記事の共通デザイン
+   背景は白、区切りは薄い線。オレンジは見出しのアクセント・ラベル・ボタンだけに使う */
+:root{--case-orange:#ff6a00;--case-orange-text:#d95600;--case-navy:#0f2b46;--case-ink:#243242;--case-muted:#5b6878;--case-border:#e3e8ee}
 body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;overflow-wrap:break-word}
 .case-page a:focus-visible{outline:3px solid var(--case-orange);outline-offset:3px}
 .case-container{width:min(calc(100% - 40px),1100px);margin-inline:auto}
+
+/* ヘッダー・パンくず */
 .case-topbar{background:var(--case-orange);color:#fff}
 .case-topbar-inner{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:76px}
 .case-site-brand{display:flex;flex-direction:column;gap:3px;color:#fff;text-decoration:none;line-height:1.3}
@@ -11,106 +13,107 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
 .case-site-brand strong{font-size:clamp(16px,2vw,21px);font-weight:900}
 .case-top-link{color:#fff;text-decoration:none;font-size:14px;font-weight:800;white-space:nowrap}
 .case-crumb-wrap{background:#fff;border-bottom:1px solid var(--case-border)}
-.case-crumb{display:flex;align-items:center;gap:8px;min-height:54px;flex-wrap:wrap;font-size:13px;font-weight:800;color:var(--case-muted)}
+.case-crumb{display:flex;align-items:center;gap:8px;min-height:52px;flex-wrap:wrap;font-size:13px;font-weight:800;color:var(--case-muted)}
 .case-crumb a{color:var(--case-muted);text-decoration:none}
-.case-crumb .case-crumb-current{color:var(--case-orange)}
-.case-masthead{background:linear-gradient(135deg,#fff5eb 0%,#fffaf5 62%,#fff 100%);padding:clamp(34px,5vw,70px) 0 clamp(30px,5vw,59px)}
-.case-eyebrow{font-family:"Archivo Black","Zen Kaku Gothic New",sans-serif;font-size:12px;letter-spacing:.15em;color:#e35c00;font-weight:900;margin-bottom:10px}
-.case-masthead h1{font-weight:900;line-height:1.42;color:var(--case-navy);font-size:clamp(29px,4.3vw,44px);letter-spacing:.01em;max-width:900px}
-.case-masthead-desc{margin-top:15px;font-size:clamp(15px,1.65vw,18px);line-height:1.85;color:#526073;max-width:760px}
-.case-masthead .case-article-tags{margin-top:22px}
+.case-crumb a:hover{color:var(--case-orange-text)}
+.case-crumb .case-crumb-current{color:var(--case-navy)}
+
+/* ページ見出し */
+.case-masthead{background:#fff;padding:clamp(32px,5vw,60px) 0 clamp(24px,3.5vw,40px)}
+.case-eyebrow{font-family:"Archivo Black","Zen Kaku Gothic New",sans-serif;font-size:12px;letter-spacing:.15em;color:var(--case-orange-text);margin-bottom:10px}
+.case-masthead h1{font-weight:900;line-height:1.42;color:var(--case-navy);font-size:clamp(28px,4.2vw,42px);letter-spacing:.01em;max-width:900px}
+.case-masthead-desc{margin-top:14px;font-size:clamp(15px,1.65vw,17px);line-height:1.9;color:var(--case-muted);max-width:760px}
+.case-masthead .case-article-tags{margin-top:20px}
+
+/* ラベル */
 .case-article-tags{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.case-tag{display:inline-flex;align-items:center;justify-content:center;border:1px solid #ffd9bb;background:#fff;color:#b74c00;padding:5px 13px;border-radius:999px;font-size:13px;font-weight:900;line-height:1.4}
+.case-tag{display:inline-flex;align-items:center;border:1px solid var(--case-border);background:#fff;color:var(--case-navy);padding:4px 12px;border-radius:999px;font-size:13px;font-weight:900;line-height:1.4}
 .case-tag.case-tag-orange{background:var(--case-orange);border-color:var(--case-orange);color:#fff}
-.case-section{padding:clamp(38px,6vw,68px) 0}
-.case-section-head{display:flex;flex-direction:column;gap:7px;margin-bottom:29px}
-.case-section-head h2{font-size:clamp(23px,2.8vw,31px);font-weight:900;color:var(--case-navy)}
-.case-section-note{color:#697687;font-size:15px}
-.case-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(20px,3vw,31px)}
-.case-list-card{overflow:hidden;display:flex;flex-direction:column;border:1px solid var(--case-border);border-radius:18px;background:#fff;box-shadow:0 6px 22px rgba(15,43,70,.06);transition:transform .18s ease,box-shadow .18s ease}
-.case-list-card:hover{transform:translateY(-3px);box-shadow:0 13px 31px rgba(15,43,70,.13)}
+
+/* 一覧：写真付きカード（事例が増えても画面幅に応じて自動で列が増える） */
+.case-list-section{padding:0 0 clamp(16px,3vw,28px)}
+.case-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:clamp(18px,2.6vw,28px)}
+.case-list-card{display:flex;flex-direction:column;border:1px solid var(--case-border);border-radius:16px;background:#fff;overflow:hidden;transition:border-color .18s ease,box-shadow .18s ease}
+.case-list-card:hover{border-color:#ffc59a;box-shadow:0 10px 26px rgba(15,43,70,.08)}
 .case-list-card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;flex:1}
-.case-list-image{height:clamp(210px,27vw,280px);position:relative;overflow:hidden;background:#f0f3f6}
-.case-list-image img{width:100%;height:100%;display:block;object-fit:cover;object-position:center 48%;transition:transform .35s ease}
-.case-list-card:hover .case-list-image img{transform:scale(1.035)}
-.case-list-image .case-image-label{position:absolute;left:18px;top:18px;border-radius:5px;padding:6px 12px;font-weight:900;font-size:13px;background:var(--case-orange);color:#fff;box-shadow:0 3px 12px #1113}
-.case-list-body{display:flex;flex-direction:column;gap:12px;padding:clamp(20px,3vw,27px);flex:1}
-.case-list-date{font-size:13px;color:#687685;font-weight:800}
-.case-list-body h3{font-size:clamp(20px,2.2vw,25px);line-height:1.53;font-weight:900;color:var(--case-navy);margin:0}
-.case-list-body p{font-size:16px;line-height:1.9;color:#405163;flex:1}
-.case-list-more{font-size:15px;font-weight:900;color:#e65b00;display:flex;align-items:center;gap:5px;padding-top:6px}
-.case-article{max-width:940px}
-.case-article-summary{display:flex;align-items:flex-start;gap:clamp(18px,3vw,30px);margin-bottom:36px}
-.case-feature{width:49%;min-width:0;margin:0;flex:0 0 49%}
-.case-feature-photo{border-radius:17px;overflow:hidden;background:#f4f5f6;border:1px solid var(--case-border);display:flex;justify-content:center;align-items:center}
-.case-feature-photo img{display:block;width:100%;max-height:500px;object-fit:contain}
-.case-feature figcaption{font-size:13px;line-height:1.7;color:#667585;margin-top:10px}
-.case-facts{flex:1;min-width:0;display:grid;gap:12px}
-.case-facts div{background:#fff8f2;border:1px solid #ffecdc;border-radius:12px;padding:16px 19px}
-.case-facts dt{font-size:13px;font-weight:900;color:#ab4d0c;line-height:1.5}
-.case-facts dd{margin:5px 0 0;font-size:clamp(16px,1.9vw,19px);line-height:1.55;font-weight:900;color:var(--case-navy)}
-.case-story{display:grid;gap:20px}
-.case-story-section{padding:clamp(22px,3.1vw,33px);border-radius:17px;border:1px solid var(--case-border);background:#fff}
-.case-story-section:nth-child(even){background:#fffaf5;border-color:#f9e7d8}
-.case-story-head{display:flex;align-items:center;gap:14px;margin-bottom:14px}
-.case-step-number{display:inline-flex;justify-content:center;align-items:center;background:#ff6a00;color:#fff;border-radius:9px;min-width:39px;height:39px;font-family:"Archivo Black",sans-serif;font-size:16px}
-.case-story h2{font-size:clamp(20px,2.2vw,26px);line-height:1.4;font-weight:900;color:var(--case-navy);margin:0}
-.case-story p{font-size:clamp(16px,1.6vw,18px);line-height:2.05;color:#3b4c5b}
-.case-small-note{margin-top:11px;font-size:14px!important;line-height:1.85!important;color:#697687!important}
-.case-return{display:inline-flex;align-items:center;gap:8px;color:#bf5000;font-size:15px;font-weight:900;text-decoration:none;margin:27px 0 5px}
-.case-contact{padding:clamp(34px,5vw,62px) 0 10px}
+.case-list-image{aspect-ratio:4/3;overflow:hidden;background:#fff;border-bottom:1px solid var(--case-border)}
+.case-list-image img{width:100%;height:100%;display:block;object-fit:cover}
+.case-list-body{display:flex;flex-direction:column;gap:10px;padding:clamp(18px,2.6vw,24px);flex:1}
+.case-list-date{font-size:13px;color:var(--case-muted);font-weight:800}
+.case-list-body h2{font-size:clamp(19px,2vw,22px);line-height:1.5;font-weight:900;color:var(--case-navy);margin:0}
+.case-list-body p{font-size:15.5px;line-height:1.85;color:#3b4c5b;flex:1}
+.case-list-more{font-size:15px;font-weight:900;color:var(--case-orange-text);padding-top:4px}
+
+/* 個別記事 */
+.case-article{max-width:900px}
+.case-section{padding:clamp(8px,2vw,16px) 0 clamp(16px,3vw,28px)}
+.case-article-summary{display:flex;align-items:flex-start;gap:clamp(20px,3.4vw,40px);margin-bottom:clamp(28px,4vw,44px)}
+.case-feature{margin:0;flex:0 1 auto;max-width:52%;min-width:0}
+.case-feature-photo img{display:block;width:auto;height:auto;max-width:100%;max-height:620px;border-radius:14px}
+.case-feature figcaption{font-size:13px;line-height:1.7;color:var(--case-muted);margin-top:10px}
+.case-facts{flex:1;min-width:0;margin:0;border-top:2px solid var(--case-navy)}
+.case-facts div{padding:14px 2px;border-bottom:1px solid var(--case-border)}
+.case-facts dt{font-size:13px;font-weight:900;color:var(--case-orange-text);line-height:1.5}
+.case-facts dd{margin:4px 0 0;font-size:clamp(16px,1.8vw,18px);line-height:1.6;font-weight:900;color:var(--case-navy)}
+.case-story-section{padding:clamp(22px,3vw,30px) 0;border-top:1px solid var(--case-border)}
+.case-story-head{display:flex;align-items:baseline;gap:12px;margin-bottom:12px}
+.case-step-number{font-family:"Archivo Black",sans-serif;font-size:15px;color:var(--case-orange);letter-spacing:.04em}
+.case-story h2{font-size:clamp(20px,2.2vw,24px);line-height:1.45;font-weight:900;color:var(--case-navy);margin:0}
+.case-story p{font-size:clamp(16px,1.6vw,17.5px);line-height:2;color:#33445a}
+.case-story p+p{margin-top:.6em}
+.case-small-note{margin-top:10px;font-size:14px!important;line-height:1.85!important;color:var(--case-muted)!important}
+
+/* 戻るボタン（白背景＋薄い枠線） */
+.case-return-nav{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px;padding-top:24px;border-top:1px solid var(--case-border)}
+.case-return-link{min-height:50px;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border:1px solid #d5dde6;border-radius:12px;background:#fff;color:var(--case-navy);font-size:15px;font-weight:900;text-decoration:none}
+.case-return-link:hover{border-color:var(--case-orange);color:var(--case-orange-text)}
+
+/* 電話・LINEボタン：トップページと同じ配色・大きさ（PC 高さ100px／スマホ 高さ58px） */
+.case-contact{padding:clamp(30px,4.5vw,52px) 0 8px}
 .case-contact-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;max-width:930px;margin:0 auto}
-.case-contact-button{min-width:0;min-height:100px;display:flex;align-items:center;justify-content:center;gap:17px;padding:18px;border-radius:14px;text-decoration:none;color:#fff!important;box-shadow:0 10px 24px rgba(15,43,70,.12);transition:transform .18s ease,box-shadow .18s ease}
-.case-contact-button:hover{transform:translateY(-2px);box-shadow:0 13px 28px rgba(15,43,70,.2)}
-.case-contact-button.phone{background:#ff6a00}
-.case-contact-button.line{background:#06c755}
-.case-contact-icon{flex:none;width:50px;height:50px;display:grid;place-items:center}
+.case-contact-button{display:flex;align-items:center;justify-content:center;min-width:0;height:100px;padding:0 20px;border-radius:14px;color:#fff!important;text-decoration:none!important}
+.case-contact-button.phone{background:#FF6A00;box-shadow:0 10px 24px rgba(255,106,0,.26)}
+.case-contact-button.line{background:#06C755;box-shadow:0 10px 24px rgba(6,199,85,.26)}
+.case-contact-inner{display:flex;align-items:center;gap:18px;width:min(100%,380px)}
+.case-contact-icon{display:flex;align-items:center;justify-content:center;width:56px;height:56px;flex-shrink:0}
 .case-contact-icon svg{display:block;width:42px;height:42px}
-.case-contact-button.line .case-contact-icon svg{width:51px;height:51px}
-.case-contact-copy{display:flex;flex-direction:column;gap:5px;line-height:1.15;min-width:0}
-.case-contact-copy strong{font-size:clamp(18px,2vw,26px);font-weight:900}
-.case-contact-copy span{font-family:"Archivo Black","Zen Kaku Gothic New",sans-serif;font-size:clamp(19px,2.2vw,27px);font-weight:900;white-space:nowrap}
-.case-contact-button.line .case-contact-copy strong{font-size:clamp(20px,2.4vw,28px)}
-.case-footer{margin-top:36px;background:#0b2137;color:#fff;padding:42px 0 38px}
+.case-contact-button.line .case-contact-icon svg{width:56px;height:56px}
+.case-contact-copy{display:flex;flex-direction:column;gap:7px;line-height:1.1;align-items:flex-start;min-width:0}
+.case-contact-label{font-size:18px;font-weight:800}
+.case-contact-button.line .case-contact-label{font-size:clamp(24px,2.3vw,28px);font-weight:900}
+.case-contact-number{font-family:"Archivo Black",sans-serif;font-size:clamp(28px,2.7vw,36px);letter-spacing:.01em;white-space:nowrap}
+.case-contact-sp{display:none}
+
+/* フッター */
+.case-footer{margin-top:40px;background:#0b2137;color:#fff;padding:42px 0 38px}
 .case-footer-inner{display:flex;flex-wrap:wrap;justify-content:space-between;gap:16px 30px}
 .case-footer strong{font-size:18px;color:#fff}
 .case-footer p{margin-top:9px;font-size:14px;color:#ffffffc8;line-height:1.8}
 .case-footer a{color:#fff}
-@media(max-width:730px){
- .case-list{grid-template-columns:1fr;gap:18px}
- .case-list-image{height:auto;aspect-ratio:16/10}
- .case-article-summary{display:flex;flex-direction:column}
- .case-feature{width:100%;flex:none}
- .case-feature-photo img{max-height:480px}
- .case-facts{display:grid;grid-template-columns:1fr 1fr;width:100%;gap:9px}
- .case-facts div{padding:13px 14px}
- .case-facts dd{font-size:15.5px}
+
+/* トップページと同じく 1024px 未満はスマホ用の電話・LINEボタン */
+@media(max-width:1023.98px){
  .case-contact-grid{gap:10px}
- .case-contact-button{min-height:60px;border-radius:12px;gap:8px;padding:10px}
+ .case-contact-button{height:58px;padding:0 8px;border-radius:12px;box-shadow:none!important}
+ .case-contact-inner{gap:8px;width:fit-content}
  .case-contact-icon{width:24px;height:24px}
- .case-contact-icon svg{width:23px;height:23px}
+ .case-contact-icon svg{width:22px;height:22px}
  .case-contact-button.line .case-contact-icon svg{width:24px;height:24px}
- .case-contact-copy strong,.case-contact-button.line .case-contact-copy strong{font-size:clamp(14px,4.1vw,17px);white-space:nowrap}
- .case-contact-copy span{display:none}
- .case-topbar-inner{min-height:65px}
+ .case-contact-copy{display:none}
+ .case-contact-sp{display:inline;font-size:17px;font-weight:900;line-height:1;white-space:nowrap}
+}
+@media(max-width:730px){
+ .case-article-summary{flex-direction:column;align-items:stretch}
+ .case-feature{max-width:100%}
+ .case-feature-photo{text-align:center}
+ .case-feature-photo img{display:inline-block;max-height:70vh}
+ .case-topbar-inner{min-height:64px}
  .case-top-link{font-size:12px}
+ .case-return-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+ .case-return-link{font-size:14px;padding:10px 8px;min-height:48px}
 }
 @media(max-width:390px){
  .case-container{width:min(calc(100% - 28px),1100px)}
  .case-top-link{display:none}
- .case-facts{grid-template-columns:1fr}
- .case-contact-copy strong,.case-contact-button.line .case-contact-copy strong{font-size:14px}
 }
-@media(prefers-reduced-motion:reduce){.case-list-card,.case-list-image img,.case-contact-button{transition:none}}
-
-/* 下部の戻り先：一覧・トップへ迷わず移動 */
-.case-return-nav{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:28px 0 0;padding:22px 0 4px;border-top:1px solid var(--case-border)}
-.case-return-link{min-height:50px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 18px;border:1px solid #dce4eb;border-radius:12px;text-decoration:none;color:var(--case-navy);font-size:15px;font-weight:900;background:#fff}
-.case-return-link:hover{border-color:var(--case-orange);color:#dd5800;background:#fff8f2}
-.case-return-link--home{border-color:#ffd8bb;color:#c65400;background:#fff5eb}
-.case-page .case-return-nav + .case-contact{padding-top:35px}
-.case-page .case-contact{margin-top:0}
-.case-list-image--switch img{object-position:center 57%}
-.case-list-image--iphone img{object-position:center 50%}
-.case-story-section .case-small-note{margin-top:12px}
-@media(max-width:620px){.case-return-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}.case-return-link{font-size:13.5px;padding:10px 8px;min-height:48px}.case-page .case-contact{padding-top:32px}}
+@media(prefers-reduced-motion:reduce){.case-list-card{transition:none}}
