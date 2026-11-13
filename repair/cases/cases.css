@@ -102,3 +102,15 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
  .case-contact-copy strong,.case-contact-button.line .case-contact-copy strong{font-size:14px}
 }
 @media(prefers-reduced-motion:reduce){.case-list-card,.case-list-image img,.case-contact-button{transition:none}}
+
+/* 下部の戻り先：一覧・トップへ迷わず移動 */
+.case-return-nav{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin:28px 0 0;padding:22px 0 4px;border-top:1px solid var(--case-border)}
+.case-return-link{min-height:50px;display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:11px 18px;border:1px solid #dce4eb;border-radius:12px;text-decoration:none;color:var(--case-navy);font-size:15px;font-weight:900;background:#fff}
+.case-return-link:hover{border-color:var(--case-orange);color:#dd5800;background:#fff8f2}
+.case-return-link--home{border-color:#ffd8bb;color:#c65400;background:#fff5eb}
+.case-page .case-return-nav + .case-contact{padding-top:35px}
+.case-page .case-contact{margin-top:0}
+.case-list-image--switch img{object-position:center 57%}
+.case-list-image--iphone img{object-position:center 50%}
+.case-story-section .case-small-note{margin-top:12px}
+@media(max-width:620px){.case-return-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px}.case-return-link{font-size:13.5px;padding:10px 8px;min-height:48px}.case-page .case-contact{padding-top:32px}}
