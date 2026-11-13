@@ -1,6 +1,6 @@
 /* オシスマ修理事例：一覧・個別記事の共通デザイン
    背景は白、区切りは薄い線。オレンジは見出しのアクセント・ラベル・ボタンだけに使う */
-:root{--case-orange:#ff6a00;--case-orange-text:#d95600;--case-navy:#0f2b46;--case-ink:#243242;--case-muted:#5b6878;--case-border:#e3e8ee}
+:root{--case-orange:#ff6a00;--case-orange-text:#ff6a00;--case-navy:#0f2b46;--case-ink:#243242;--case-muted:#5b6878;--case-border:#e3e8ee}
 body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;overflow-wrap:break-word}
 .case-page a:focus-visible{outline:3px solid var(--case-orange);outline-offset:3px}
 .case-container{width:min(calc(100% - 40px),1100px);margin-inline:auto}
