@@ -22,6 +22,9 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
 .case-masthead{background:#fff;padding:clamp(32px,5vw,60px) 0 clamp(24px,3.5vw,40px)}
 .case-eyebrow{font-family:"Archivo Black","Zen Kaku Gothic New",sans-serif;font-size:12px;letter-spacing:.15em;color:var(--case-orange-text);margin-bottom:10px}
 .case-masthead h1{font-weight:900;line-height:1.42;color:var(--case-navy);font-size:clamp(28px,4.2vw,42px);letter-spacing:.01em;max-width:900px}
+/* 見出し・機種名を言葉の途中で折り返さない */
+.case-nb{display:inline-block}
+.case-nw{white-space:nowrap}
 .case-masthead-desc{margin-top:14px;font-size:clamp(15px,1.65vw,17px);line-height:1.9;color:var(--case-muted);max-width:760px}
 .case-masthead .case-article-tags{margin-top:20px}
 
@@ -32,7 +35,7 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
 
 /* 一覧：写真付きカード（事例が増えても画面幅に応じて自動で列が増える） */
 .case-list-section{padding:0 0 clamp(16px,3vw,28px)}
-.case-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,320px),1fr));gap:clamp(18px,2.6vw,28px)}
+.case-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:clamp(18px,2.6vw,28px)}
 .case-list-card{display:flex;flex-direction:column;border:1px solid var(--case-border);border-radius:16px;background:#fff;overflow:hidden;transition:border-color .18s ease,box-shadow .18s ease}
 .case-list-card:hover{border-color:#ffc59a;box-shadow:0 10px 26px rgba(15,43,70,.08)}
 .case-list-card a{color:inherit;text-decoration:none;display:flex;flex-direction:column;flex:1}
