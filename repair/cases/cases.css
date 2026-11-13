@@ -277,3 +277,17 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
 .case-page .case-crumb a:hover{color:#0f2b46;text-decoration:underline;text-decoration-color:#ff6a00}
 .case-page .case-return-link:hover{color:#0f2b46;border-color:#ff6a00}
 .case-page .case-tag:not(.case-tag-orange){color:#0f2b46}
+
+/* 2026-11-13: 補助文字は「大きさを保ち、細めにする」。Archivo Blackは
+   固定極太フォントなので、英語の補助見出しも日本語と同じ可変ウェイトへ変更 */
+.case-page .case-eyebrow{
+  font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN",Meiryo,sans-serif;
+  font-weight:600; letter-spacing:.095em; color:#536477;
+}
+.case-page .case-facts dt,
+.case-page .case-article .case-facts dt{
+  font-weight:500; color:#5e7082; letter-spacing:.025em;
+}
+/* 修理内容の日本語単語がスマホで途中分割されない表示 */
+.case-page .case-work-items{display:flex;flex-wrap:wrap;gap:3px 13px;align-items:center}
+.case-page .case-work-item{display:inline-block;white-space:nowrap}
