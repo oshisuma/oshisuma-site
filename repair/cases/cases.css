@@ -291,3 +291,24 @@ body.case-page{background:#fff;color:var(--case-ink);font-family:"Zen Kaku Gothi
 /* 修理内容の日本語単語がスマホで途中分割されない表示 */
 .case-page .case-work-items{display:flex;flex-wrap:wrap;gap:3px 13px;align-items:center}
 .case-page .case-work-item{display:inline-block;white-space:nowrap}
+
+/* 修理事例の主役を機種・作業内容に。地域は検索に必要な補助情報として控えめに配置 */
+.case-page .case-list-meta{
+  display:flex;align-items:center;flex-wrap:wrap;gap:9px;
+  color:#607083;font-size:clamp(14px,1.4vw,16px);font-weight:500;line-height:1.5
+}
+.case-page .case-list-body h2{
+  display:flex;flex-direction:column;gap:4px;margin:1px 0 0;
+  color:var(--case-navy)
+}
+.case-page .case-title-device{
+  display:block;font-size:clamp(18px,1.9vw,22px);font-weight:700;line-height:1.42
+}
+.case-page .case-title-service{
+  display:block;font-size:clamp(22px,2.4vw,29px);font-weight:900;line-height:1.38
+}
+.case-page .case-list-body{gap:8px}
+@media(max-width:730px){
+ .case-page .case-title-device{font-size:19px}
+ .case-page .case-title-service{font-size:24px}
+}
