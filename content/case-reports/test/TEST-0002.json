@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "reportId": "TEST-0002",
+  "status": "test",
+  "source": {
+    "type": "test",
+    "note": "架空のテストデータ。実在のお客様・修理ではない。写真はHPで公開済みのスタッフ写真を流用。地域が不明な報告の例。"
+  },
+  "facts": {
+    "workDate": "2026-11-21",
+    "area": null,
+    "device": { "category": "switch", "name": "Nintendo Switch", "slug": "nintendo-switch" },
+    "consultation": "Joy-Conのスティックが勝手に動く。",
+    "works": ["Joy-Conスティック交換", "動作確認"],
+    "result": "",
+    "staffComment": "",
+    "uncertain": ["左右どちらのJoy-Conか報告に書かれていない"]
+  },
+  "media": [
+    {
+      "id": "p1",
+      "role": "after",
+      "src": "/uploads/staff-nintendo-switch.jpg",
+      "width": 1536,
+      "height": 864,
+      "alt": "Nintendo Switchを手に持つスタッフ",
+      "caption": "Nintendo Switch（テスト用の写真）。",
+      "privacyCheck": "ok",
+      "contentMatch": "pending"
+    }
+  ],
+  "drafts": {
+    "hp": {
+      "slug": "2026-11-21-test-switch-joycon-stick",
+      "date": "2026-11-21",
+      "titleArea": null,
+      "titleDevice": "Nintendo Switch",
+      "titleServices": ["Joy-Conスティック交換"],
+      "description": "【テスト】Nintendo Switchの修理事例。Joy-Conのスティックが勝手に動く症状に、スティック交換で対応しました。",
+      "cardSummary": "【テスト】Joy-Conのスティックが勝手に動く症状に対応。スティックを交換し、動作を確認しました。",
+      "featureMedia": "p1",
+      "cardMedia": "p1",
+      "sections": [
+        { "heading": "ご相談", "paragraphs": ["【テスト】Joy-Conのスティックが勝手に動くとのご相談をいただきました。"] },
+        { "heading": "修理内容", "paragraphs": ["【テスト】Joy-Conのスティックを交換し、動作を確認しました。", { "text": "※作業内容は今回の事例です。症状や在庫状況によって異なります。", "note": true }] }
+      ]
+    },
+    "gbp": {
+      "summary": "【テスト投稿・架空の事例】\nNintendo SwitchのJoy-Conスティック交換を行いました。\nスティックが勝手に動くとのご相談で、スティックを交換して動作を確認しています。\n\nSwitch修理・Joy-Conの不具合も、オシエテスマホ＋茨城町本店にご相談ください。",
+      "media": "p1"
+    }
+  },
+  "publishLog": { "hp": null, "gbp": null }
+}

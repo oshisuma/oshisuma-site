@@ -1,0 +1,54 @@
+{
+  "schemaVersion": 1,
+  "reportId": "TEST-0001",
+  "status": "test",
+  "source": {
+    "type": "test",
+    "note": "架空のテストデータ。実在のお客様・修理ではない。写真はHPで公開済みのスタッフ写真を流用。"
+  },
+  "facts": {
+    "workDate": "2026-11-20",
+    "area": { "name": "水戸市", "slug": "mito" },
+    "device": { "category": "iphone", "name": "iPhone SE（第2世代）", "slug": "iphonese2" },
+    "consultation": "落として画面にヒビが入り、タッチが効きにくくなった。",
+    "works": ["画面修理"],
+    "result": "当日お渡し。",
+    "staffComment": "",
+    "uncertain": []
+  },
+  "media": [
+    {
+      "id": "p1",
+      "role": "work",
+      "src": "/uploads/iphone-careful-disassembly-hands.jpg",
+      "width": 1152,
+      "height": 1536,
+      "alt": "iPhoneを開いて、画面の部品を取り外しているスタッフの手元",
+      "caption": "画面修理の作業の様子（テスト用の写真）。",
+      "privacyCheck": "ok",
+      "contentMatch": "ok"
+    }
+  ],
+  "drafts": {
+    "hp": {
+      "slug": "2026-11-20-test-mito-iphonese2-screen",
+      "date": "2026-11-20",
+      "titleArea": "水戸市",
+      "titleDevice": "iPhone SE（第2世代）",
+      "titleServices": ["画面修理"],
+      "description": "【テスト】水戸市からご来店のiPhone SE（第2世代）修理事例。落として画面にヒビが入り、タッチが効きにくくなったiPhoneの画面修理を行いました。",
+      "cardSummary": "【テスト】落下による画面のヒビとタッチ不良に対応。画面修理を行い、当日お渡ししました。",
+      "featureMedia": "p1",
+      "cardMedia": "p1",
+      "sections": [
+        { "heading": "ご相談", "paragraphs": ["【テスト】iPhone SE（第2世代）を落としてしまい、画面にヒビが入ってタッチが効きにくくなったとのご相談をいただきました。"] },
+        { "heading": "修理内容", "paragraphs": ["【テスト】画面修理を行い、当日お渡ししました。"] }
+      ]
+    },
+    "gbp": {
+      "summary": "【テスト投稿・架空の事例】\n水戸市からご来店のお客様のiPhone SE（第2世代）を画面修理しました。\n落として画面にヒビが入り、タッチが効きにくくなったとのご相談でした。画面修理を行い、当日お渡ししています。\n\niPhoneの画面割れ・タッチ不良は、オシエテスマホ＋茨城町本店にご相談ください。",
+      "media": "p1"
+    }
+  },
+  "publishLog": { "hp": null, "gbp": null }
+}
