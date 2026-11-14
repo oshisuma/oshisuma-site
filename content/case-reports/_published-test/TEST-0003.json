@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "reportId": "TEST-0003",
+  "status": "test",
+  "source": {
+    "type": "test",
+    "note": "架空のテストデータ（段階②・写真の自動処理）。実在のお客様・修理ではない。元写真はHPで公開済みのスタッフ写真に架空の撮影情報を付けたもの。"
+  },
+  "facts": {
+    "workDate": "2026-11-22",
+    "area": {
+      "name": "水戸市",
+      "slug": "mito"
+    },
+    "device": {
+      "category": "iphone",
+      "name": "iPhone 12",
+      "slug": "iphone12"
+    },
+    "consultation": "画面が割れて、表示にすじが入る。",
+    "works": [
+      "画面修理"
+    ],
+    "result": "",
+    "staffComment": "",
+    "uncertain": []
+  },
+  "media": [
+    {
+      "id": "p1",
+      "original": "drive-test:IMG_9001.jpg",
+      "shows": "during",
+      "privacyCheck": "ok",
+      "contentMatch": "ok",
+      "checkNotes": [],
+      "alt": "画面を開けて内部の部品を取り外しているiPhone 12の作業の様子",
+      "caption": "画面修理の作業の様子（テスト用の写真）。",
+      "qualityNote": "使った範囲が634×614pxと小さいため、Google用（1200×900）・一覧用（800×600）は拡大され、粗く見えることがあります。",
+      "src": "/repair/cases/_preview/images/mito-iphone12-screen-repair-20261122.jpg",
+      "width": 634,
+      "height": 614,
+      "webp": "/repair/cases/_preview/images/mito-iphone12-screen-repair-20261122.webp",
+      "card": {
+        "src": "/repair/cases/_preview/images/mito-iphone12-screen-repair-20261122-card.jpg",
+        "width": 800,
+        "height": 600,
+        "webp": "/repair/cases/_preview/images/mito-iphone12-screen-repair-20261122-card.webp"
+      },
+      "gbp": {
+        "src": "/repair/cases/_preview/images/mito-iphone12-screen-repair-20261122-gbp.jpg",
+        "width": 1200,
+        "height": 900
+      }
+    },
+    {
+      "id": "p2",
+      "original": "drive-test:IMG_9002.jpg",
+      "shows": "during",
+      "privacyCheck": "pending",
+      "contentMatch": "ok",
+      "checkNotes": [
+        "人物の顔が写っています。",
+        "料金の表示が写っています。",
+        "手書きの文字（管理番号・名前など）が写っています。"
+      ],
+      "alt": "iPhone 12：iPhoneの修理作業をするスタッフ",
+      "caption": ""
+    },
+    {
+      "id": "p3",
+      "original": "drive-test:IMG_9003.jpg",
+      "shows": "other",
+      "privacyCheck": "pending",
+      "contentMatch": "mismatch",
+      "checkNotes": [
+        "伝票・書類が写っています。",
+        "バーコード・QRコードが写っています。",
+        "写真に写っているもの（その他の物）が報告の機種（iPhone 12）と合いません。",
+        "修理の前後・作業・部品の写真ではありません。"
+      ],
+      "alt": "iPhone 12：SIMカードと書類を指さす手元",
+      "caption": ""
+    }
+  ],
+  "drafts": {
+    "hp": {
+      "slug": "2026-11-22-test-mito-iphone12-screen",
+      "date": "2026-11-22",
+      "titleArea": "水戸市",
+      "titleDevice": "iPhone 12",
+      "titleServices": [
+        "画面修理"
+      ],
+      "description": "【テスト】水戸市からご来店のiPhone 12修理事例。画面が割れて表示にすじが入るiPhoneの画面修理を行いました。",
+      "cardSummary": "【テスト】画面割れと表示のすじに対応し、画面修理を行いました。",
+      "featureMedia": "p1",
+      "cardMedia": "p1",
+      "sections": [
+        {
+          "heading": "ご相談",
+          "paragraphs": [
+            "【テスト】iPhone 12の画面が割れて、表示にすじが入るとのご相談をいただきました。"
+          ]
+        },
+        {
+          "heading": "修理内容",
+          "paragraphs": [
+            "【テスト】画面修理を行いました。"
+          ]
+        }
+      ]
+    },
+    "gbp": {
+      "summary": "【テスト投稿・架空の事例】\n水戸市からご来店のお客様のiPhone 12を画面修理しました。\n画面が割れて、表示にすじが入るとのご相談でした。\n\niPhoneの画面割れは、オシエテスマホ＋茨城町本店にご相談ください。",
+      "media": "p1"
+    }
+  },
+  "publishLog": {
+    "hp": {
+      "at": "2026-11-14T11:17:40.159Z",
+      "revision": 2,
+      "fp": "376d88814c7dd503a2f692f6f169dccd",
+      "approvedBy": "oshietesumahoplus@gmail.com",
+      "approvedAt": "2026-11-14T11:16:45.250Z"
+    },
+    "gbp": null
+  },
+  "approval": {
+    "hp": {
+      "state": "approved",
+      "by": "oshietesumahoplus@gmail.com",
+      "at": "2026-11-14T11:16:45.250Z",
+      "revision": 2,
+      "fp": "376d88814c7dd503a2f692f6f169dccd"
+    },
+    "gbp": {
+      "state": "draft",
+      "by": "oshietesumahoplus@gmail.com",
+      "at": "2026-11-14T11:16:45.249Z",
+      "revision": 1,
+      "note": "HP記事が承認済みではなくなったため、Google投稿ももう一度承認が必要です（記事より先に投稿しないため）。"
+    }
+  }
+}

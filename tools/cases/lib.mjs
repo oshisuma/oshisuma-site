@@ -5,6 +5,7 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { createHash } from 'node:crypto';
 import {
   MIN_PHOTOS, MAX_PHOTOS, SIZE_LIMITS, GBP_MIN_BYTES, FILE_NAME_RE, scanMetadata, isPublishable
 } from './photos.mjs';
@@ -200,7 +201,8 @@ export function loadReports(dir = join(ROOT, REPORTS_DIR)) {
   const walk = (d) => {
     for (const ent of readdirSync(d, { withFileTypes: true })) {
       const p = join(d, ent.name);
-      if (ent.isDirectory()) walk(p);
+      // 公開の記録（published・_published-test）や記録ファイル（_logs）は、入力の報告データではないので読まない
+      if (ent.isDirectory()) { if (!ent.name.startsWith('_') && ent.name !== 'published') walk(p); }
       else if (ent.name.endsWith('.json') && !ent.name.startsWith('_')) {
         out.push({ file: p, report: JSON.parse(readFileSync(p, 'utf8')) });
       }
@@ -384,4 +386,16 @@ export function validateAll(entries, { root = ROOT } = {}) {
     problems.push({ file, report, errors, warnings, blocked });
   }
   return problems;
+}
+
+// ---------------------------------------------------------------- 承認の指紋（段階⑤）
+
+// 承認画面（Apps Script）の fingerprint_ と同じ計算。承認した時点の内容と、公開しようとしている内容が同じかを確かめる
+export function fingerprint(report, ch) {
+  const hp = report.drafts.hp;
+  const pick = (id) => { const m = (report.media || []).find((x) => x.id === id); return m ? [m.id, m.src, m.alt] : null; };
+  const data = ch === 'hp'
+    ? [hp.slug, hp.titleArea, hp.titleDevice, hp.titleServices, hp.description, hp.cardSummary, hp.sections, pick(hp.featureMedia), pick(hp.cardMedia)]
+    : [report.drafts.gbp.summary, pick(report.drafts.gbp.media), hp.slug];
+  return createHash('sha256').update(JSON.stringify(data), 'utf8').digest().subarray(0, 16).toString('hex');
 }

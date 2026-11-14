@@ -87,6 +87,25 @@ node tools/cases/build.mjs                                           # 確認用
 node tools/cases/test.mjs && node tools/cases/test-photos.mjs <そのフォルダ>
 ```
 
+## 承認済みのHP記事を公開用データにする（段階⑤）
+
+```
+承認画面（Apps Script・テスト用スプレッドシート）
+  └ exportHpCandidates … HP記事が「承認済み・承認後に内容が変わっていない」ものだけを「HP公開候補」に書き出す
+       （承認した時点の内容の指紋 fp を一緒に渡す。Google投稿は承認状態を記録するだけ）
+HPリポジトリ
+  └ node tools/cases/publish.mjs --candidates <候補のJSON> --mode test|production
+       test       … テストデータだけ。repair/cases/_preview/published/ に作る（一覧は写しを使う・noindex）
+       production … テストデータは受け付けない。記事ページ・一覧のカード（目印の直後）・サイトマップ・
+                    content/case-reports/published/<報告ID>.json を作る。GitHubへの送信・公開はしない
+```
+
+- 公開しないもの：未承認・差し戻し・承認取り消し・承認後に内容が変わったもの（指紋が合わない）
+- 二重登録しない：同じ報告IDで同じ内容なら何もしない。新しい版で再承認されたものだけ更新。古い版では上書きしない
+- 守るもの：このしくみ以前の手作りの記事・一覧カード・画像（同じURLなら止める）。確認用フォルダの写真を使う記事は本番用に作らない
+- 記録：`content/case-reports/_logs/publish.jsonl`（テストは `publish-test.jsonl`）に、作成・更新・見送り・エラーを残す
+- テスト：`node tools/cases/test-publish.mjs`（リポジトリの写しの中で本番用モードを確認）
+
 ## 段階と今後
 
 1. **段階①（このブランチ）**：共通の報告データ、記事・カード・Google投稿の下書き作成、確認用ページ、テスト
