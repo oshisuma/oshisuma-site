@@ -17,7 +17,7 @@ const shell = loadShell();
 const results = validateAll(loadReports());
 let failed = false;
 
-for (const { file, report, errors, warnings } of results) {
+for (const { file, report, errors, warnings, blocked } of results) {
   const name = relative(ROOT, file).replace(/\\/g, '/');
   if (errors.length) {
     failed = true;
@@ -26,6 +26,7 @@ for (const { file, report, errors, warnings } of results) {
   } else {
     console.log(`○ ${name}`);
   }
+  blocked.forEach((b) => console.log(`   確認待ち：${b}`));
   warnings.forEach((w) => console.log(`   注意：${w}`));
 }
 
@@ -65,28 +66,46 @@ const reviewHead = (title) => `<!doctype html>
 <body class="case-page">
 `;
 
+// 写真ごとの判定・公開用ファイル・使い道の一覧
+const STATUS = { ok: 'OK', pending: '確認待ち', mismatch: '報告と不一致' };
+function photoTable(report) {
+  const hp = report.drafts.hp;
+  const uses = (id) => [id === hp.featureMedia && 'HP記事', id === hp.cardMedia && 'HP一覧', id === report.drafts.gbp.media && 'Google投稿'].filter(Boolean).join('・') || '使わない';
+  return report.media.map((m) => {
+    const files = m.card ? [m.src, m.webp, m.card.src, m.card.webp, m.gbp && m.gbp.src].filter(Boolean) : (m.src ? [m.src] : []);
+    return `    <div style="border-top:1px solid #d6dee8;padding:12px 0">
+      <p class="rv-text"><strong>${esc(m.id)}</strong>（元写真：${esc(m.original || m.src)}）<br>個人情報：${esc(STATUS[m.privacyCheck] || m.privacyCheck)} ／ 報告との一致：${esc(STATUS[m.contentMatch] || m.contentMatch)} ／ 使い道：${esc(uses(m.id))}</p>
+      ${m.card ? `<img class="rv-img" src="${esc(m.card.src)}" alt="${esc(m.alt)}" width="${m.card.width}" height="${m.card.height}" loading="lazy">` : '<p class="rv-meta">公開用の画像は作っていません（元写真はドライブに残ります）。</p>'}
+      <p class="rv-meta">alt：${esc(m.alt)}${(m.checkNotes || []).length ? '<br>確認が必要な点：' + m.checkNotes.map(esc).join(' ') : ''}${files.length ? '<br>ファイル：' + files.map((x) => esc(x.split('/').pop())).join('、') : ''}</p>
+    </div>`;
+  }).join('\n');
+}
+
 const index = [];
-for (const { report, warnings } of ready) {
+for (const { report, warnings, blocked } of ready) {
   const hp = report.drafts.hp;
   const dir = `${PREVIEW_DIR}/${hp.slug}`;
-  writeIfChanged(`${dir}/index.html`, renderArticle(report, { shell, preview: true }));
+  const canBuild = blocked.length === 0;
+  if (canBuild) writeIfChanged(`${dir}/index.html`, renderArticle(report, { shell, preview: true }));
 
   const post = renderGbpPost(report);
-  const gbpPhoto = report.media.find((m) => m.id === report.drafts.gbp.media);
+  const gbpFound = report.media.find((m) => m.id === report.drafts.gbp.media);
+  const gbpPhoto = gbpFound && (gbpFound.gbp ? { ...gbpFound.gbp, alt: gbpFound.alt } : gbpFound);
   const review = reviewHead(`確認用：${hpTitle(hp)}`) +
 `<main><div class="case-container case-section">
   <p class="case-eyebrow">確認用ページ（公開されていません）</p>
   <h1 style="font-size:clamp(24px,4vw,34px);line-height:1.4;color:#0f2b46;margin:4px 0 18px">${esc(hpTitle(hp))}</h1>
   <p class="rv-note">${report.status === 'test' ? 'これは<strong>架空のテストデータ</strong>です。実在のお客様・修理ではありません。<br>' : ''}報告ID：${esc(report.reportId)} ／ 状態：${esc(report.status)}</p>
 
+${blocked.length ? `<p class="rv-note"><strong>確認待ち：</strong>${blocked.map(esc).join('<br>')}</p>` : ''}
   <section class="rv-box"><span class="rv-label">① HP記事</span><h2>記事ページ</h2>
-    <p class="rv-text"><a href="./">記事の表示を確認する →</a></p>
+    <p class="rv-text">${canBuild ? '<a href="./">記事の表示を確認する →</a>' : '写真の確認待ちのため、まだ作っていません。'}</p>
     <p class="rv-meta">公開時のURL：https://oshisuma.jp/repair/cases/${esc(hp.slug)}/</p>
   </section>
 
   <section class="rv-box"><span class="rv-label">② HP一覧</span><h2>一覧ページのカード</h2>
   <div class="case-list" style="margin:0">
-${renderCard(report).replace(`href="${esc(`/repair/cases/${hp.slug}/`)}"`, 'href="./"')}  </div>
+${canBuild ? renderCard(report).replace(`href="${esc(`/repair/cases/${hp.slug}/`)}"`, 'href="./"') : '    <p class="rv-text">写真の確認待ちのため、まだ作っていません。</p>\n'}  </div>
   <p class="rv-meta">※確認用のため、カードを押すと確認用の記事ページが開きます。</p>
   </section>
 
@@ -96,7 +115,11 @@ ${renderCard(report).replace(`href="${esc(`/repair/cases/${hp.slug}/`)}"`, 'href
     <p class="rv-meta">文字数：${post.summary.length}／${GBP_SUMMARY_MAX}<br>ボタン：詳細（LEARN_MORE）→ ${esc(post.callToAction.url)}<br>写真：${esc(post.media.map((m) => m.sourceUrl).join(', ') || 'なし')}<br>※Googleへは送信していません。</p>
   </section>
 
-  <section class="rv-box"><span class="rv-label">④ 確認事項</span><h2>自動チェックの結果</h2>
+  <section class="rv-box"><span class="rv-label">④ 写真</span><h2>報告の写真（${(report.intake && report.intake.photos.length) || report.media.length}枚）と使い分け</h2>
+${photoTable(report)}
+  </section>
+
+  <section class="rv-box"><span class="rv-label">⑤ 確認事項</span><h2>自動チェックの結果</h2>
     ${warnings.length ? `<ul class="rv-list">${warnings.map((w) => `<li>${esc(w)}</li>`).join('')}</ul>` : '<p class="rv-text">問題は見つかりませんでした。</p>'}
   </section>
 </div></main>

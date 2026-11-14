@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 1,
+  "reportId": "TEST-0005",
+  "status": "test",
+  "source": {
+    "type": "test",
+    "note": "架空のテストデータ（段階②・写真の自動処理）。実在のお客様・修理ではない。元写真はHPで公開済みのスタッフ写真に架空の撮影情報を付けたもの。"
+  },
+  "facts": {
+    "workDate": "2026-11-24",
+    "area": {
+      "name": "笠間市",
+      "slug": "kasama"
+    },
+    "device": {
+      "category": "iphone",
+      "name": "iPhone 13",
+      "slug": "iphone13"
+    },
+    "consultation": "バッテリーの減りが早い。",
+    "works": [
+      "バッテリー交換"
+    ],
+    "result": "",
+    "staffComment": "",
+    "uncertain": []
+  },
+  "intake": {
+    "originalsRef": "drive-test",
+    "photos": [
+      {
+        "original": "IMG_9001.jpg"
+      },
+      {
+        "original": "IMG_9002.jpg"
+      }
+    ],
+    "processed": {
+      "hash": "ff8e75ff566a39f1",
+      "at": "2026-11-14"
+    }
+  },
+  "media": [
+    {
+      "id": "p1",
+      "original": "drive-test:IMG_9001.jpg",
+      "shows": null,
+      "privacyCheck": "pending",
+      "contentMatch": "pending",
+      "checkNotes": [
+        "写真の内容をまだ確認していません（AIまたは人の確認待ち）。"
+      ],
+      "alt": "iPhone 13のバッテリー交換（写真1）",
+      "caption": ""
+    },
+    {
+      "id": "p2",
+      "original": "drive-test:IMG_9002.jpg",
+      "shows": null,
+      "privacyCheck": "pending",
+      "contentMatch": "pending",
+      "checkNotes": [
+        "写真の内容をまだ確認していません（AIまたは人の確認待ち）。"
+      ],
+      "alt": "iPhone 13のバッテリー交換（写真2）",
+      "caption": ""
+    }
+  ],
+  "drafts": {
+    "hp": {
+      "slug": "2026-11-24-test-kasama-iphone13-battery",
+      "date": "2026-11-24",
+      "titleArea": "笠間市",
+      "titleDevice": "iPhone 13",
+      "titleServices": [
+        "バッテリー交換"
+      ],
+      "description": "【テスト】笠間市からご来店のiPhone 13修理事例。バッテリーの減りが早い症状に、バッテリー交換で対応しました。",
+      "cardSummary": "【テスト】バッテリーの減りが早い症状に対応。バッテリーを交換しました。",
+      "featureMedia": null,
+      "cardMedia": null,
+      "sections": [
+        {
+          "heading": "ご相談",
+          "paragraphs": [
+            "【テスト】iPhone 13のバッテリーの減りが早いとのご相談をいただきました。"
+          ]
+        },
+        {
+          "heading": "修理内容",
+          "paragraphs": [
+            "【テスト】バッテリーを交換しました。"
+          ]
+        }
+      ]
+    },
+    "gbp": {
+      "summary": "【テスト投稿・架空の事例】\n笠間市からご来店のお客様のiPhone 13のバッテリーを交換しました。\nバッテリーの減りが早いとのご相談でした。\n\niPhoneのバッテリー交換は、オシエテスマホ＋茨城町本店にご相談ください。",
+      "media": null
+    }
+  },
+  "publishLog": {
+    "hp": null,
+    "gbp": null
+  }
+}

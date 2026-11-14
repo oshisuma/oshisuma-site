@@ -5,6 +5,9 @@
 import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  MIN_PHOTOS, MAX_PHOTOS, SIZE_LIMITS, GBP_MIN_BYTES, FILE_NAME_RE, scanMetadata, isPublishable
+} from './photos.mjs';
 
 export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 export const SITE = 'https://oshisuma.jp';
@@ -95,7 +98,7 @@ function renderBody(report) {
   }).join('');
   return '  <div class="case-article-summary">\n' +
     '    <figure class="case-feature">\n' +
-    `      <div class="case-feature-photo"><img src="${esc(photo.src)}" alt="${esc(photo.alt)}" width="${photo.width}" height="${photo.height}" decoding="async"></div>\n` +
+    `      <div class="case-feature-photo">${picture(photo.webp, `<img src="${esc(photo.src)}" alt="${esc(photo.alt)}" width="${photo.width}" height="${photo.height}" decoding="async">`)}</div>\n` +
     `      <figcaption>${esc(photo.caption)}</figcaption>\n` +
     '    </figure>\n' +
     '    <dl class="case-facts">\n' +
@@ -106,6 +109,11 @@ function renderBody(report) {
     '  <div class="case-story">\n' +
     sections +
     '  </div>\n\n';
+}
+
+// WebPがあるときは、対応ブラウザでWebPを、それ以外ではJPEGを表示する（見た目は同じ）
+function picture(webp, img) {
+  return webp ? `<picture><source srcset="${esc(webp)}" type="image/webp">${img}</picture>` : img;
 }
 
 export function featurePhoto(report) {
@@ -119,7 +127,8 @@ export function cardPhoto(report) {
   const id = report.drafts.hp.cardMedia;
   const p = report.media.find((m) => m.id === id);
   if (!p) throw new Error(`${report.reportId}: 一覧用の写真 ${id} が media にありません。`);
-  return p;
+  // 段階②以降は一覧用の小さい画像（800×600）を使う。段階①のデータは記事の写真をそのまま使う
+  return p.card ? { ...p.card, alt: p.alt } : p;
 }
 
 // preview: true のときは検索エンジンに載せない設定にする（それ以外は公開記事と同じ）
@@ -156,7 +165,7 @@ export function renderCard(report) {
   const meta = [`<span>${esc(hp.date.slice(0, 4))}年</span>`];
   if (hp.titleArea) meta.push('<span aria-hidden="true">·</span>', `<span>${esc(hp.titleArea)}</span>`);
   return `    <article class="case-list-card"><a href="${esc(articleUrl(hp))}">\n` +
-    `      <div class="case-list-image"><img src="${esc(photo.src)}" alt="${esc(photo.alt)}" width="${photo.width}" height="${photo.height}" loading="lazy" decoding="async"></div>\n` +
+    `      <div class="case-list-image">${picture(photo.webp, `<img src="${esc(photo.src)}" alt="${esc(photo.alt)}" width="${photo.width}" height="${photo.height}" loading="lazy" decoding="async">`)}</div>\n` +
     '      <div class="case-list-body">\n' +
     `        <div class="case-list-meta">${meta.join('')}</div>\n` +
     `        <h2><span class="case-title-device">${esc(hp.titleDevice)}</span><span class="case-title-service">${esc(hp.titleServices.join('・'))}</span></h2>\n` +
@@ -172,7 +181,9 @@ export function renderCard(report) {
 export function renderGbpPost(report) {
   const gbp = report.drafts.gbp;
   const hp = report.drafts.hp;
-  const photo = report.media.find((m) => m.id === gbp.media);
+  const found = report.media.find((m) => m.id === gbp.media);
+  // 段階②以降はGoogle用の画像（1200×900）を使う
+  const photo = found && (found.gbp || found);
   return {
     languageCode: 'ja',
     topicType: 'STANDARD',
@@ -239,6 +250,8 @@ export const GBP_SUMMARY_MAX = 1500;
 export function validateReport(report, { root = ROOT } = {}) {
   const errors = [];
   const warnings = [];
+  // 確認待ち（エラーではないが、記事はまだ作れない状態）
+  const blocked = [];
   const r = report;
   const need = (cond, msg) => { if (!cond) errors.push(msg); };
 
@@ -257,7 +270,7 @@ export function validateReport(report, { root = ROOT } = {}) {
   need(Array.isArray(hp.sections) && hp.sections.length, 'drafts.hp.sections（本文）がありません。');
   need(hp.description && hp.cardSummary, 'drafts.hp の description・cardSummary がありません。');
   need(typeof gbp.summary === 'string' && gbp.summary.length > 0, 'drafts.gbp.summary（Google投稿の本文）がありません。');
-  if (errors.length) return { errors, warnings };
+  if (errors.length) return { errors, warnings, blocked };
 
   // 報告にない事実を足していないか
   if (f.device.name !== hp.titleDevice) errors.push(`記事タイトルの機種「${hp.titleDevice}」が報告の機種「${f.device.name}」と違います。`);
@@ -281,26 +294,65 @@ export function validateReport(report, { root = ROOT } = {}) {
   if (!gbp.summary.includes(f.device.name)) warnings.push('Google投稿の本文に機種名がありません。');
 
   // 写真
+  const ready = r.status === 'approved' || r.status === 'published';
+  if (r.intake && Array.isArray(r.intake.photos)) {
+    const n = r.intake.photos.length;
+    if (n < MIN_PHOTOS || n > MAX_PHOTOS) errors.push(`報告の写真は${MIN_PHOTOS}〜${MAX_PHOTOS}枚にしてください（${n}枚）。`);
+  }
+  // 1つの画像ファイルを確かめる。key … main / card / gbp（段階②で作った画像のときだけ）
+  const checkFile = (m, label, ref, key, ext) => {
+    const file = join(root, (ref.src || '').replace(/^\//, ''));
+    if (!ref.src || !existsSync(file)) { errors.push(`写真 ${m.id}（${label}）のファイルがありません：${ref.src}`); return; }
+    const size = imageSize(file);
+    if (ref.width != null && (size.width !== ref.width || size.height !== ref.height)) {
+      errors.push(`写真 ${m.id}（${label}）の大きさが違います（データ ${ref.width}×${ref.height}／実際 ${size.width}×${size.height}）。`);
+    }
+    if (!key) return;
+    const name = ref.src.split('/').pop();
+    if (!FILE_NAME_RE.test(name)) errors.push(`写真 ${m.id}（${label}）のファイル名が決まりと違います：${name}`);
+    const meta = scanMetadata(readFileSync(file));
+    if (meta.gps) errors.push(`写真 ${m.id}（${label}）に位置情報（GPS）が残っています。`);
+    else if (meta.exif || meta.xmp || meta.other.length) errors.push(`写真 ${m.id}（${label}）に撮影情報が残っています。`);
+    const limit = SIZE_LIMITS[`${key}.${ext}`];
+    if (limit && size.bytes > limit) errors.push(`写真 ${m.id}（${label}）が重すぎます（${Math.round(size.bytes / 1024)}KB／上限${Math.round(limit / 1024)}KB）。`);
+    if (key === 'card' && (size.width !== 800 || size.height !== 600)) errors.push(`写真 ${m.id} の一覧用画像が800×600ではありません。`);
+    if (key === 'gbp' && (size.width !== 1200 || size.height !== 900)) errors.push(`写真 ${m.id} のGoogle用画像が1200×900ではありません。`);
+    if (key === 'gbp' && size.bytes < GBP_MIN_BYTES) errors.push(`写真 ${m.id} のGoogle用画像が小さすぎます（10KB未満）。`);
+  };
   const ids = new Set();
+  const usable = new Set();
   for (const m of r.media) {
     if (ids.has(m.id)) errors.push(`写真の id「${m.id}」が重複しています。`);
     ids.add(m.id);
     if (!m.alt) errors.push(`写真 ${m.id} の alt（説明文）がありません。`);
-    const file = join(root, (m.src || '').replace(/^\//, ''));
-    if (!m.src || !existsSync(file)) { errors.push(`写真 ${m.id} のファイルがありません：${m.src}`); continue; }
-    const size = imageSize(file);
-    if (size.width !== m.width || size.height !== m.height) {
-      errors.push(`写真 ${m.id} の大きさが違います（データ ${m.width}×${m.height}／実際 ${size.width}×${size.height}）。`);
+    if (!m.src) {
+      // 確認待ち・公開しない写真：公開用の画像は作らない（元写真はドライブに残る）
+      if (isPublishable(m)) errors.push(`写真 ${m.id} は公開できる判定なのに、公開用の画像がありません。`);
+      warnings.push(`写真 ${m.id} は確認待ちのため公開用の画像を作っていません：${(m.checkNotes || []).join(' ') || '未確認'}`);
+      continue;
     }
-    const ready = r.status === 'approved' || r.status === 'published';
+    usable.add(m.id);
+    const staged = !!(m.card || m.gbp);
+    checkFile(m, '記事用', m, staged ? 'main' : null, 'jpg');
+    if (m.webp) checkFile(m, '記事用WebP', { src: m.webp, width: m.width, height: m.height }, 'main', 'webp');
+    if (m.card) {
+      checkFile(m, '一覧用', m.card, 'card', 'jpg');
+      if (m.card.webp) checkFile(m, '一覧用WebP', { src: m.card.webp, width: m.card.width, height: m.card.height }, 'card', 'webp');
+    }
+    if (m.gbp) checkFile(m, 'Google用', m.gbp, 'gbp', 'jpg');
+    if (staged && !m.alt.includes(f.device.name)) warnings.push(`写真 ${m.id} の alt に機種名がありません。`);
+    if (m.qualityNote) warnings.push(`写真 ${m.id}：${m.qualityNote}`);
     if (m.privacyCheck !== 'ok') (ready ? errors : warnings).push(`写真 ${m.id} の個人情報チェックが「${m.privacyCheck || '未確認'}」です。`);
     if (m.contentMatch !== 'ok') (ready ? errors : warnings).push(`写真 ${m.id} と報告内容の一致確認が「${m.contentMatch || '未確認'}」です。`);
   }
   for (const key of ['featureMedia', 'cardMedia']) {
-    if (!ids.has(hp[key])) errors.push(`drafts.hp.${key}「${hp[key]}」が media にありません。`);
+    if (hp[key] == null) { if (key === 'featureMedia') blocked.push('公開できる写真がまだないため、記事は作っていません（写真の確認待ち）。'); }
+    else if (!usable.has(hp[key])) errors.push(`drafts.hp.${key}「${hp[key]}」が、公開用の画像がある写真の中にありません。`);
   }
-  if (gbp.media && !ids.has(gbp.media)) errors.push(`drafts.gbp.media「${gbp.media}」が media にありません。`);
-  return { errors, warnings };
+  if (gbp.media == null) (ready ? errors : warnings).push('Google投稿に使える写真がありません。');
+  else if (!usable.has(gbp.media)) errors.push(`drafts.gbp.media「${gbp.media}」が、公開用の画像がある写真の中にありません。`);
+  if (ready && blocked.length) errors.push(...blocked);
+  return { errors, warnings, blocked: ready ? [] : blocked };
 }
 
 // 全件の確認（報告ID・URLの重複、公開済みページの上書き防止）
@@ -308,8 +360,17 @@ export function validateAll(entries, { root = ROOT } = {}) {
   const problems = [];
   const seenId = new Map();
   const seenSlug = new Map();
+  const seenImage = new Map();
   for (const { file, report } of entries) {
-    const { errors, warnings } = validateReport(report, { root });
+    const { errors, warnings, blocked } = validateReport(report, { root });
+    // 別の報告と同じ画像ファイルを使っていないか（段階②で作った画像）
+    for (const m of report.media || []) {
+      if (!m.card) continue;
+      for (const src of [m.src, m.webp, m.card.src, m.card.webp, m.gbp && m.gbp.src].filter(Boolean)) {
+        if (seenImage.has(src) && seenImage.get(src) !== file) errors.push(`画像 ${src} を別の報告（${seenImage.get(src)}）でも使っています。`);
+        seenImage.set(src, file);
+      }
+    }
     const slug = report.drafts && report.drafts.hp && report.drafts.hp.slug;
     if (seenId.has(report.reportId)) errors.push(`reportId「${report.reportId}」が ${seenId.get(report.reportId)} と重複しています（二重登録）。`);
     seenId.set(report.reportId, file);
@@ -320,7 +381,7 @@ export function validateAll(entries, { root = ROOT } = {}) {
         errors.push(`記事のURL「${slug}」はすでに公開済みのページがあります（上書きしません）。`);
       }
     }
-    problems.push({ file, report, errors, warnings });
+    problems.push({ file, report, errors, warnings, blocked });
   }
   return problems;
 }

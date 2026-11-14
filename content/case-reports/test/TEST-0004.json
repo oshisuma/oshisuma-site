@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "reportId": "TEST-0004",
+  "status": "test",
+  "source": {
+    "type": "test",
+    "note": "架空のテストデータ（段階②・写真の自動処理）。実在のお客様・修理ではない。元写真はHPで公開済みのスタッフ写真に架空の撮影情報を付けたもの。"
+  },
+  "facts": {
+    "workDate": "2026-11-23",
+    "area": null,
+    "device": {
+      "category": "switch",
+      "name": "Nintendo Switch",
+      "slug": "nintendo-switch"
+    },
+    "consultation": "充電してもすぐにバッテリーが切れる。",
+    "works": [
+      "バッテリー交換"
+    ],
+    "result": "",
+    "staffComment": "",
+    "uncertain": [
+      "お客様の地域が報告に書かれていない"
+    ]
+  },
+  "intake": {
+    "originalsRef": "drive-test",
+    "photos": [
+      {
+        "original": "IMG_9004.jpg",
+        "review": {
+          "by": "test-manual",
+          "confidence": "high",
+          "people": "hands",
+          "risks": [],
+          "device": "switch",
+          "shows": "after",
+          "crop": {
+            "x": 0.4,
+            "y": 0.52,
+            "w": 0.32,
+            "h": 0.3
+          },
+          "description": "バッテリー交換を終えたNintendo Switchの本体",
+          "caption": "バッテリー交換後のNintendo Switch（テスト用の写真）。",
+          "note": "元の写真にはスタッフの顔が写るため、本体と手元だけを切り抜き"
+        }
+      },
+      {
+        "original": "IMG_9006.jpg",
+        "review": {
+          "by": "test-manual",
+          "confidence": "high",
+          "people": "face",
+          "risks": [
+            "barcode",
+            "idcard"
+          ],
+          "device": "iphone",
+          "shows": "during",
+          "description": "カウンターで作業する2人のスタッフ"
+        }
+      }
+    ],
+    "processed": {
+      "hash": "2606abb6e5c3706e",
+      "at": "2026-11-14"
+    }
+  },
+  "media": [
+    {
+      "id": "p1",
+      "original": "drive-test:IMG_9004.jpg",
+      "shows": "after",
+      "privacyCheck": "ok",
+      "contentMatch": "ok",
+      "checkNotes": [],
+      "alt": "バッテリー交換を終えたNintendo Switchの本体",
+      "caption": "バッテリー交換後のNintendo Switch（テスト用の写真）。",
+      "qualityNote": "使った範囲が492×259pxと小さいため、Google用（1200×900）・一覧用（800×600）は拡大され、粗く見えることがあります。",
+      "src": "/repair/cases/_preview/images/nintendo-switch-battery-replacement-20261123.jpg",
+      "width": 492,
+      "height": 259,
+      "webp": "/repair/cases/_preview/images/nintendo-switch-battery-replacement-20261123.webp",
+      "card": {
+        "src": "/repair/cases/_preview/images/nintendo-switch-battery-replacement-20261123-card.jpg",
+        "width": 800,
+        "height": 600,
+        "webp": "/repair/cases/_preview/images/nintendo-switch-battery-replacement-20261123-card.webp"
+      },
+      "gbp": {
+        "src": "/repair/cases/_preview/images/nintendo-switch-battery-replacement-20261123-gbp.jpg",
+        "width": 1200,
+        "height": 900
+      }
+    },
+    {
+      "id": "p2",
+      "original": "drive-test:IMG_9006.jpg",
+      "shows": "during",
+      "privacyCheck": "pending",
+      "contentMatch": "mismatch",
+      "checkNotes": [
+        "人物の顔が写っています。",
+        "バーコード・QRコードが写っています。",
+        "身分証・カード類が写っています。",
+        "写真に写っているもの（iPhone）が報告の機種（Nintendo Switch）と合いません。"
+      ],
+      "alt": "Nintendo Switch：カウンターで作業する2人のスタッフ",
+      "caption": ""
+    }
+  ],
+  "drafts": {
+    "hp": {
+      "slug": "2026-11-23-test-switch-battery",
+      "date": "2026-11-23",
+      "titleArea": null,
+      "titleDevice": "Nintendo Switch",
+      "titleServices": [
+        "バッテリー交換"
+      ],
+      "description": "【テスト】Nintendo Switchの修理事例。充電してもすぐにバッテリーが切れる症状に、バッテリー交換で対応しました。",
+      "cardSummary": "【テスト】すぐにバッテリーが切れる症状に対応。バッテリーを交換しました。",
+      "featureMedia": "p1",
+      "cardMedia": "p1",
+      "sections": [
+        {
+          "heading": "ご相談",
+          "paragraphs": [
+            "【テスト】充電してもすぐにバッテリーが切れるとのご相談をいただきました。"
+          ]
+        },
+        {
+          "heading": "修理内容",
+          "paragraphs": [
+            "【テスト】バッテリーを交換しました。"
+          ]
+        }
+      ]
+    },
+    "gbp": {
+      "summary": "【テスト投稿・架空の事例】\nNintendo Switchのバッテリー交換を行いました。\n充電してもすぐにバッテリーが切れるとのご相談でした。\n\nSwitch修理・バッテリー交換は、オシエテスマホ＋茨城町本店にご相談ください。",
+      "media": "p1"
+    }
+  },
+  "publishLog": {
+    "hp": null,
+    "gbp": null
+  }
+}

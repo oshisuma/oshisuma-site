@@ -92,7 +92,7 @@ for (const card of cards) {
 
 console.log('\n【2】テストデータ（架空）の確認');
 const entries = loadReports();
-check('テストデータが2件ある', entries.length === 2, `${entries.length}件`);
+check('テストデータが5件ある', entries.length === 5, `${entries.length}件`);
 for (const r of validateAll(entries)) {
   check(`${r.report.reportId}：エラーなし`, r.errors.length === 0, r.errors.join(' / '));
 }
@@ -136,6 +136,8 @@ check('公開済み記事と同じURLは上書きしない', validateAll([{ file
 
 console.log('\n【4】確認用ページと、公開済みファイルの保護');
 for (const { report } of entries) {
+  // 写真の確認待ちで記事を作っていない報告は、段階②のテスト（test-photos.mjs）で確かめる
+  if (validateReport(report).blocked.length) continue;
   const dir = join(ROOT, PREVIEW_DIR, report.drafts.hp.slug);
   const html = existsSync(join(dir, 'index.html')) ? readFileSync(join(dir, 'index.html'), 'utf8') : '';
   check(`${report.reportId}：確認用の記事ページがある`, html.length > 0);
