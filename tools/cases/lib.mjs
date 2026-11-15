@@ -393,7 +393,8 @@ export function validateAll(entries, { root = ROOT } = {}) {
 // 承認画面（Apps Script）の fingerprint_ と同じ計算。承認した時点の内容と、公開しようとしている内容が同じかを確かめる
 export function fingerprint(report, ch) {
   const hp = report.drafts.hp;
-  const pick = (id) => { const m = (report.media || []).find((x) => x.id === id); return m ? [m.id, m.src, m.alt] : null; };
+  // 写真は「元写真＋alt」で比べる（承認の後で公開用の画像を作っても、指紋は変わらない）
+  const pick = (id) => { const m = (report.media || []).find((x) => x.id === id); return m ? [m.id, m.original || m.src, m.alt] : null; };
   const data = ch === 'hp'
     ? [hp.slug, hp.titleArea, hp.titleDevice, hp.titleServices, hp.description, hp.cardSummary, hp.sections, pick(hp.featureMedia), pick(hp.cardMedia)]
     : [report.drafts.gbp.summary, pick(report.drafts.gbp.media), hp.slug];

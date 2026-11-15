@@ -108,10 +108,16 @@ for (const c of byId.values()) {
 
     // ページ・カード・サイトマップを作る
     const out = JSON.parse(JSON.stringify(r));
+    // リポジトリは誰でも見られるため、スタッフの報告文・確認メモ・承認者のメール・元写真のIDなどは残さない
+    delete out.intake;
+    delete out.draftSource;
+    delete out.exported;
+    if (out.facts) delete out.facts.uncertain;
+    for (const m of out.media || []) { delete m.original; delete m.decidedBy; delete m.decidedAt; delete m.checkNotes; }
     out.status = mode === 'test' ? 'test' : 'published';
-    out.approval = c.approval;
+    out.approval = { hp: { state: 'approved', at: hpApproval.at, fp: hpApproval.fp }, gbp: { state: c.approval.gbp ? c.approval.gbp.state : 'draft' } };
     out.publishLog = {
-      hp: { at: new Date().toISOString(), revision: c.revision, fp: hpApproval.fp, approvedBy: hpApproval.by, approvedAt: hpApproval.at },
+      hp: { at: new Date().toISOString(), revision: c.revision, fp: hpApproval.fp, approvedAt: hpApproval.at },
       gbp: null    // Google最新情報は承認状態を記録するだけ（投稿はまだしない）
     };
     const article = renderArticle(out, { shell, preview: mode === 'test' });
