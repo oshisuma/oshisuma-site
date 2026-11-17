@@ -43,7 +43,7 @@ function harness({enabled=false,initial=[],data=draft(),headers=head}={}){
 test('default OFF does not write',()=>{const x=harness();x.run();assert.equal(x.rows.length,0);});
 test('new draft is imported once and stays unapproved',()=>{
  const x=harness({enabled:true});x.run();x.run();assert.equal(x.rows.length,1);
- assert.deepEqual(x.rows[0].slice(0,4),[id,1,'draft','draft']);
+ assert.deepEqual(Array.from(x.rows[0].slice(0,4)),[id,1,'draft','draft']);
 });
 test('existing ID is never overwritten',()=>{
  const existing=[id,3,'approved','approved','{"custom":"keep"}','timestamp'];
