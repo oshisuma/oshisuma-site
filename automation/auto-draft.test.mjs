@@ -38,7 +38,7 @@ function harness({ rows = [report()], enabled = 'false', approved = 'false', rep
     HANDOFF_FOLDER_ID: 'root', OWNER_EMAIL: 'owner@example.test',
     APPROVAL_URL: 'https://example.test/approve', ANTHROPIC_MODEL: 'test-model',
     ANTHROPIC_API_KEY: 'test-secret', AUTO_START_AFTER: '2026-11-17T00:00:00Z',
-    MAX_AI_CALLS_PER_DAY: '3'
+    MAX_AI_CALLS_PER_DAY: '3', HOLD_REPORT_IDS: HELD.join(',')
   }));
   const out = new Map();
   const emails = [];
