@@ -56,6 +56,14 @@ function oshIntakePhotos_(cell) {
   }).filter(Boolean);
   return Array.from(new Set(ids)).slice(0, 5);
 }
+function oshIntakeDate_(raw) {
+  if (raw instanceof Date) return new Date(raw.getTime());
+  const match = String(raw || '').trim().match(/^(\d{4})[-\/](\d{1,2})[-\/](\d{1,2})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?$/);
+  if (!match) return new Date(NaN);
+  const [, year, month, day, hour, minute, second='0'] = match;
+  return new Date(year + '-' + month.padStart(2, '0') + '-' + day.padStart(2, '0') +
+    'T' + hour.padStart(2, '0') + ':' + minute + ':' + second.padStart(2, '0') + '+09:00');
+}
 function oshIntakeStableId_(row, timestamp, device) {
   // ランダム生成ではなく、シート行番号＋日時＋機種に固定して再実行時の重複を防ぐ
   const seed = String(row) + ':' + String(timestamp) + ':' + String(device);
@@ -66,12 +74,14 @@ function oshIntakeStableId_(row, timestamp, device) {
 }
 function oshIntakeMapRow_(values, rowNumber) {
   const [rawTimestamp, staff, rawArea, otherArea, device, body, imageCell] = values;
-  const timestamp = rawTimestamp instanceof Date ? rawTimestamp : new Date(String(rawTimestamp).replace(' ', 'T') + '+09:00');
+  const timestamp = oshIntakeDate_(rawTimestamp);
   if (!Number.isFinite(timestamp.getTime())) return null;
   if (!String(device || '').trim() || !String(body || '').trim()) return null;
   const imageIds = oshIntakePhotos_(imageCell);
   // 写真が指定されているのにURL形式を解釈できない場合は黙って無視しない
-  if (String(imageCell || '').trim() && imageIds.length === 0) throw new Error('回答' + rowNumber + 'の写真URLが読めません');
+  if (!String(imageCell || '').trim() || imageIds.length === 0)
+    throw new Error('回答' + rowNumber + 'の写真がありません。公開用の自動取り込みを停止');
+  if (imageIds.length > 5) throw new Error('回答' + rowNumber + 'の写真が5枚を超えています');
   const area = String(rawArea || '不明').trim();
   const id = oshIntakeStableId_(rowNumber, timestamp.toISOString(), device);
   const sourceKey = 'auto_row_' + rowNumber + '_' + id.split('-').pop();
@@ -126,7 +136,18 @@ function oshAutoIntakeTick() {
       const report = mapped.report, name = report.reportId + '.json';
       if (c.hold.includes(report.reportId)) continue;
       // 既に同名ファイルがある場合は作らない（手動処理との競合防止）
-      if (oshIntakeFind_(intake, name)) continue;
+      const prior = oshIntakeFind_(intake, name);
+      if (prior) {
+        // JSON作成後・履歴更新前の障害から復帰する場合も二重生成を避ける。
+        const saved = JSON.parse(prior.getBlob().getDataAsString('utf-8'));
+        if (saved.reportId !== report.reportId || saved.source?.key !== mapped.sourceKey)
+          throw new Error('既存ファイルと入力行が一致しません: ' + name);
+        imported.appendRow([mapped.sourceKey, report.reportId, row, mapped.timestamp.toISOString(),
+          new Date().toISOString(), mapped.staff]);
+        processed.add(row);
+        count++;
+        continue;
+      }
       const folderName = report.reportId;
       let photoFolder = oshIntakeFolderOrCreate_(photos, folderName);
       let good = true;
