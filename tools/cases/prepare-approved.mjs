@@ -46,6 +46,13 @@ for (const c of input.candidates) {
       if (!isPublishable(m)) throw new Error(`写真 ${mid} はオーナーの「公開OK」になっていません。`);
       if (!m.alt) throw new Error(`写真 ${mid} の alt がありません。`);
     }
+    // 既存の承認指紋は元写真と説明のみを比較する。
+    // マスクや補正を承認後に変更できる状態では、そのまま本番画像として使わない。
+    // 現行の承認GASと公開検証の両方が加工内容を指紋に含めるまでは試験用だけに限定。
+    if (!isTest && r.media.some((m) =>
+      (Array.isArray(m.privacyMasks) && m.privacyMasks.length > 0) || m.photoTone)) {
+      throw new Error('画像のマスク・補正設定はまだ本番承認の検証対象ではありません。承認画面の拡張前は公開を止めます。');
+    }
     // 番号（01・02…）は「公開OK」の写真の並び順で付ける（HP用とGoogle写真一覧用で同じ番号）
     const okMedia = r.media.filter((m) => isPublishable(m) && m.alt);
     const fresh = okMedia.filter((m) => !m.card);
