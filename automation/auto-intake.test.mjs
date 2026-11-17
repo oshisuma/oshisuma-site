@@ -34,8 +34,11 @@ function mock({enabled=false, start=2, rows=cases, importedRows=[]}={}){
     getFoldersByName:name=>iter(photos.has(name)?[photos.get(name)]:[]),
     createFolder:name=>{
       const files=new Map();
-      const f={getFilesByName:n=>iter(files.has(n)?[files.get(n)]:[]),
-        add:(n,o)=>files.set(n,o)};
+      const f={
+        getFilesByName:n=>iter(files.has(n)?[files.get(n)]:[]),
+        getFiles:()=>iter([...files.values()]),
+        add:(n,o)=>files.set(n,{...o,getName:()=>n,getSize:()=>1024})
+      };
       photos.set(name,f);return f;
     }
   };
