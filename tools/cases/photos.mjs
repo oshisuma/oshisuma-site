@@ -32,7 +32,7 @@ export const AREA_SLUGS = {
 // 修理内容 → ファイル名に使う英語。ここにない修理内容は止めて、対応表への追加を求める
 export const WORK_SLUGS = {
   '画面修理': 'screen-repair', '画面交換': 'screen-repair', 'バッテリー交換': 'battery-replacement',
-  '充電口修理': 'charging-port-repair', '充電口交換': 'charging-port-repair', 'カメラ修理': 'camera-repair',
+  '充電口修理': 'charging-port-repair', '充電口交換': 'charging-port-repair', '充電口メンテナンス': 'charging-port-maintenance', 'カメラ修理': 'camera-repair',
   '背面ガラス修理': 'back-glass-repair', '水没修理': 'water-damage-repair', 'データ移行': 'data-transfer',
   'Joy-Conスティック交換': 'joycon-stick-replacement', 'スピーカー修理': 'speaker-repair',
   'ボタン修理': 'button-repair', '基板修理': 'board-repair'
