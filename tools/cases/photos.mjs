@@ -203,3 +203,50 @@ export function readImage(src, root = ROOT) {
 }
 
 export { basename };
+
+// ---------------------------------------------------------------- SEO・MEO向けの写真名（地域-機種-修理内容-01）
+
+// Googleビジネスプロフィールの「写真一覧」用：切り抜かず、長辺2048pxまで・高画質（10KB以上5MB以下）
+export const GBP_PHOTO_RENDITION = { key: 'photo', spec: { mode: 'fit', maxW: 2048, maxH: 2048 }, formats: [{ type: 'image/jpeg', quality: 0.9 }] };
+export const GBP_PHOTO_LIMITS = { minBytes: 10 * 1024, maxBytes: 5 * 1024 * 1024, minShortEdge: 250 };
+
+// 機種名（記事タイトルの表記）→ 英小文字・数字・ハイフン。例「iPhone 16 Pro」→「iphone-16-pro」
+export function deviceNameSlug(name) {
+  const s = String(name || '').normalize('NFKC').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  if (!/^[a-z0-9]+(-[a-z0-9]+)*$/.test(s)) throw new Error(`機種名「${name}」からファイル名を作れません。`);
+  return s;
+}
+
+// 写真名の土台：地域（対応表にあるときだけ）-機種-修理内容。確認できた事実（報告の地域・タイトルの機種・報告の修理内容）だけを使う
+export function seoBase(facts, hp) {
+  const parts = [];
+  const area = facts.area && AREA_SLUGS[facts.area.name];
+  if (area) parts.push(area);
+  parts.push(deviceNameSlug(hp.titleDevice || facts.device.name));
+  const work = WORK_SLUGS[facts.works[0]];
+  if (!work) throw new Error(`修理内容「${facts.works[0]}」がファイル名の対応表（WORK_SLUGS）にありません。対応表に追加してください。`);
+  parts.push(work);
+  return parts.join('-');
+}
+
+// 1つの報告の写真名（01・02…）をまとめて決める。1枚でも既存の名前と重なれば、掲載日を入れた名前にする（上書きしない）
+//   例：mito-iphone-16-pro-charging-port-maintenance-01 → 重なれば mito-iphone-16-pro-charging-port-maintenance-20261117-01
+// suffixes … 1枚の写真から作るファイル名の末尾（例 ['.jpg', '.webp', '-card.jpg']）
+export function seoStems(facts, hp, count, taken, suffixes) {
+  const base = seoBase(facts, hp);
+  const make = (b) => Array.from({ length: count }, (_, i) => `${b}-${String(i + 1).padStart(2, '0')}`);
+  const clash = (stems) => stems.some((s) => suffixes.some((x) => taken.has(`${s}${x}`)));
+  let stems = make(base);
+  if (clash(stems)) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(hp.date || '')) throw new Error('同じ名前の写真があり、掲載日（drafts.hp.date）もないため、名前を決められません。');
+    stems = make(`${base}-${hp.date.replace(/-/g, '')}`);
+    if (clash(stems)) throw new Error(`同じ名前の写真がすでにあります（上書きしません）：${stems[0]}`);
+  }
+  stems.forEach((s) => suffixes.forEach((x) => taken.add(`${s}${x}`)));
+  return stems;
+}
+
+// Google写真一覧に載せる写真：オーナーが「公開OK」にした写真すべて（altあり・最大5枚・報告の順）。承認画面の gbpPhotoIds_ と同じ
+export function gbpPhotoIds(report) {
+  return (report.media || []).filter((m) => isPublishable(m) && m.alt).slice(0, MAX_PHOTOS).map((m) => m.id);
+}

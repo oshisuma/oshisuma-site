@@ -113,12 +113,13 @@ for (const c of byId.values()) {
     delete out.draftSource;
     delete out.exported;
     if (out.facts) delete out.facts.uncertain;
-    for (const m of out.media || []) { delete m.original; delete m.decidedBy; delete m.decidedAt; delete m.checkNotes; }
+    for (const m of out.media || []) { delete m.original; delete m.decidedBy; delete m.decidedAt; delete m.checkNotes; delete m.gbpPhoto; }   // gbpPhoto … このパソコンの中の写真一覧用画像の場所
     out.status = mode === 'test' ? 'test' : 'published';
-    out.approval = { hp: { state: 'approved', at: hpApproval.at, fp: hpApproval.fp }, gbp: { state: c.approval.gbp ? c.approval.gbp.state : 'draft' } };
+    out.approval = { hp: { state: 'approved', at: hpApproval.at, fp: hpApproval.fp }, gbp: { state: c.approval.gbp ? c.approval.gbp.state : 'draft' }, gbpPhotos: { state: c.approval.gbpPhotos ? c.approval.gbpPhotos.state : 'draft' } };
     out.publishLog = {
       hp: { at: new Date().toISOString(), revision: c.revision, fp: hpApproval.fp, approvedAt: hpApproval.at },
-      gbp: null    // Google最新情報は承認状態を記録するだけ（投稿はまだしない）
+      gbp: null,        // Google最新情報・写真一覧は承認状態を記録するだけ（投稿は tools/cases/gbp.mjs。結果はリポジトリの外に記録）
+      gbpPhotos: null
     };
     const article = renderArticle(out, { shell, preview: mode === 'test' });
     let card = renderCard(out);

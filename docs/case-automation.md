@@ -33,6 +33,25 @@ Google最新情報は、承認状態を記録するだけで、投稿はまだ�
 - リポジトリは誰でも見られるため、公開記録にはスタッフの報告文・確認メモ・メールアドレス・元写真のIDを残さない
 - 結果は `content/case-reports/_logs/publish.jsonl` に残す
 
+## Googleビジネスプロフィール（最新情報・写真一覧）
+
+最新情報と写真一覧は**別々に承認・送信・記録**する（最新情報に写真を付けても、写真一覧に載ったことにはしない）。
+
+| 対象 | 承認画面の承認 | 送るもの |
+|---|---|---|
+| 最新情報 | 「Google投稿」（HP記事の承認が先） | 本文・代表写真（HPに公開した1200×900の画像のURL）・「詳細」ボタン＝HP記事のURL |
+| 写真一覧 | 「Google写真一覧」（HP記事の承認が先） | 「公開OK」の写真すべて（切り抜かず長辺2048px・高画質・分類「仕事風景」・説明＝alt） |
+
+- 写真名：`地域-機種-修理内容-01.jpg`（2枚目は 02）。例 `mito-iphone-16-pro-charging-port-maintenance-01.jpg`。
+  既存の画像と重なれば掲載日を入れる（`…-20261117-01.jpg`）。元の写真はGoogleドライブに残し、名前を付けたコピーを使う。
+- 写真一覧用の画像は `prepare-approved.mjs --gbp-out <リポジトリの外のフォルダ>` で作る（HPには置かない）。
+- 送信は `node tools/cases/gbp.mjs --candidates <公開候補> --state <リポジトリの外の記録フォルダ> --mode plan|mock`。
+  - HP記事が公開済み（公開記録があり、承認した内容と同じ）でなければ何もしない
+  - 承認の後に内容が変わったものは送らない。成功したものは二度送らない。失敗したものだけ次の実行で送り直す
+  - 送信中のまま止まったものは自動で送り直さない（Google上で確認してから記録を直す）
+  - 投稿ID・写真ID・成功／失敗・掲載の確認・日時を、記録フォルダの `<報告ID>.json` と `history.jsonl` に残す
+  - `--mode live`（実際の投稿）は、API利用申請の承認とオーナーの承認まで使えない
+
 ## ファイル
 
 | 場所 | 役割 |
@@ -41,6 +60,7 @@ Google最新情報は、承認状態を記録するだけで、投稿はまだ�
 | `tools/cases/photos.mjs` `photo-process.js` `browser.mjs` | 写真の判定・ファイル名・画像処理（パソコンのEdgeで動かす） |
 | `tools/cases/prepare-approved.mjs` | 承認済みの写真から公開用の画像を作る |
 | `tools/cases/publish.mjs` | 公開用データを作る（GitHubへの送信・公開はしない） |
+| `tools/cases/gbp.mjs` | Google最新情報・写真一覧の送信の準備（今は表示・模擬だけ）と記録 |
 | `tools/cases/check-no-test-data.mjs` | テスト用のものが混ざっていないかの確認 |
 | `content/case-reports/published/` | このしくみで公開した修理事例の記録 |
 

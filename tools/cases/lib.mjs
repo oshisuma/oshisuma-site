@@ -401,6 +401,8 @@ export function fingerprint(report, ch) {
   const pick = (id) => { const m = (report.media || []).find((x) => x.id === id); return m ? [m.id, m.original || m.src, m.alt] : null; };
   const data = ch === 'hp'
     ? [hp.slug, hp.titleArea, hp.titleDevice, hp.titleServices, hp.description, hp.cardSummary, hp.sections, pick(hp.featureMedia), pick(hp.cardMedia)]
-    : [report.drafts.gbp.summary, pick(report.drafts.gbp.media), hp.slug];
+    : ch === 'gbp' ? [report.drafts.gbp.summary, pick(report.drafts.gbp.media), hp.slug]
+    // Google写真一覧：公開OKの写真すべて（承認画面の fingerprint_ と同じ計算）
+    : ['gbpPhotos', (report.media || []).filter((m) => m.privacyCheck === 'ok' && m.contentMatch === 'ok' && m.alt).slice(0, 5).map((m) => pick(m.id)), hp.slug];
   return createHash('sha256').update(JSON.stringify(data), 'utf8').digest().subarray(0, 16).toString('hex');
 }
