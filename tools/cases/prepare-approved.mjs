@@ -60,7 +60,7 @@ for (const c of input.candidates) {
       browser = browser || await startBrowser();
       const stem = needHp ? stems[i] : (m.src.split('/').pop().replace(/\.jpg$/, ''));
       if (needHp) {
-        const result = await processPhoto(browser, join(dir, file), RENDITIONS, m.crop || null);
+        const result = await processPhoto(browser, join(dir, file), RENDITIONS, m.crop || null, { masks: m.privacyMasks || [], tone: m.photoTone || null });
         mkdirSync(join(ROOT, outRel), { recursive: true });
         const files = {};
         for (const x of result.renditions) {
@@ -83,7 +83,7 @@ for (const c of input.candidates) {
       }
       if (needGbp) {
         // Google写真一覧用：切り抜かず高画質のコピー（リポジトリの外）
-        const result = await processPhoto(browser, join(dir, file), [GBP_PHOTO_RENDITION], m.crop || null);
+        const result = await processPhoto(browser, join(dir, file), [GBP_PHOTO_RENDITION], m.crop || null, { masks: m.privacyMasks || [], tone: m.photoTone || null });
         const x = result.renditions[0];
         const buf = Buffer.from(x.base64, 'base64');
         if (buf.length < GBP_PHOTO_LIMITS.minBytes || buf.length > GBP_PHOTO_LIMITS.maxBytes) throw new Error(`写真 ${m.id} の写真一覧用の画像が ${buf.length} バイトです（10KB以上5MB以下が必要）。`);
