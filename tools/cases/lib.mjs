@@ -62,6 +62,10 @@ export function loadShell(html = readText(REFERENCE_ARTICLE)) {
   return shell;
 }
 
+// 機種名の比較：空白・大文字小文字・全角半角の違いだけなら同じとみなす（承認画面の normalize_ と同じ）
+// 例：「iPhone16pro」と「iPhone 16 Pro」は同じ。「iPhone 16 Pro」と「iPhone 16 Pro Max」は違う
+export const deviceKey = (s) => String(s || '').normalize('NFKC').replace(/\s+/g, '').toLowerCase();
+
 // ---------------------------------------------------------------- HP記事
 
 export function hpTitle(hp) {
@@ -275,7 +279,7 @@ export function validateReport(report, { root = ROOT } = {}) {
   if (errors.length) return { errors, warnings, blocked };
 
   // 報告にない事実を足していないか
-  if (f.device.name !== hp.titleDevice) errors.push(`記事タイトルの機種「${hp.titleDevice}」が報告の機種「${f.device.name}」と違います。`);
+  if (deviceKey(f.device.name) !== deviceKey(hp.titleDevice)) errors.push(`記事タイトルの機種「${hp.titleDevice}」が報告の機種「${f.device.name}」と違います。`);
   const area = f.area ? f.area.name : null;
   if ((hp.titleArea || null) !== area) errors.push(`記事タイトルの地域「${hp.titleArea || 'なし'}」が報告の地域「${area || 'なし'}」と違います。`);
   for (const s of hp.titleServices) {
@@ -293,7 +297,7 @@ export function validateReport(report, { root = ROOT } = {}) {
   if (PHONE_RE.test(gbp.summary)) errors.push('Google投稿の本文に電話番号があります（投稿が却下されることがあるため、本文には書かない）。');
   if (URL_RE.test(gbp.summary)) errors.push('Google投稿の本文にURLがあります（記事へのリンクは「詳細」ボタンで付けます）。');
   if (gbp.summary.length > GBP_SUMMARY_MAX) errors.push(`Google投稿の本文が${gbp.summary.length}文字です（上限${GBP_SUMMARY_MAX}文字）。`);
-  if (!gbp.summary.includes(f.device.name)) warnings.push('Google投稿の本文に機種名がありません。');
+  if (!deviceKey(gbp.summary).includes(deviceKey(f.device.name))) warnings.push('Google投稿の本文に機種名がありません。');
 
   // 写真
   const ready = r.status === 'approved' || r.status === 'published';
@@ -342,7 +346,7 @@ export function validateReport(report, { root = ROOT } = {}) {
       if (m.card.webp) checkFile(m, '一覧用WebP', { src: m.card.webp, width: m.card.width, height: m.card.height }, 'card', 'webp');
     }
     if (m.gbp) checkFile(m, 'Google用', m.gbp, 'gbp', 'jpg');
-    if (staged && !m.alt.includes(f.device.name)) warnings.push(`写真 ${m.id} の alt に機種名がありません。`);
+    if (staged && !deviceKey(m.alt).includes(deviceKey(f.device.name))) warnings.push(`写真 ${m.id} の alt に機種名がありません。`);
     if (m.qualityNote) warnings.push(`写真 ${m.id}：${m.qualityNote}`);
     if (m.privacyCheck !== 'ok') (ready ? errors : warnings).push(`写真 ${m.id} の個人情報チェックが「${m.privacyCheck || '未確認'}」です。`);
     if (m.contentMatch !== 'ok') (ready ? errors : warnings).push(`写真 ${m.id} と報告内容の一致確認が「${m.contentMatch || '未確認'}」です。`);
