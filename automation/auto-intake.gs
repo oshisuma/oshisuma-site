@@ -145,32 +145,31 @@ function oshAutoIntakeTick() {
       if (c.hold.includes(report.reportId)) continue;
       // 既に同名ファイルがある場合は作らない（手動処理との競合防止）
       const prior = oshIntakeFind_(intake, name);
+      const folderName = report.reportId;
+      const photoFolder = oshIntakeFolderOrCreate_(photos, folderName);
       if (prior) {
-        // JSON作成後・履歴更新前の障害から復帰する場合も二重生成を避ける。
+        // JSON作成直後にシートへの記録が失敗した場合でも、写真が全枚数あるかを必ず再検証する。
         const saved = JSON.parse(prior.getBlob().getDataAsString('utf-8'));
         if (saved.reportId !== report.reportId || saved.source?.key !== mapped.sourceKey)
           throw new Error('既存ファイルと入力行が一致しません: ' + name);
+        oshIntakeVerifyPhotos_(saved, photoFolder, row);
         imported.appendRow([mapped.sourceKey, report.reportId, row, mapped.timestamp.toISOString(),
           new Date().toISOString(), mapped.staff]);
         processed.add(row);
         count++;
         continue;
       }
-      const folderName = report.reportId;
-      let photoFolder = oshIntakeFolderOrCreate_(photos, folderName);
-      let good = true;
       for (const media of report.media) {
         const fid = media.original.slice(6);
         const original = DriveApp.getFileById(fid);
-        if (!original.getMimeType().startsWith('image/')) { good = false; break; }
         const ext = oshIntakeImageExt_(original.getMimeType());
-        if (!ext) { good = false; break; }
+        if (!ext) throw new Error('写真形式が非対応。回答行: ' + row);
         const filename = media.id + '.' + ext;
-        if (!oshIntakeFind_(photoFolder, filename))
-          original.makeCopy(filename, photoFolder);
+        const existing = oshIntakeFind_(photoFolder, filename);
+        if (!existing) original.makeCopy(filename, photoFolder);
       }
-      if (!good) throw new Error('写真形式が非対応。回答行: ' + row);
-      // 完全保存した後で記録。再試行時は元データを上書きしない。
+      oshIntakeVerifyPhotos_(report, photoFolder, row);
+      // 写真がそろっていることを検証した後でJSON保存。失敗時は履歴を残さない。
       intake.createFile(name, JSON.stringify(report, null, 2), MimeType.PLAIN_TEXT);
       imported.appendRow([mapped.sourceKey, report.reportId, row, mapped.timestamp.toISOString(),
         new Date().toISOString(), mapped.staff]);
@@ -178,6 +177,41 @@ function oshAutoIntakeTick() {
       count++;
     }
   } finally { lock.releaseLock(); }
+}
+function oshIntakeVerifyPhotos_(report, photoFolder, row) {
+  if (!Array.isArray(report.media) || report.media.length < 1 || report.media.length > 5)
+    throw new Error('画像枚数が不正。回答行: ' + row);
+  for (const media of report.media) {
+    if (!/^p[1-5]$/.test(media.id) || !/^drive:[a-zA-Z0-9_-]{15,}$/.test(media.original || ''))
+      throw new Error('写真識別子の形式が不正。回答行: ' + row);
+    // HEICなどコピーできても後工程で読めない形式があるため、存在確認だけを行い、公開は自動許可しない。
+    const it = photoFolder.getFiles();
+    let found = false;
+    while (it.hasNext()) {
+      const candidate = it.next();
+      if (new RegExp('^' + media.id + '\\.(jpg|png|webp|heic)
+  const it = root.getFoldersByName(name);
+  return it.hasNext() ? it.next() : root.createFolder(name);
+}
+function oshIntakeImageExt_(mime) {
+  const map = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp', 'image/heic':'heic' };
+  return map[mime] || null;
+}
+/** 統合して接続設定を終えるまでは外から呼ばないこと。
+ * 後半のAIにはAI_DATA_SHARING_APPROVEDなど独立した安全スイッチがある。
+ */
+function oshAutoIntakeAndDraftTick() {
+  oshAutoIntakeTick();
+  oshAutoTick();
+}
+,'i').test(candidate.getName()) &&
+          Number(candidate.getSize()) > 0) {
+        found = true;
+        break;
+      }
+    }
+    if (!found) throw new Error('写真コピーの確認に失敗。回答行: ' + row + '、' + media.id);
+  }
 }
 function oshIntakeFolderOrCreate_(root, name) {
   const it = root.getFoldersByName(name);
