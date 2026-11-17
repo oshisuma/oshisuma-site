@@ -121,3 +121,12 @@ test('no new field or any approval is created by the intake bridge',()=>{
   assert.equal(r.approval.gbp.state,'draft');
   assert.equal(r.publishLog.hp,null);
 });
+
+test('device categories match existing repair article conventions',()=>{
+ const x=mock();
+ const check=s=>vm.runInContext('oshIntakeCategory_('+JSON.stringify(s)+')',x.context);
+ assert.equal(check('iPhone 15 Pro'),'iphone');
+ assert.equal(check('iPad A16'),'ipad');
+ assert.equal(check('Galaxy S23 Ultra'),'android');
+ assert.equal(check('Nintendo Switch'),'switch');
+});
