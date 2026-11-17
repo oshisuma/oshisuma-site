@@ -107,7 +107,7 @@ function renderBody(report) {
     `      <figcaption>${esc(photo.caption)}</figcaption>\n` +
     '    </figure>\n' +
     '    <dl class="case-facts">\n' +
-    `      <div><dt>機種</dt><dd>${esc(report.facts.device.name)}</dd></div>\n` +
+    `      <div><dt>機種</dt><dd>${esc(hp.titleDevice || report.facts.device.name)}</dd></div>\n` +
     `      <div><dt>対応</dt>${workDd}</div>\n` +
     '    </dl>\n' +
     '  </div>\n\n' +
