@@ -16,6 +16,7 @@ const draft=(status='needs-photo-review')=>({
 const iterator=a=>{let i=0;return {hasNext:()=>i<a.length,next:()=>a[i++]};};
 function harness({enabled=false,initial=[],data=draft(),headers=head}={}){
  const rows=initial.map(r=>r.slice());
+ const emails=[];
  const settings=new Map(Object.entries({
   AUTO_DRAFT_SHEET_SYNC_ENABLED:String(enabled),
   HANDOFF_FOLDER_ID:'root',MANAGEMENT_SPREADSHEET_ID:'mgmt',
