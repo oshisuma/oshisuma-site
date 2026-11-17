@@ -25,6 +25,7 @@ import { join, resolve, relative, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ROOT, SITE, CASES_URL, fingerprint, hpTitle } from './lib.mjs';
 import { isPublishable } from './photos.mjs';
+import { assertPhotoTransformApproved } from './photo-approval.mjs';
 
 export const PAGES_PROJECT = 'oshisuma-site';
 
@@ -62,6 +63,7 @@ export function readSet(file) {
   const a = c.approval || {};
   if (!a.hp || a.hp.state !== 'approved') throw new Error('HP記事が承認済みではありません。');
   if (a.hp.fp !== fingerprint(r, 'hp')) throw new Error('HP記事が、承認した後に変わっています（承認画面で承認し直してください）。');
+  assertPhotoTransformApproved(r, a.photoTransform);
   for (const ch of ['gbp', 'gbpPhotos']) {
     if (a[ch] && a[ch].state === 'approved' && a[ch].fp !== fingerprint(r, ch)) throw new Error(`${ch === 'gbp' ? 'Google最新情報' : 'Google写真一覧'}が、承認した後に変わっています。`);
   }
