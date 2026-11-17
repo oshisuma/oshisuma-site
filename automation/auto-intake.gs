@@ -184,27 +184,11 @@ function oshIntakeVerifyPhotos_(report, photoFolder, row) {
   for (const media of report.media) {
     if (!/^p[1-5]$/.test(media.id) || !/^drive:[a-zA-Z0-9_-]{15,}$/.test(media.original || ''))
       throw new Error('写真識別子の形式が不正。回答行: ' + row);
-    // HEICなどコピーできても後工程で読めない形式があるため、存在確認だけを行い、公開は自動許可しない。
     const it = photoFolder.getFiles();
     let found = false;
     while (it.hasNext()) {
       const candidate = it.next();
-      if (new RegExp('^' + media.id + '\\.(jpg|png|webp|heic)
-  const it = root.getFoldersByName(name);
-  return it.hasNext() ? it.next() : root.createFolder(name);
-}
-function oshIntakeImageExt_(mime) {
-  const map = { 'image/jpeg':'jpg', 'image/png':'png', 'image/webp':'webp', 'image/heic':'heic' };
-  return map[mime] || null;
-}
-/** 統合して接続設定を終えるまでは外から呼ばないこと。
- * 後半のAIにはAI_DATA_SHARING_APPROVEDなど独立した安全スイッチがある。
- */
-function oshAutoIntakeAndDraftTick() {
-  oshAutoIntakeTick();
-  oshAutoTick();
-}
-,'i').test(candidate.getName()) &&
+      if (new RegExp('^' + media.id + '\\.(jpg|png|webp|heic)$', 'i').test(candidate.getName()) &&
           Number(candidate.getSize()) > 0) {
         found = true;
         break;
