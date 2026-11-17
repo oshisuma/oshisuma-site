@@ -10,11 +10,7 @@
  * AUTO_START_AFTER=2026-11-17T13:00:00Z （導入時に正確な時刻を設定する）,
  * MAX_AI_CALLS_PER_DAY=3, HOLD_REPORT_IDS=R-...,...  // 誤って公開候補にしない対象
  */
-const OSH_AUTO = {
-  folder: 'intake', output: 'drafts', maxPerRun: 3,
-  // 2026-11-17の2件は投稿保留。試験を終えるまで通常の自動処理でも対象外にする。
-  defaultHold: ['R-20261117-f5586927', 'R-20261117-83fc7631']
-};
+const OSH_AUTO = { folder: 'intake', output: 'drafts', maxPerRun: 3 };
 
 function oshAutoSettings_() {
   const p = PropertiesService.getScriptProperties();
@@ -28,7 +24,7 @@ function oshAutoSettings_() {
     startAfter: p.getProperty('AUTO_START_AFTER'),
     apiKey: p.getProperty('ANTHROPIC_API_KEY'),
     model: p.getProperty('ANTHROPIC_MODEL'),
-    held: [...OSH_AUTO.defaultHold, ...String(p.getProperty('HOLD_REPORT_IDS') || '').split(',').map(x => x.trim()).filter(Boolean)]
+    held: String(p.getProperty('HOLD_REPORT_IDS') || '').split(',').map(x => x.trim()).filter(Boolean)
   };
 }
 function oshAutoFolder_(parent, name) {
@@ -65,11 +61,6 @@ function oshAutoTick() {
       if (file.getDateCreated().getTime() <= Date.parse(c.startAfter)) continue; // 導入前の報告には触れない
       if (!/^R-\d{8}-[a-z0-9]{8}\.json$/i.test(file.getName())) continue;
       const name = file.getName();
-      if (oshAutoFile_(drafts, name)) {
-        // 保存済みを再生成しない。メール送信だけ失敗していたら再試行可能にする。
-        oshAutoNotify_(c, reportIdFromName_(name), drafts, name);
-        continue;
-      }
       let report;
       try { report = JSON.parse(file.getBlob().getDataAsString('utf-8')); }
       catch (e) { Logger.log('不正なJSON: ' + name); continue; }
@@ -77,6 +68,11 @@ function oshAutoTick() {
       if (c.held.includes(report.reportId) || report.status === 'hold') continue;
       if (report.approval?.hp?.state !== 'draft' || report.publishLog?.hp || report.drafts?.hp) continue;
       if (!report.intake?.reportText || !report.facts?.area?.name || !report.facts?.device?.name) continue;
+      if (oshAutoFile_(drafts, name)) {
+        // 承認済み・保留・古い報告にメールを送らない。保存済みは再生成しない。
+        oshAutoNotify_(c, report.reportId, drafts, name);
+        continue;
+      }
       try {
         if (!oshAutoBudget_(c.p)) throw new Error('本日のAI処理上限に達しました');
         const answer = oshAutoGenerate_(report, c);
