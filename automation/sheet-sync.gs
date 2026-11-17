@@ -13,6 +13,10 @@ function oshAutoDraftSheetSyncTick() {
   if (!rootId || !sheetId || !Number.isFinite(cut))
     throw new Error('承認シート同期の設定が不足しています');
   const held = new Set(String(p.getProperty('HOLD_REPORT_IDS') || '').split(',').map(s=>s.trim()).filter(Boolean));
+  const notifyTo = p.getProperty('OWNER_EMAIL');
+  const approvalUrl = p.getProperty('APPROVAL_URL');
+  if (!notifyTo || !/^https:\/\//.test(approvalUrl || ''))
+    throw new Error('通知メール先・承認画面のURLが未設定です');
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(1000)) return;
   try {
@@ -22,8 +26,19 @@ function oshAutoDraftSheetSyncTick() {
     const headers = sheet.getRange(1,1,1,6).getValues()[0].map(String);
     if (JSON.stringify(headers) !== JSON.stringify(['報告ID','版','HP','Google','報告データ（JSON）','更新日時']))
       throw new Error('管理シートの列名が変更されたため停止');
-    const known = new Set(sheet.getLastRow() > 1 ?
-      sheet.getRange(2,1,sheet.getLastRow()-1,1).getValues().map(r=>String(r[0])) : []);
+    const existingRows = sheet.getLastRow() > 1 ?
+      sheet.getRange(2,1,sheet.getLastRow()-1,6).getValues() : [];
+    const known = new Set(existingRows.map(r => String(r[0])));
+    // 途中失敗で通知が届かなかった下書きだけ、次回の実行で再送する。
+    // 既に承認・公開・差し戻しされたものは通知しない。
+    for (const row of existingRows) {
+      const id = String(row[0] || '');
+      if (!id || held.has(id) || row[2] !== 'draft' || row[3] !== 'draft') continue;
+      let draft;
+      try { draft = JSON.parse(String(row[4] || '{}')); } catch (_) { continue; }
+      if (!oshSyncNotifyEligible_(draft, id)) continue;
+      oshSyncNotify_(p, notifyTo, approvalUrl, draft);
+    }
     const files = folder.getFiles();
     let imported = 0;
     while(files.hasNext() && imported < 3) {
@@ -41,8 +56,32 @@ function oshAutoDraftSheetSyncTick() {
       sheet.appendRow([id,1,'draft','draft',JSON.stringify(data),now]);
       known.add(id);
       imported++;
+      oshSyncNotify_(p, notifyTo, approvalUrl, data);
     }
   } finally {lock.releaseLock();}
+}
+function oshSyncNotifyEligible_(d,id) {
+  return d && d.reportId === id &&
+    d.source?.mode === 'production' &&
+    ['hold','needs-photo-review'].includes(d.status) &&
+    d.approval?.hp?.state === 'draft' &&
+    d.approval?.gbp?.state === 'draft' &&
+    !d.publishLog?.hp && !d.publishLog?.gbp;
+}
+function oshSyncNotify_(p, to, url, draft) {
+  const key = 'OSH_AUTO_SYNC_NOTIFY_' + draft.reportId;
+  if (p.getProperty(key) === 'true') return;
+  if (!oshSyncNotifyEligible_(draft, draft.reportId)) return;
+  const isHold = draft.status === 'hold';
+  const subject = isHold ? '【オシスマ】確認が必要な修理報告' : '【オシスマ】修理事例の下書きを保存しました';
+  // プレビュー完成ではないことを明示する。公開操作に直接つながる承認リンクは送らない。
+  MailApp.sendEmail(to, subject,
+    '機種：' + draft.facts.device.name + '\n' +
+    (isHold ? '確認事項があります。修理完了とは扱っていません。' :
+      'HP・Google用の文章下書きを管理シートに登録しました。') +
+    '\n写真の確認・完成プレビュー・最終承認はまだです。' +
+    '\n管理画面：' + url + '\n\nHP・Googleへは公開していません。');
+  p.setProperty(key,'true');
 }
 function oshSyncFindFolder_(parent,name) {
   const f=parent.getFoldersByName(name);
