@@ -50,3 +50,22 @@
 実行例・結果：[GitHub Actions 成功](https://github.com/oshisuma/oshisuma-site/actions/runs/44090470437)
 
 注意：実際の写真処理、Googleフォーム→intake自動取込、管理シートへの書戻し、APIへの実通信、Cloudflareプレビュー、最終承認は未検証です。検証が終わるまで `main` へ統合しないでください。
+
+## 第2段階：フォーム取り込み・管理シート同期（2026-11-17追加）
+
+- `auto-intake.gs`: 実際のフォーム回答シートの先頭7列を照合し、**未取り込み行だけ**画像コピー付きで受け渡しフォルダへ書き出す。列名の不一致・日時解釈失敗・画像欠落時は停止。回答の重複取り込みを防ぐため管理シート「取り込み済み」の行番号も照合。初期 `AUTO_INTAKE_ENABLED=false`。
+- `auto-draft.gs`: 上記 intake からAI文章下書きを生成するが、**外部AIへのデータ送信同意・APIキー・日次件数上限**がすべて満たされるまで停止。初期 `AUTO_DRAFT_ENABLED=false`。
+- `sheet-sync.gs`: Drive drafts の新しい未承認下書きを管理シート「下書き」へ追記する。**既存の承認済み行を更新しない**。初期 `AUTO_DRAFT_SHEET_SYNC_ENABLED=false`。
+- `oshAutoPipelineTick()`: 上記3つを順に呼ぶ候補関数。**GASに統合するまではトリガー未設定**。
+
+### 接続設定が必要なもの
+`SOURCE_SPREADSHEET_ID`、`MANAGEMENT_SPREADSHEET_ID`、`HANDOFF_FOLDER_ID`、`AUTO_INTAKE_MIN_ROW`（新規回答のみを対象にする開始行）、
+`HOLD_REPORT_IDS`（GalaxyとiPadの既存2件を公開保留）、`AI_DATA_SHARING_APPROVED`、
+`AUTO_DRAFT_ENABLED`、`AUTO_DRAFT_SHEET_SYNC_ENABLED`、`AUTO_INTAKE_ENABLED`。
+
+GASの初期化・権限・トリガーの設定と本番導入は未実行。フォームと管理用の既存Apps Scriptを照合して統合してから、順番に機能を有効化する。
+
+**注意**：この段階では公開用画像の個人情報ぼかし・画質補正はまだ接続しておらず、写真の判定値は必ず `pending`。AIの文章内容・写真安全性は未検証で、下書き生成は**公開や承認を意味しない**。実際のCloudflareプレビューとGoogleのAPI投稿も未接続。
+
+### CI
+`node --test automation/*.test.mjs`（GitHub Actionsで3ファイルをテスト）。
