@@ -78,3 +78,19 @@ test('already approved sheet row is never re-notified',()=>{
  const d=draft(),old=[id,2,'approved','approved',JSON.stringify(d),'time'];
  const x=harness({enabled:true,initial:[old]});x.run();assert.equal(x.emails.length,0);
 });
+
+test('after a failed email, an existing unapproved draft can be notified on retry',()=>{
+ const d=draft(), existing=[id,1,'draft','draft',JSON.stringify(d),'time'];
+ const x=harness({enabled:true,initial:[existing]});
+ x.run();x.run();
+ assert.equal(x.rows.length,1);
+ assert.equal(x.emails.length,1);
+ assert.match(x.emails[0][1],/下書きを保存/);
+});
+test('an explicitly held report is never notified',()=>{
+ const d=draft(), existing=[id,1,'draft','draft',JSON.stringify(d),'time'];
+ const x=harness({enabled:true,initial:[existing]});
+ x.settings.set('HOLD_REPORT_IDS',id);
+ x.run();
+ assert.equal(x.emails.length,0);
+});
