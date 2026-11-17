@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "reportId": "R-20261114-1ca34069",
+  "status": "published",
+  "source": {
+    "type": "google-form",
+    "key": "sent_1ca34069eb6e084f3bf08a61",
+    "mode": "production"
+  },
+  "facts": {
+    "workDate": "2026-11-14",
+    "area": {
+      "name": "水戸市",
+      "slug": "mito"
+    },
+    "device": {
+      "category": "iphone",
+      "name": "iPhone16pro",
+      "slug": "iphone16pro"
+    },
+    "consultation": "前日からiPhone 16 Proがうまく充電できなくなった。",
+    "works": [
+      "充電口メンテナンス"
+    ],
+    "result": "作業後は充電できるようになり、部品交換なしで症状が改善した。",
+    "staffComment": "お客様にも安心していただけた。"
+  },
+  "media": [
+    {
+      "id": "p1",
+      "privacyCheck": "ok",
+      "contentMatch": "ok",
+      "alt": "水戸市エリアで充電口メンテナンスを行ったiPhone 16 Proの充電口側",
+      "caption": "充電口の状態を確認し、外側からメンテナンスを行ったiPhone 16 Pro",
+      "src": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-01.jpg",
+      "width": 900,
+      "height": 1200,
+      "webp": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-01.webp",
+      "card": {
+        "src": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-01-card.jpg",
+        "width": 800,
+        "height": 600,
+        "webp": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-01-card.webp"
+      },
+      "gbp": {
+        "src": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-01-gbp.jpg",
+        "width": 1200,
+        "height": 900
+      },
+      "qualityNote": "使った範囲が1108×1477pxのため、Google最新情報用（1200×900）は拡大されています。"
+    },
+    {
+      "id": "p2",
+      "privacyCheck": "ok",
+      "contentMatch": "ok",
+      "alt": "水戸市エリアのiPhone修理事例、iPhone 16 Proの背面",
+      "caption": "今回ご相談いただいたiPhone 16 Pro",
+      "src": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-02.jpg",
+      "width": 900,
+      "height": 1200,
+      "webp": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-02.webp",
+      "card": {
+        "src": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-02-card.jpg",
+        "width": 800,
+        "height": 600,
+        "webp": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-02-card.webp"
+      },
+      "gbp": {
+        "src": "/repair/cases/images/mito-iphone-16-pro-charging-port-maintenance-02-gbp.jpg",
+        "width": 1200,
+        "height": 900
+      },
+      "qualityNote": "使った範囲が1108×1477pxのため、Google最新情報用（1200×900）は拡大されています。"
+    }
+  ],
+  "drafts": {
+    "hp": {
+      "slug": "2026-11-17-mito-iphone16pro-charging-port-maintenance",
+      "date": "2026-11-17",
+      "titleArea": "水戸市",
+      "titleDevice": "iPhone 16 Pro",
+      "titleServices": [
+        "充電口メンテナンス"
+      ],
+      "description": "水戸市エリアのiPhone修理事例です。前日からうまく充電できなくなったiPhone 16 Proの充電口を確認し、外側からのメンテナンスを行いました。部品交換なしで、再び充電できるようになりました。",
+      "cardSummary": "充電できなくなったiPhone 16 Proを、部品交換なしの充電口メンテナンスで改善しました。",
+      "featureMedia": "p1",
+      "cardMedia": "p2",
+      "sections": [
+        {
+          "heading": "ご相談",
+          "paragraphs": [
+            "水戸市からお越しのお客様、iPhone 16 Proの修理事例です。",
+            "前日からiPhone 16 Proがうまく充電できなくなった、とのご相談をいただきました。"
+          ]
+        },
+        {
+          "heading": "修理内容",
+          "paragraphs": [
+            "まず、iPhone 16 Proの充電口の状態を確認しました。",
+            "そのうえで、充電口に外側からのメンテナンスを行いました。部品の交換は行っていません。"
+          ]
+        },
+        {
+          "heading": "修理後",
+          "paragraphs": [
+            "作業後は無事に充電できるようになり、部品を交換することなく症状が改善しました。お客様にも安心していただけました。",
+            "水戸市周辺で、iPhone修理やスマホ修理、充電の不調についてのご相談先をお探しの方も、どうぞお気軽にお声がけください。このたびはご相談いただき、本当にありがとうございました。"
+          ]
+        }
+      ]
+    },
+    "gbp": {
+      "summary": "【水戸市からお越しのお客様｜修理事例｜iPhone 16 Pro 充電口メンテナンス】\n前日からうまく充電できなくなったiPhone 16 Proのご相談をいただきました。充電口の状態を確認し、外側からのメンテナンスを行ったところ、無事に充電できるようになりました。部品交換なしで症状が改善し、お客様にも安心していただけました。\niPhoneの充電の不調でお困りの方は、オシエテスマホ＋ 茨城町本店までお気軽にご相談ください。",
+      "media": "p1"
+    }
+  },
+  "publishLog": {
+    "hp": {
+      "at": "2026-11-17T05:25:49.150Z",
+      "revision": 4,
+      "fp": "07d443e3bd8749d6c5aaf283494ae4da",
+      "approvedAt": "2026-11-17T04:12:37.857Z"
+    },
+    "gbp": null,
+    "gbpPhotos": null
+  },
+  "approval": {
+    "hp": {
+      "state": "approved",
+      "at": "2026-11-17T04:12:37.857Z",
+      "fp": "07d443e3bd8749d6c5aaf283494ae4da"
+    },
+    "gbp": {
+      "state": "approved"
+    },
+    "gbpPhotos": {
+      "state": "approved"
+    }
+  }
+}
