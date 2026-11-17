@@ -37,12 +37,24 @@ export async function startBrowser() {
 }
 
 // 元写真（ファイル）から、renditions で指定した公開用の画像を作る
-export function processPhoto(browser, file, renditions, region) {
+// redactions … 読み取れなくする部分（写真のプライバシー確認で決めたもの）
+export function processPhoto(browser, file, renditions, region, redactions) {
   const b64 = readFileSync(file).toString('base64');
   return browser.evaluate(`(async () => {
     const bin = atob(${JSON.stringify(b64)});
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return OshismaPhoto.process(new Blob([bytes], { type: 'image/jpeg' }), ${JSON.stringify(renditions)}, ${JSON.stringify(region || null)});
+    return OshismaPhoto.process(new Blob([bytes], { type: 'image/jpeg' }), ${JSON.stringify(renditions)}, ${JSON.stringify(region || null)}, ${JSON.stringify(redactions || [])});
+  })()`);
+}
+
+// 画像（ファイル）の決まった範囲に、細かい模様が残っていないかを測る（確認用）
+export function measureFile(browser, file, rects) {
+  const b64 = readFileSync(file).toString('base64');
+  return browser.evaluate(`(async () => {
+    const bin = atob(${JSON.stringify(b64)});
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return OshismaPhoto.measure(new Blob([bytes]), ${JSON.stringify(rects)});
   })()`);
 }

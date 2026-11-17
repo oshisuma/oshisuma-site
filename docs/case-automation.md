@@ -17,12 +17,16 @@
   ④ HP記事を承認すると、公開候補と「公開セット」（公開候補＋公開OKの写真・SHA-256つき、1ファイル）を受け渡し用フォルダに置く
   ↓ 承認画面の「公開セットをダウンロード」（1ファイル）
 パソコン（このリポジトリ）
-  ⑤ node tools/cases/run-approved.mjs --push … 次をまとめて行い、途中で問題があれば止める
-       公開セットの確認（承認の指紋・写真の SHA-256・公開OKの写真だけ）→ main から作業用ブランチ
+  ⑤ 写真のプライバシー確認（AI）… 公開セットの写真を tools/cases/privacy-check.mjs で見て、
+       顔・書類・QRコード・シリアル・画面などを確かめ、処理（塗りつぶし・ぼかし・切り抜き）か公開しないかを決める
+       （記事作成ルールの「写真のプライバシー処理」。毎回オーナーに確認しなくてよい）
+  ⑥ node tools/cases/run-approved.mjs --privacy <確認ファイル> --push … 次をまとめて行い、途中で問題があれば止める
+       公開セットの確認（承認の指紋・写真の SHA-256・公開OKの写真だけ・写真のプライバシー確認）→ main から作業用ブランチ
        → 公開用の画像（prepare-approved.mjs）→ 記事・一覧・サイトマップ・公開記録（publish.mjs）
        → 予定外のファイルがないか・テストデータの確認（check-no-test-data.mjs）→ 作業用ブランチに記録
        → GitHub の作業用ブランチへ送り、Cloudflare のプレビューができるまで待って URL を表示（main には送らない）
-  ⑥ オーナーがプレビューを確認 → 明確な承認 → main に統合して公開
+       公開用の画像は、元の写真を変えずにコピーを処理して作り、処理した部分が読めないことを測って確かめる
+  ⑦ オーナーがプレビュー（処理した写真を含む）を確認 → 明確な承認 → main に統合して公開（main はPRが必要）
 ```
 
 公開セットを作れなかったとき（写真が大きすぎるなど）は、承認画面に理由が出る。そのときは従来どおり
@@ -65,6 +69,8 @@ Google最新情報は、承認状態を記録するだけで、投稿はまだ�
 | `tools/cases/lib.mjs` | 記事・一覧カード・Google投稿の作成、内容の確認、指紋 |
 | `tools/cases/photos.mjs` `photo-process.js` `browser.mjs` | 写真の判定・ファイル名・画像処理（パソコンのEdgeで動かす） |
 | `tools/cases/run-approved.mjs` | 公開セット1つから、作業用ブランチ・プレビューまでをまとめて行う |
+| `tools/cases/privacy.mjs` `privacy-check.mjs` | 写真のプライバシー処理（確認ファイルの検査・確認用の画像） |
+| `content/case-reports/photo-privacy/` | 公開した写真のプライバシー確認の記録（処理の範囲・方法・理由） |
 | `tools/cases/prepare-approved.mjs` | 承認済みの写真から公開用の画像を作る |
 | `tools/cases/publish.mjs` | 公開用データを作る（GitHubへの送信・公開はしない） |
 | `tools/cases/gbp.mjs` | Google最新情報・写真一覧の送信の準備（今は表示・模擬だけ）と記録 |
