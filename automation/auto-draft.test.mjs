@@ -111,7 +111,7 @@ test('creates an unapproved draft and notifies once; headers are correct', () =>
   const a = harness({ enabled: 'true', approved: 'true' });
   a.run(); a.run();
   assert.equal(a.apiRequests.length, 1);
-  assert.equal(a.emails.length, 1);
+  assert.equal(a.emails.length, 0); // 保存直後は通知せずシート同期を待つ
   const req = a.apiRequests[0].req;
   assert.equal(req.headers['x-api-key'], 'test-secret');
   assert.equal(req.headers['anthropic-version'], '2023-06-01');
