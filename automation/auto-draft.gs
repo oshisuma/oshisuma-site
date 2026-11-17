@@ -5,7 +5,8 @@
  *
  * Script Properties:
  * HANDOFF_FOLDER_ID, OWNER_EMAIL, APPROVAL_URL,
- * ANTHROPIC_API_KEY, ANTHROPIC_MODEL, AUTO_DRAFT_ENABLED=true,
+ * ANTHROPIC_API_KEY, ANTHROPIC_MODEL, AUTO_DRAFT_ENABLED=false,
+ * AI_DATA_SHARING_APPROVED=false,
  * AUTO_START_AFTER=2026-11-17T13:00:00Z （導入時に正確な時刻を設定する）,
  * MAX_AI_CALLS_PER_DAY=3, HOLD_REPORT_IDS=R-...,...  // 誤って公開候補にしない対象
  */
@@ -46,6 +47,7 @@ function oshAutoFile_(folder, name) {
 function oshAutoTick() {
   const c = oshAutoSettings_();
   if (!c.enabled) return;
+  // データ送信許可、APIキー、費用上限の確認なしでは実行しない。
   if (!c.dataSharingApproved) throw new Error('外部AIへのデータ送信は未承認です。処理を停止します');
   if (!c.folderId || !c.email || !c.url || !c.apiKey || !c.model || !c.startAfter ||
       !Number.isFinite(Date.parse(c.startAfter)))
@@ -128,7 +130,7 @@ function oshAutoRedact_(text) {
     .replace(/\b[A-HJ-NPR-Z0-9]{15,17}\b/gi, '［識別番号非公開］');
 }
 function oshAutoGenerate_(r, c) {
-  // AIは文章だけ。元写真や個人情報の識別子を送信しない。
+  // AIへは文章だけを送る。完全な匿名化は保証できないため、同意がない場合は送信しない。
   const prompt = [
     'オシスマの修理事例記事。以下の報告内容以外から事実を作らない。',
     '相談のみ・修理完了が未確認なら ready=false。修理したことにしない。',
@@ -145,7 +147,7 @@ function oshAutoGenerate_(r, c) {
   ].join('\n');
   const response = UrlFetchApp.fetch('https://api.anthropic.com/v1/messages', {
     method: 'post', contentType: 'application/json', muteHttpExceptions: true,
-    headers: { Authorization: 'Bearer ' + c.apiKey, 'anthropic-version': '2026-10-21' },
+    headers: { 'x-api-key': c.apiKey, 'anthropic-version': '2023-06-01' },
     payload: JSON.stringify({ model: c.model, max_tokens: 2300,
       messages: [{ role: 'user', content: prompt }] })
   });
@@ -154,7 +156,7 @@ function oshAutoGenerate_(r, c) {
   const res = JSON.parse(response.getContentText());
   const raw = (res.content || []).filter(x => x.type === 'text').map(x => x.text).join('').trim();
   const v = JSON.parse(raw.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, ''));
-  if (typeof v.ready !== 'boolean' || !Array.isArray(v.works) ||
+  if (!v || typeof v.ready !== 'boolean' || !Array.isArray(v.works) ||
       !Array.isArray(v.uncertain) || !v.hp || !v.gbp ||
       !Array.isArray(v.hp.titleServices) || !Array.isArray(v.hp.sections) ||
       v.hp.sections.length !== 3) throw new Error('AI返答形式が不正');
@@ -188,7 +190,7 @@ function oshAutoMerge_(r, v) {
   d.drafts.gbp = { summary: v.gbp.summary, media: p1 };
   // 画像の検査・補正が終わるまで公開不可。承認状態は常に draft。
   d.status = 'needs-photo-review';
-  d.media = (d.media || []).map(m => ({ ...m, privacyCheck: 'pending', contentMatch: 'pending' }));
+  d.media = (d.media || []).map(m => ({ ...m, privacyCheck: 'pending', contentMatch: 'pending', alt: '', caption: '' }));
   d.facts.uncertain.push('写真のプライバシー・品質・内容照合が未完了。承認前に確認が必要');
   return d;
 }
