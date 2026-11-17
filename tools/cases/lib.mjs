@@ -243,7 +243,7 @@ export function imageSize(file) {
 }
 
 const PRICE_RE = /[0-9０-９,，]+\s*円|¥|￥|税込|税抜/;
-const AGE_GENDER_RE = /[0-9０-９]+\s*(代|歳|才)|男性|女性|ご年配|高齢|お子様|おじいちゃん|おばあちゃん/;
+const AGE_GENDER_RE = /[0-9０-９]+\s*(代|歳|才)|男性|女性|ご年配|高齢|お子様|おじいちゃん|おばあちゃん|小学生|中学生|高校生|大学生|[0-9０-９一二三四五六]年生|未成年/;
 const PHONE_RE = /0\d{1,4}[-‐－ー]?\d{1,4}[-‐－ー]?\d{3,4}|tel:/i;
 const URL_RE = /https?:\/\//i;
 export const GBP_SUMMARY_MAX = 1500;
@@ -281,7 +281,7 @@ export function validateReport(report, { root = ROOT } = {}) {
   for (const s of hp.titleServices) {
     if (!f.works.includes(s)) errors.push(`タイトルの修理内容「${s}」が報告の対応内容にありません。`);
   }
-  const hpText = [hp.description, hp.cardSummary, ...hp.sections.flatMap((s) => [s.heading, ...s.paragraphs.map((p) => (typeof p === 'string' ? p : p.text))]), ...r.media.flatMap((m) => [m.alt, m.caption])].join('\n');
+  const hpText = [hp.titleServices.join('・'), hp.description, hp.cardSummary, ...hp.sections.flatMap((s) => [s.heading, ...s.paragraphs.map((p) => (typeof p === 'string' ? p : p.text))]), ...r.media.flatMap((m) => [m.alt, m.caption])].join('\n');
   const texts = { 'HP記事': hpText, 'Google投稿': gbp.summary };
   for (const [label, text] of Object.entries(texts)) {
     if (PRICE_RE.test(text)) errors.push(`${label}に料金が書かれています。`);
