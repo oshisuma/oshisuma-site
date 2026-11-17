@@ -11,16 +11,22 @@
   ↓ 読むだけ
 承認画面（Apps Script・管理用スプレッドシートに付属。オーナー本人だけが操作できる）
   ① 最近の回答から1件選んで取り込む → 受け渡し用フォルダに報告と写真のコピーを置く
-  ② パソコン（Claude Code）が報告文だけを材料に下書きを作り、受け渡し用フォルダに置く
-  ③ 下書きを読み込む → 写真ごとに「公開OK／使わない」を選ぶ → HP記事・Google投稿を確認して承認
-  ④ HP記事を承認すると、公開候補（承認した内容の指紋つき）を受け渡し用フォルダに置く
-  ↓ Googleドライブ パソコン版で同期
+  ② 「下書き作成用の材料」をコピーしてパソコン（Claude Code）に渡す → 報告文だけを材料に下書きを作る
+  ③ 下書きを承認画面に貼り付けて読み込む（ドライブの drafts フォルダからも読み込める）
+     → 掲載日（記事のURLの日付）は読み込んだ日になる → 写真ごとに「公開OK／使わない」→ HP記事・Google投稿を確認して承認
+  ④ HP記事を承認すると、公開候補と「公開セット」（公開候補＋公開OKの写真・SHA-256つき、1ファイル）を受け渡し用フォルダに置く
+  ↓ 承認画面の「公開セットをダウンロード」（1ファイル）
 パソコン（このリポジトリ）
-  ⑤ node tools/cases/prepare-approved.mjs … 「公開OK」の写真だけから公開用の画像を作る
-  ⑥ node tools/cases/publish.mjs --mode production … 記事ページ・一覧のカード・サイトマップ・公開記録を作る
-  ⑦ node tools/cases/check-no-test-data.mjs … テスト用のものが混ざっていないか確認
-  ⑧ 作業用ブランチでPRを作り、Cloudflareのプレビューをオーナーが確認 → 明確な承認 → マージで公開
+  ⑤ node tools/cases/run-approved.mjs --push … 次をまとめて行い、途中で問題があれば止める
+       公開セットの確認（承認の指紋・写真の SHA-256・公開OKの写真だけ）→ main から作業用ブランチ
+       → 公開用の画像（prepare-approved.mjs）→ 記事・一覧・サイトマップ・公開記録（publish.mjs）
+       → 予定外のファイルがないか・テストデータの確認（check-no-test-data.mjs）→ 作業用ブランチに記録
+       → GitHub の作業用ブランチへ送り、Cloudflare のプレビューができるまで待って URL を表示（main には送らない）
+  ⑥ オーナーがプレビューを確認 → 明確な承認 → main に統合して公開
 ```
+
+公開セットを作れなかったとき（写真が大きすぎるなど）は、承認画面に理由が出る。そのときは従来どおり
+approved フォルダの公開候補と photos フォルダの写真をダウンロードし、prepare-approved.mjs・publish.mjs を順に使う。
 
 Google最新情報は、承認状態を記録するだけで、投稿はまだ行わない。
 
@@ -58,6 +64,7 @@ Google最新情報は、承認状態を記録するだけで、投稿はまだ�
 |---|---|
 | `tools/cases/lib.mjs` | 記事・一覧カード・Google投稿の作成、内容の確認、指紋 |
 | `tools/cases/photos.mjs` `photo-process.js` `browser.mjs` | 写真の判定・ファイル名・画像処理（パソコンのEdgeで動かす） |
+| `tools/cases/run-approved.mjs` | 公開セット1つから、作業用ブランチ・プレビューまでをまとめて行う |
 | `tools/cases/prepare-approved.mjs` | 承認済みの写真から公開用の画像を作る |
 | `tools/cases/publish.mjs` | 公開用データを作る（GitHubへの送信・公開はしない） |
 | `tools/cases/gbp.mjs` | Google最新情報・写真一覧の送信の準備（今は表示・模擬だけ）と記録 |
