@@ -146,6 +146,10 @@ export async function main(argv) {
   if (useGit) {
     step('2. 作業用ブランチ（main から作る）');
     if (git(['status', '--porcelain'])) stop('HPのフォルダに、記録していない変更があります。先に片付けてから実行してください。');
+    // 記録（コミット）に使う名前がないと最後で止まるため、ブランチを作る前に確かめる
+    let who = '';
+    try { who = git(['config', 'user.email']); } catch { who = ''; }
+    if (!who) stop('記録に使う名前・メールアドレスが、このリポジトリに設定されていません（git config user.name／user.email）。');
     git(['fetch', 'origin', '--quiet']);
     branch = branchName(c);
     if (git(['branch', '--list', branch]) || git(['ls-remote', '--heads', 'origin', branch])) stop(`作業用ブランチ ${branch} はすでにあります（同じ版を二度作りません）。`);
