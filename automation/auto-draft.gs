@@ -19,8 +19,6 @@ function oshAutoSettings_() {
     enabled: p.getProperty('AUTO_DRAFT_ENABLED') === 'true',
     dataSharingApproved: p.getProperty('AI_DATA_SHARING_APPROVED') === 'true',
     folderId: p.getProperty('HANDOFF_FOLDER_ID'),
-    email: p.getProperty('OWNER_EMAIL'),
-    url: p.getProperty('APPROVAL_URL'),
     startAfter: p.getProperty('AUTO_START_AFTER'),
     apiKey: p.getProperty('ANTHROPIC_API_KEY'),
     model: p.getProperty('ANTHROPIC_MODEL'),
@@ -45,7 +43,7 @@ function oshAutoTick() {
   if (!c.enabled) return;
   // データ送信許可、APIキー、費用上限の確認なしでは実行しない。
   if (!c.dataSharingApproved) throw new Error('外部AIへのデータ送信は未承認です。処理を停止します');
-  if (!c.folderId || !c.email || !c.url || !c.apiKey || !c.model || !c.startAfter ||
+  if (!c.folderId || !c.apiKey || !c.model || !c.startAfter ||
       !Number.isFinite(Date.parse(c.startAfter)))
     throw new Error('接続設定が不足しています。自動下書きを停止します');
   const lock = LockService.getScriptLock();
@@ -69,8 +67,7 @@ function oshAutoTick() {
       if (report.approval?.hp?.state !== 'draft' || report.publishLog?.hp || report.drafts?.hp) continue;
       if (!report.intake?.reportText || !report.facts?.area?.name || !report.facts?.device?.name) continue;
       if (oshAutoFile_(drafts, name)) {
-        // 承認済み・保留・古い報告にメールを送らない。保存済みは再生成しない。
-        oshAutoNotify_(c, report.reportId, drafts, name);
+        // 下書きが保存済みなら再生成しない。通知は管理シート同期が成功した後だけ。
         continue;
       }
       try {
@@ -80,7 +77,7 @@ function oshAutoTick() {
         // 本番の画像審査は別工程。AI出力があっても承認はしない
         drafts.createFile(name, JSON.stringify(draft, null, 2), MimeType.PLAIN_TEXT);
         made++;
-        oshAutoNotify_(c, report.reportId, drafts, name);
+        // 「下書き完成」通知はまだ送らない。管理シート登録と写真確認を待つ。
       } catch (e) {
         // APIエラーなどは処理を保留し、次の時限実行で再試行。内容はログに出さない。
         Logger.log(report.reportId + ': 自動下書き失敗(' + String(e.message).slice(0, 120) + ')');
@@ -98,22 +95,6 @@ function oshAutoBudget_(p) {
   if (used >= limit) return false;
   p.setProperty(key, String(used + 1)); // API失敗も予算の安全側に計上
   return true;
-}
-function reportIdFromName_(name) { return name.replace(/\.json$/i, ''); }
-function oshAutoNotify_(c, reportId, drafts, name) {
-  const notifiedKey = 'OSH_AUTO_NOTIFIED_' + reportId;
-  if (c.p.getProperty(notifiedKey) === 'true') return;
-  const file = oshAutoFile_(drafts, name);
-  if (!file) return;
-  const draft = JSON.parse(file.getBlob().getDataAsString('utf-8'));
-  // 記事が「完成」とは伝えない。写真確認・プレビュー・公開承認は別段階。
-  MailApp.sendEmail(c.email, '【オシスマ】下書き作成：' + draft.facts.device.name,
-    '下書きを保存しました。\n機種：' + draft.facts.device.name +
-    '\n状態：' + draft.status +
-    '\n写真の安全確認・プレビュー・公開承認はまだです。' +
-    '\n確認画面：' + c.url +
-    '\n\n本番公開・Google投稿はしていません。');
-  c.p.setProperty(notifiedKey, 'true');
 }
 /** 外部AIへ送信するテキストから、明確な連絡先・識別子をまず除外。
  * 氏名等を完全に識別できるわけではないため、送信に先立ち利用者の運用合意が必須。
