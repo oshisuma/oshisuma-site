@@ -114,3 +114,13 @@ GASの初期化・権限・トリガーの設定と本番導入は未実行。�
 **重要**：この機能はNode側に検証を追加した段階です。GAS承認画面では写真加工の `approval.photoTransform` と指紋が未生成なので、実際の写真加工を本番公開する場合は停止します。承認画面を更新して同一の指紋を作成し、実機検証を経てから利用可能になります。
 
 Googleに投稿する前に、Google Business Profile APIの利用承認・アカウント権限・オーナーの最終承認が必要です。写真の個人情報を自動判定するAIはまだ未実装です。
+
+## 第6段階：スマホ承認と公開処理の写真加工指紋を整合させる準備
+
+- `automation/photo-approval.gs` を追加し、既存Apps Scriptの承認画面でも写真加工を指紋化できる計算関数を用意した（本番GASへは**未接続**）。
+- `tools/cases/photo-approval.mjs` と同じデータ・SHA-256の先頭16バイトを使う。
+- `tools/cases/run-approved.mjs` は写真加工の追加承認が欠ける／内容が変わる場合に、ブランチ作成やHP画像の生成よりも**前に停止**する。
+- `tools/cases/prepare-approved.mjs` も同じ追加承認を検査し、単独での実行を保護。
+- `automation/photo-approval.test.mjs` と `automation/photo-approval-gas.test.mjs` で、承認後の変更検知・GAS/Nodeの指紋一致を検証。
+
+**未実装**：スマホ承認画面の実際のボタン、写真のマスク範囲を選択するUI、既存GASでの本人確認と承認記録の連携。承認画面で明示承認を得る前に写真加工を本番へ公開しない。
