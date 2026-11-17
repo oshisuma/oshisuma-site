@@ -19,7 +19,8 @@ function harness({enabled=false,initial=[],data=draft(),headers=head}={}){
  const settings=new Map(Object.entries({
   AUTO_DRAFT_SHEET_SYNC_ENABLED:String(enabled),
   HANDOFF_FOLDER_ID:'root',MANAGEMENT_SPREADSHEET_ID:'mgmt',
-  AUTO_START_AFTER:'2026-11-17T00:00:00Z'
+  AUTO_START_AFTER:'2026-11-17T00:00:00Z',
+  OWNER_EMAIL:'owner@example.test',APPROVAL_URL:'https://example.test/approve'
  }));
  const files=[{
   getName:()=>id+'.json',getDateCreated:()=>new Date('2026-11-18T02:00:00Z'),
@@ -32,18 +33,20 @@ function harness({enabled=false,initial=[],data=draft(),headers=head}={}){
  };
  const ctx=vm.createContext({
   Date,Set,JSON,
-  PropertiesService:{getScriptProperties:()=>({getProperty:k=>settings.get(k)||null})},
+  PropertiesService:{getScriptProperties:()=>({getProperty:k=>settings.get(k)||null,setProperty:(k,v)=>settings.set(k,v)})},
   LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock:()=>{}})},
   SpreadsheetApp:{openById:()=>({getSheetByName:()=>sheet})},
+  MailApp:{sendEmail:(...a)=>emails.push(a)},
   DriveApp:{getFolderById:()=>({getFoldersByName:()=>iterator([{getFiles:()=>iterator(files)}])})}
  });
  vm.runInContext(source,ctx);
- return {rows,settings,run:()=>vm.runInContext('oshAutoDraftSheetSyncTick()',ctx)};
+ return {rows,settings,emails,run:()=>vm.runInContext('oshAutoDraftSheetSyncTick()',ctx)};
 }
 test('default OFF does not write',()=>{const x=harness();x.run();assert.equal(x.rows.length,0);});
 test('new draft is imported once and stays unapproved',()=>{
  const x=harness({enabled:true});x.run();x.run();assert.equal(x.rows.length,1);
  assert.deepEqual(Array.from(x.rows[0].slice(0,4)),[id,1,'draft','draft']);
+ assert.equal(x.emails.length,1);
 });
 test('existing ID is never overwritten',()=>{
  const existing=[id,3,'approved','approved','{"custom":"keep"}','timestamp'];
@@ -68,4 +71,9 @@ test('unreviewed photo field cannot be marked safe by AI',()=>{
 test('schema drift stops before write',()=>{
  const x=harness({enabled:true,headers:['BAD',...head.slice(1)]});
  assert.throws(()=>x.run(),/列名が変更/);assert.equal(x.rows.length,0);
+});
+
+test('already approved sheet row is never re-notified',()=>{
+ const d=draft(),old=[id,2,'approved','approved',JSON.stringify(d),'time'];
+ const x=harness({enabled:true,initial:[old]});x.run();assert.equal(x.emails.length,0);
 });
