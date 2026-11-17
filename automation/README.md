@@ -22,9 +22,9 @@
 
 ## 必須のスクリプトプロパティ（統合してから）
 `HANDOFF_FOLDER_ID`, `OWNER_EMAIL`, `APPROVAL_URL`, `ANTHROPIC_API_KEY`, `ANTHROPIC_MODEL`, `AUTO_START_AFTER`（ISO日時）、`HOLD_REPORT_IDS`（2件を明示保留）、
-`MAX_AI_CALLS_PER_DAY`（初期3回）。`AUTO_DRAFT_ENABLED`は初期**false**。APIキーなどの秘密をGitHubへ保存しない。
+`MAX_AI_CALLS_PER_DAY`（初期3回）、`AI_DATA_SHARING_APPROVED`（初期**false**）。`AUTO_DRAFT_ENABLED`は初期**false**。APIキーなどの秘密をGitHubへ保存しない。
 
-**重要**：Claude Codeの利用料金とは別に、API契約・従量料金が発生し得ます。報告文をAIプロバイダーへ送るため、プライバシー・費用・モデル設定についてオーナーが承認するまで有効化しないでください。
+**重要**：この試験コードは外部AIの認証ヘッダーを `x-api-key` / `anthropic-version: 2023-06-01` として構成していますが、実際のモデル名・契約・権限は未確認です。氏名・住所などは簡易除去だけでは完全に隠せません。個人情報を含む原文の外部送信は、運用方針の承認前に有効化してはいけません。\n\n**重要**：Claude Codeの利用料金とは別に、API契約・従量料金が発生し得ます。報告文をAIプロバイダーへ送るため、プライバシー・費用・モデル設定についてオーナーが承認するまで有効化しないでください。
 
 ## 動作確認の予定
 1. 合成テストデータでDrive内の新規取込・二重登録防止・失敗時の停止を検証。
@@ -35,3 +35,18 @@
 6. GitHubの作業用ブランチ→Cloudflareプレビューを確認し、ユーザー承認後のみ本番接続。
 
 **この変更だけでは完全自動化はまだ完了していません。オーナーの本番公開承認は求めず、作業用PRのレビューだけ行います。**
+
+## 実行可能なテスト（2026-11-17）
+
+`node --test automation/auto-draft.test.mjs` を使用します。GitHub Actions の `Repair case automation checks` でも実行。
+
+- 実行停止（既定OFF）
+- データ送信未承認時の停止
+- Galaxy S23 Ultra・iPad A16 の恒久的保留
+- 下書きが二重作成・二重通知されないこと／認証ヘッダー形式
+- 未完了は記事化せず保留
+- メール・電話・URLの簡易マスク
+
+実行例・結果：[GitHub Actions 成功](https://github.com/oshisuma/oshisuma-site/actions/runs/44090470437)
+
+注意：実際の写真処理、Googleフォーム→intake自動取込、管理シートへの書戻し、APIへの実通信、Cloudflareプレビュー、最終承認は未検証です。検証が終わるまで `main` へ統合しないでください。
