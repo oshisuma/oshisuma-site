@@ -6,7 +6,8 @@
  * Script Properties:
  * HANDOFF_FOLDER_ID, OWNER_EMAIL, APPROVAL_URL,
  * ANTHROPIC_API_KEY, ANTHROPIC_MODEL, AUTO_DRAFT_ENABLED=true,
- * HOLD_REPORT_IDS=R-...,...  // 誤って公開候補にしない対象
+ * AUTO_START_AFTER=2026-11-17T13:00:00Z （導入時に正確な時刻を設定する）,
+ * MAX_AI_CALLS_PER_DAY=3, HOLD_REPORT_IDS=R-...,...  // 誤って公開候補にしない対象
  */
 const OSH_AUTO = { folder: 'intake', output: 'drafts', maxPerRun: 3 };
 
@@ -18,6 +19,7 @@ function oshAutoSettings_() {
     folderId: p.getProperty('HANDOFF_FOLDER_ID'),
     email: p.getProperty('OWNER_EMAIL'),
     url: p.getProperty('APPROVAL_URL'),
+    startAfter: p.getProperty('AUTO_START_AFTER'),
     apiKey: p.getProperty('ANTHROPIC_API_KEY'),
     model: p.getProperty('ANTHROPIC_MODEL'),
     held: String(p.getProperty('HOLD_REPORT_IDS') || '').split(',').map(x => x.trim()).filter(Boolean)
@@ -39,7 +41,7 @@ function oshAutoFile_(folder, name) {
 function oshAutoTick() {
   const c = oshAutoSettings_();
   if (!c.enabled) return;
-  if (!c.folderId || !c.email || !c.apiKey || !c.model)
+  if (!c.folderId || !c.email || !c.apiKey || !c.model || !c.startAfter || !Number.isFinite(Date.parse(c.startAfter)))
     throw new Error('接続設定が不足しています。自動下書きを停止します');
   const lock = LockService.getScriptLock();
   if (!lock.tryLock(1000)) return;
@@ -51,6 +53,7 @@ function oshAutoTick() {
     let made = 0;
     while (files.hasNext() && made < OSH_AUTO.maxPerRun) {
       const file = files.next();
+      if (file.getDateCreated().getTime() <= Date.parse(c.startAfter)) continue; // 導入前の報告には触れない
       if (!/^R-\d{8}-[a-z0-9]{8}\.json$/i.test(file.getName())) continue;
       const name = file.getName();
       if (oshAutoFile_(drafts, name)) continue; // 既存下書きを上書きしない
@@ -62,6 +65,7 @@ function oshAutoTick() {
       if (report.approval?.hp?.state !== 'draft' || report.publishLog?.hp || report.drafts?.hp) continue;
       if (!report.intake?.reportText || !report.facts?.area?.name || !report.facts?.device?.name) continue;
       try {
+        if (!oshAutoBudget_(c.p)) throw new Error('本日のAI処理上限に達しました');
         const answer = oshAutoGenerate_(report, c);
         const draft = oshAutoMerge_(report, answer);
         // 本番の画像審査は別工程。AI出力があっても承認はしない
@@ -79,6 +83,15 @@ function oshAutoTick() {
       }
     }
   } finally { lock.releaseLock(); }
+}
+function oshAutoBudget_(p) {
+  const date = Utilities.formatDate(new Date(), 'Asia/Tokyo', 'yyyyMMdd');
+  const key = 'OSH_AUTO_CALLS_' + date;
+  const used = Number(p.getProperty(key) || '0');
+  const limit = Math.max(0, Math.min(10, Number(p.getProperty('MAX_AI_CALLS_PER_DAY') || '3')));
+  if (used >= limit) return false;
+  p.setProperty(key, String(used + 1)); // API失敗も予算の安全側に計上
+  return true;
 }
 function oshAutoGenerate_(r, c) {
   // AIは文章だけ。元写真や個人情報の識別子を送信しない。
