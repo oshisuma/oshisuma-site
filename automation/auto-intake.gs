@@ -40,6 +40,14 @@ function oshIntakeFind_(folder, name) {
 function oshIntakeSlug_(name) {
   return String(name || '').normalize('NFKC').toLowerCase().replace(/[^a-z0-9]+/g, '');
 }
+function oshIntakeCategory_(device) {
+  const d = String(device || '').normalize('NFKC').toLowerCase();
+  if (d.includes('iphone')) return 'iphone';
+  if (d.includes('ipad')) return 'ipad';
+  if (d.includes('switch')) return 'switch';
+  if (/galaxy|aquos|pixel|android|xperia|arrows|oppo|redmi|xiaomi/.test(d)) return 'android';
+  return 'other';
+}
 function oshIntakeArea_(name) {
   const known = {
     '茨城町':'ibaraki','水戸市':'mito','大洗町':'oarai',
@@ -94,7 +102,7 @@ function oshIntakeMapRow_(values, rowNumber) {
       facts: {
         workDate: Utilities.formatDate(timestamp, 'Asia/Tokyo', 'yyyy-MM-dd'),
         area: { name: area === 'その他' && otherArea ? String(otherArea).trim() : area, slug: oshIntakeArea_(area) },
-        device: { category: 'other', name: String(device).trim(), slug: oshIntakeSlug_(device) || 'unknown' },
+        device: { category: oshIntakeCategory_(device), name: String(device).trim(), slug: oshIntakeSlug_(device) || 'unknown' },
         consultation: '', works: [], result: '', staffComment: '',
         uncertain: ['作業日は回答日時から仮置き。実際の作業日は未確認のため本文で断定しない']
       },
