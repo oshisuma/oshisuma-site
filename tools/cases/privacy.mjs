@@ -10,6 +10,8 @@
 //       "checked": ["顔", "名前・住所", "書類", "QRコード・バーコード", "シリアル・IMEI・管理番号", "端末の画面", "背景"],
 //       "crop": { "x": 0, "y": 0, "w": 1, "h": 1 } | null,          // 必要な部分だけを使う（0〜1・写真の向きを直した後）
 //       "redact": [{ "x": 0.1, "y": 0.2, "w": 0.3, "h": 0.1, "method": "fill" | "blur", "reason": "背景の書類" }],
+//       "rotate": 0,                 // 傾きの修正（度・時計回りが正・-8〜8）。省略は 0
+//       "enhance": "auto" | "off",   // 画質の補正（明るさ・色味・ノイズ・鮮明度）。省略は auto（補正で悪くなる写真は自動で補正しない）
 //       "note": "判断のメモ（個人情報そのものは書かない）"
 //     }
 //   }
@@ -43,6 +45,8 @@ export function loadPrivacy(file, reportId) {
     for (const r of e.redact || []) {
       if (!rectOk(r) || !['fill', 'blur'].includes(r.method) || !r.reason) bad(`${id} の処理の範囲・方法・理由`);
     }
+    if (e.rotate != null && !(typeof e.rotate === 'number' && Math.abs(e.rotate) <= 8)) bad(`${id} の傾きの修正（-8〜8度）`);
+    if (e.enhance != null && !['auto', 'off'].includes(e.enhance)) bad(`${id} の画質の補正（auto か off）`);
     if (e.status === 'processed' && !(e.redact || []).length && !e.crop) bad(`${id} は「処理して公開」なのに、処理の内容がありません`);
     if (e.status === 'ok' && ((e.redact || []).length || e.crop)) bad(`${id} は「処理不要」なのに、処理の内容があります`);
   }
@@ -56,7 +60,20 @@ export function privacyFor(privacy, id, file) {
   const sha = createHash('sha256').update(readFileSync(file)).digest('hex');
   if (sha !== e.sha256) throw new Error(`写真 ${id} が、プライバシー確認をした写真と違います（SHA-256 が一致しません）。`);
   if (e.status === 'unsafe') throw new Error(`写真 ${id} は、個人情報を安全に処理できないため公開しません（${e.note || '理由はプライバシー確認ファイルを参照'}）。`);
-  return { crop: e.crop || null, redactions: (e.redact || []).map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h, method: r.method })) };
+  return {
+    crop: e.crop || null,
+    redactions: (e.redact || []).map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h, method: r.method })),
+    // 仕上げ（傾きの修正・画質の補正）。事実に関わる部分を描き換える処理はない（写真全体に同じ調整だけ）
+    opts: { rotate: e.rotate || 0, enhance: e.enhance !== 'off' }
+  };
+}
+
+// 画質の補正の結果を、確認のために短い文にする
+export function qualityText(q) {
+  if (!q) return '補正なし';
+  if (!q.applied) return `補正しませんでした（${q.problems.join('・')}）`;
+  const f = (a, b, d = 2) => `${a.toFixed(d)}→${b.toFixed(d)}`;
+  return `明るさ ${f(q.before.mean, q.after.mean)}・コントラスト ${f(q.before.contrast, q.after.contrast, 3)}・色かぶり ${f(q.before.cast, q.after.cast, 3)}・鮮明さ ${f(q.before.sharp, q.after.sharp)}・ざらつき ${f(q.before.noise, q.after.noise)}`;
 }
 
 // できあがった公開用の画像の確認結果（processPhoto の renditions[].redacted）を調べる

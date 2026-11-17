@@ -196,7 +196,7 @@ export async function main(argv) {
   const privacyRec = { reportId: id, version: 1, checkedBy: privacy.checkedBy || 'AI（Claude Code）', checkedAt: privacy.checkedAt || '', photos: {} };
   for (const p of photos) {
     const e = privacy.photos[p.id];
-    privacyRec.photos[p.id] = { sha256: e.sha256, status: e.status, checked: e.checked, crop: e.crop || null, redact: (e.redact || []).map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h, method: r.method, reason: r.reason })) };
+    privacyRec.photos[p.id] = { sha256: e.sha256, status: e.status, checked: e.checked, crop: e.crop || null, redact: (e.redact || []).map((r) => ({ x: r.x, y: r.y, w: r.w, h: r.h, method: r.method, reason: r.reason })), rotate: e.rotate || 0, enhance: e.enhance || 'auto' };
   }
   mkdirSync(join(ROOT, 'content/case-reports/photo-privacy'), { recursive: true });
   writeFileSync(join(ROOT, 'content/case-reports/photo-privacy', `${id}.json`), `${JSON.stringify(privacyRec, null, 2)}\n`);

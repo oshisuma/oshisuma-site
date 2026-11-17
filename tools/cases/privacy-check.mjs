@@ -10,7 +10,7 @@ import { createHash } from 'node:crypto';
 import { join, resolve, relative, isAbsolute } from 'node:path';
 import { ROOT } from './lib.mjs';
 import { startBrowser, processPhoto } from './browser.mjs';
-import { loadPrivacy, privacyFor, verifyRedactions, CHECK_ITEMS } from './privacy.mjs';
+import { loadPrivacy, privacyFor, verifyRedactions, qualityText, CHECK_ITEMS } from './privacy.mjs';
 
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
@@ -31,7 +31,7 @@ try {
     const id = f.replace(/\.[^.]+$/, '');
     const buf = readFileSync(join(photosDir, f));
     const sha = createHash('sha256').update(buf).digest('hex');
-    template.photos[id] = { sha256: sha, status: 'ok', checked: CHECK_ITEMS, crop: null, redact: [], note: '' };
+    template.photos[id] = { sha256: sha, status: 'ok', checked: CHECK_ITEMS, crop: null, redact: [], rotate: 0, enhance: 'auto', note: '' };
     // 目盛り付きの確認用画像（向きを直して長い辺1600px）
     const grid = await browser.evaluate(`(async () => {
       const bin = atob(${JSON.stringify(buf.toString('base64'))});
@@ -57,11 +57,16 @@ try {
     if (privacy) {
       try {
         const pv = privacyFor(privacy, id, join(photosDir, f));
-        const r = await processPhoto(browser, join(photosDir, f), [{ key: 'main', spec: { mode: 'fit', maxW: 1600, maxH: 1600 }, formats: [{ type: 'image/jpeg', quality: 0.85 }] }], pv.crop, pv.redactions);
+        const spec = [{ key: 'main', spec: { mode: 'fit', maxW: 1600, maxH: 1600 }, formats: [{ type: 'image/jpeg', quality: 0.85 }] }];
+        const r = await processPhoto(browser, join(photosDir, f), spec, pv.crop, pv.redactions, pv.opts);
         verifyRedactions(id, r.renditions);
         writeFileSync(join(outDir, `${id}-after.jpg`), Buffer.from(r.renditions[0].base64, 'base64'));
+        // 比べるための「処理も補正もしない」画像
+        const plain = await processPhoto(browser, join(photosDir, f), spec, null, [], {});
+        writeFileSync(join(outDir, `${id}-plain.jpg`), Buffer.from(plain.renditions[0].base64, 'base64'));
         const m = r.renditions[0].redacted.map((q) => `${q.method} ${q.edge.toFixed(2)}`).join('、');
-        console.log(`   処理後：${join(outDir, `${id}-after.jpg`)}${m ? `（処理した部分の細かさ：${m}）` : '（処理なし）'}`);
+        console.log(`   処理後：${join(outDir, `${id}-after.jpg`)}${m ? `（処理した部分の細かさ：${m}）` : '（塗りつぶし・ぼかしなし）'}`);
+        console.log(`   画質の補正：${qualityText(r.quality)}${r.rotate ? `／傾き ${r.rotate}度` : ''}`);
       } catch (e) {
         failed = true;
         console.log(`   × ${e.message}`);
