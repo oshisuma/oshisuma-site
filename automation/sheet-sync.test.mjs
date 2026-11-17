@@ -1,0 +1,71 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
+const source=readFileSync(new URL('./sheet-sync.gs',import.meta.url),'utf8');
+const id='R-20261118-abcd1234';
+const head=['報告ID','版','HP','Google','報告データ（JSON）','更新日時'];
+const draft=(status='needs-photo-review')=>({
+ reportId:id,source:{mode:'production'},status,
+ facts:{area:{name:'水戸市'},device:{name:'iPhone 13'}},
+ media:[{privacyCheck:'pending',contentMatch:'pending'}],
+ approval:{hp:{state:'draft'},gbp:{state:'draft'}},
+ publishLog:{hp:null,gbp:null},
+ drafts:{hp:status==='hold'?null:{slug:'demo'},gbp:status==='hold'?null:{summary:'demo'}}
+});
+const iterator=a=>{let i=0;return {hasNext:()=>i<a.length,next:()=>a[i++]};};
+function harness({enabled=false,initial=[],data=draft(),headers=head}={}){
+ const rows=initial.map(r=>r.slice());
+ const settings=new Map(Object.entries({
+  AUTO_DRAFT_SHEET_SYNC_ENABLED:String(enabled),
+  HANDOFF_FOLDER_ID:'root',MANAGEMENT_SPREADSHEET_ID:'mgmt',
+  AUTO_START_AFTER:'2026-11-17T00:00:00Z'
+ }));
+ const files=[{
+  getName:()=>id+'.json',getDateCreated:()=>new Date('2026-11-18T02:00:00Z'),
+  getBlob:()=>({getDataAsString:()=>JSON.stringify(data)})
+ }];
+ const sheet={
+  getLastRow:()=>rows.length+1,
+  getRange:(r,col,n,w)=>({getValues:()=>r===1?[headers]:rows.map(x=>w===1?[x[0]]:x)}),
+  appendRow:r=>rows.push(r)
+ };
+ const ctx=vm.createContext({
+  Date,Set,JSON,
+  PropertiesService:{getScriptProperties:()=>({getProperty:k=>settings.get(k)||null})},
+  LockService:{getScriptLock:()=>({tryLock:()=>true,releaseLock:()=>{}})},
+  SpreadsheetApp:{openById:()=>({getSheetByName:()=>sheet})},
+  DriveApp:{getFolderById:()=>({getFoldersByName:()=>iterator([{getFiles:()=>iterator(files)}])})}
+ });
+ vm.runInContext(source,ctx);
+ return {rows,settings,run:()=>vm.runInContext('oshAutoDraftSheetSyncTick()',ctx)};
+}
+test('default OFF does not write',()=>{const x=harness();x.run();assert.equal(x.rows.length,0);});
+test('new draft is imported once and stays unapproved',()=>{
+ const x=harness({enabled:true});x.run();x.run();assert.equal(x.rows.length,1);
+ assert.deepEqual(x.rows[0].slice(0,4),[id,1,'draft','draft']);
+});
+test('existing ID is never overwritten',()=>{
+ const existing=[id,3,'approved','approved','{"custom":"keep"}','timestamp'];
+ const x=harness({enabled:true,initial:[existing]});x.run();
+ assert.deepEqual(x.rows[0],existing);assert.equal(x.rows.length,1);
+});
+test('incomplete repair stays on hold and is not approved',()=>{
+ const x=harness({enabled:true,data:draft('hold')});x.run();
+ assert.equal(JSON.parse(x.rows[0][4]).status,'hold');
+ assert.equal(x.rows[0][2],'draft');
+});
+test('already approved report is rejected',()=>{
+ const data=draft();data.approval.hp.state='approved';
+ const x=harness({enabled:true,data});
+ assert.throws(()=>x.run(),/未承認の安全な下書き/);assert.equal(x.rows.length,0);
+});
+test('unreviewed photo field cannot be marked safe by AI',()=>{
+ const data=draft();data.media[0].privacyCheck='ok';
+ const x=harness({enabled:true,data});assert.throws(()=>x.run(),/写真が未確認/);
+ assert.equal(x.rows.length,0);
+});
+test('schema drift stops before write',()=>{
+ const x=harness({enabled:true,headers:['BAD',...head.slice(1)]});
+ assert.throws(()=>x.run(),/列名が変更/);assert.equal(x.rows.length,0);
+});
