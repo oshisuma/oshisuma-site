@@ -37,12 +37,12 @@ export async function startBrowser() {
 }
 
 // 元写真（ファイル）から、renditions で指定した公開用の画像を作る
-export function processPhoto(browser, file, renditions, region) {
+export function processPhoto(browser, file, renditions, region, options = null) {
   const b64 = readFileSync(file).toString('base64');
   return browser.evaluate(`(async () => {
     const bin = atob(${JSON.stringify(b64)});
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return OshismaPhoto.process(new Blob([bytes], { type: 'image/jpeg' }), ${JSON.stringify(renditions)}, ${JSON.stringify(region || null)});
+    return OshismaPhoto.process(new Blob([bytes], { type: 'image/jpeg' }), ${JSON.stringify(renditions)}, ${JSON.stringify(region || null)}, ${JSON.stringify(options || null)});
   })()`);
 }
