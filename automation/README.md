@@ -258,3 +258,17 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 `legacy-import-bridge.test.mjs` で導入開始行、本人確認、古い案件の除外、エラー時停止、件数上限など11件をモック検証。
 
 **本番は未変更。** 追加で `回答の取り込み.gs` と `承認画面_表示.html` の現行コードを確認してから、上記アダプターの実接続方法を確定する。
+
+## 第14段階：現行承認画面へのAI下書き受け渡しブリッジ（2026-11-18）
+
+- `legacy-auto-draft-bridge.gs`: **初期OFF・本番未導入**。現行 `exchangeFolders_` が保存した `EXCHANGE_IDS` の `intake` / `drafts` フォルダを再利用。管理シート `下書き` の `status: needs-draft` のみ処理。過去案件は作成日時下限で除外し、Galaxy S23 Ultra `R-20261117-f5586927`、iPad A16 `R-20261117-83fc7631` は常に保留。
+- `AI_DATA_SHARING_APPROVED`、APIキー、モデル、開始日時、本番本人認証、日次呼び出し上限がそろうまで**外部AI呼び出しなし**。識別情報が疑われる報告は個別保留。AIが相談のみ／結果未確認なら公開記事用下書きなし。
+- `legacy-draft-payload.gs`: 現行 `承認.gs` の `applyDraft_` 互換の「差分JSON」を構成。元報告と画像IDを変更しない。alt/captionは自動で捏造せず写真確認を残す。既存の `applyDraft_` をコピーした報告で事前検証した後でのみ `drafts` に保存する。
+- `apiSyncDrafts` は**現行システムにある**ので、そのまま流用する。管理シートへ新規行追加する従来の `sheet-sync.gs` は本番に接続しない。
+- テスト `legacy-auto-draft-bridge.test.mjs` 10件（無効状態、データ送信同意、本人確認、重複、プライバシー疑義、未完了、形式不備の安全停止など）。GitHub Actionsで模擬テスト通過。
+
+**接続前の制約・残課題**：
+1. 顧客報告の外部AI送信・従量課金は未承認のため、APIは稼働していない。
+2. `Session.getActiveUser().getEmail()` に依存する既存認証が時間トリガーで使えるかは未検証。取得できなければ無理に権限を迂回せず停止する。
+3. 写真のalt/caption・プライバシー確認、完成プレビュー、本人の最終公開承認は未自動化。写真が未確認なら今の承認画面でブロックされる。
+4. 新スクリプトを本番GASへコピー・デプロイ・トリガー設定・権限追加することはしていない。事前のテスト用環境と明確な許可が必要。
