@@ -9,7 +9,7 @@ const source = readFileSync(new URL('./auto-draft.gs', import.meta.url), 'utf8')
 const HELD = ['R-20261117-f5586927', 'R-20261117-83fc7631'];
 const NEW_ID = 'R-20261118-a1b2c3d4';
 const report = (id = NEW_ID) => ({
-  schemaVersion: 1, reportId: id, status: 'needs-draft',
+  schemaVersion: 1, reportId: id, status: 'draft', workflow: { stage: 'needs-ai-draft' },
   source: { type: 'google-form', mode: 'production' },
   facts: { area: { name: '水戸市', slug: 'mito' }, device: { name: 'iPhone 13', slug: 'iphone13' }, uncertain: [] },
   intake: { reportText: '突然電源が入らなくなり、基板修理で復旧した。' },
@@ -116,7 +116,8 @@ test('creates an unapproved draft and notifies once; headers are correct', () =>
   assert.equal(req.headers['x-api-key'], 'test-secret');
   assert.equal(req.headers['anthropic-version'], '2023-06-01');
   const draft = JSON.parse(a.out.get(NEW_ID + '.json'));
-  assert.equal(draft.status, 'needs-photo-review');
+  assert.equal(draft.status, 'draft');
+  assert.equal(draft.workflow.stage, 'needs-photo-review');
   assert.equal(draft.approval.hp.state, 'draft');
   assert.equal(draft.approval.gbp.state, 'draft');
   assert.equal(draft.media[0].privacyCheck, 'pending');
@@ -126,7 +127,8 @@ test('incomplete repair is held, never claimed complete', () => {
   const a = harness({ enabled: 'true', approved: 'true', reply: answer });
   a.run();
   const draft = JSON.parse(a.out.get(NEW_ID + '.json'));
-  assert.equal(draft.status, 'hold');
+  assert.equal(draft.status, 'draft');
+  assert.equal(draft.workflow.stage, 'hold');
   assert.equal(draft.approval.hp.state, 'draft');
   assert.equal(draft.drafts.hp, null);
 });
