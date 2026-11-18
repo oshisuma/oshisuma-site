@@ -297,3 +297,13 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 5. この確認用プレビューは**本番サイトに近いCloudflareプレビューの代わりではない**。サイト全体の見た目を検証するCloudflareプレビューとオーナー最終公開承認は別工程で必須。
 
 **現状**：本番未変更、プレビューURL未作成、写真自動検査未完了。GitHub Actionsの模擬テストは成功しても実機確認にはならない。
+
+## 第17段階：現行本番スクリプトに合わせた読取専用接続診断（2026-11-18）
+
+- `legacy-readonly-preflight.gs` を追加（**本番未導入・無効状態を前提**）。ユーザーから実際に共有された `共通.gs`、`受け渡し.gs`、`承認.gs`、`回答の取り込み.gs` に合わせる。
+- 現行 `book_()` で管理用スプレッドシート（currentonly）だけを開き、`DRAFT_HEADERS` / `IMPORT_HEADERS` / `LOG_HEADERS` が正しいか確かめる。フォーム回答は既存 `responseSheet_()`（Sheets API読み取り専用）を流用。
+- Driveに保存済みの `EXCHANGE_IDS` を**読むだけ**で、既存の `root/intake/drafts/photos/approved` の存在を確認する。`exchangeFolders_()` は呼ばず、勝手にフォルダを作成しない。
+- 外部AI承認状態、取り込み開始行、AI処理開始日時、APIキーとモデル設定の**有無だけ**を返す。実際のキー、フォルダID、報告文、担当スタッフ名などは返さない。テスト結果がすべてOKでも `productionApproved:false`。
+- `legacy-readonly-preflight.test.mjs` の7件のVM模擬テストを追加。GitHub Actionsで成功。ただしGASの実権限・Webアプリの本人認証は未検証。
+
+**次に必要な実接続**：本番GASのコピーを作り、設定・Driveの既存フォルダ・時間トリガーの実行主体を確認した後、実案件ではない合成報告で一連の動作を検証。現段階では、時間トリガーが既存の `requireApprover_()` を通れるか不明で、権限を迂回する実装は禁止。AIの外部API使用・課金と実データの送信にも別の明確な許可が必要。現行HP公開とGoogle投稿は未変更。
