@@ -41,7 +41,7 @@ export function assembleLegacyReview(html,reviewFunctions,inboxFunctions){
     '画面遷移時の通信停止');
   result=insertOnce(result,
     "el('button', { class: 'b danger' + (p.decision === 'ng' ? ' on' : ''), 'aria-pressed': String(p.decision === 'ng'), onclick: () => decide(p.id, 'ng') }, '使わない')))));",
-    "el('button', { class: 'b danger' + (p.decision === 'ng' ? ' on' : ''), 'aria-pressed': String(p.decision === 'ng'), onclick: () => decide(p.id, 'ng') }, '使わない'),\n      el('button', { class: 'b', disabled: p.decision !== 'ok', onclick: () => oshEditPhotoAlt_(p) }, '写真の説明文を編集'))));",
+    "el('button', { class: 'b danger' + (p.decision === 'ng' ? ' on' : ''), 'aria-pressed': String(p.decision === 'ng'), onclick: () => decide(p.id, 'ng') }, '使わない'),\n      el('button', { class: 'b', disabled: p.decision !== 'ok', onclick: () => oshEditPhotoAlt_(p) }, '写真の説明文を編集')))));",
     '写真説明文のボタン');
   result=insertOnce(result,
     "photos),\n    el('details', { class: 'meta' }",
