@@ -328,3 +328,13 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 対応確認：GitHub Actions `node --test automation/*.test.mjs` 成功。
 
 **未完了の最重要事項**：`legacy-*` モジュールの本番GASへの安全な統合、時間トリガーでの本人認証、AI API利用同意・課金とデータ保護、写真の目視確認、Cloudflare完成プレビュー、オーナー最終承認。現在も初期OFF、本番反映なし。
+
+## 第20段階：本番HTMLを保護する統合用の差分生成（2026-11-18）
+
+`assemble-legacy-review.mjs` を作成。本番の `承認画面_表示.html` を**上書きせず**別ファイルとして読み、`legacy-owner-review-ui.js`・`legacy-review-inbox.js` を安全に挿入するためのローカル組立ツール。
+- 既存の `ALLOWED`（本人認証）、`apiApprove`、`apiPhoto`、`doGet` や公開処理は変更しない。
+- 追加対象は写真alt編集・記事内容確認プレビュー・画面を開いている間の新着案内。
+- 元ファイル上書き、既存機能への重複挿入、HTML側の構造不一致は**失敗として停止**する。実運用に使う前に別ファイルのコードレビューと実GASテストが必須。
+- 開発用の合成HTMLだけを `assemble-legacy-review.test.mjs` で検証（5項目通過）。本番のHTML全文はGitHubにコミットしない。
+
+**重要：この画面はまだ本番未導入です。** ローカルで合成した画面と写真を含む実データは、GitHubや一般公開URLに置かないこと。完了には実環境の権限・実写真・Cloudflareプレビュー・本人公開承認の検証が必要。
