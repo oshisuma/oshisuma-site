@@ -5,13 +5,13 @@ import {readFileSync} from 'node:fs';
 const source=readFileSync(new URL('./sheet-sync.gs',import.meta.url),'utf8');
 const id='R-20261118-abcd1234';
 const head=['報告ID','版','HP','Google','報告データ（JSON）','更新日時'];
-const draft=(status='needs-photo-review')=>({
- reportId:id,source:{mode:'production'},status,
+const draft=(stage='needs-photo-review')=>({
+ reportId:id,source:{mode:'production'},status:'draft',workflow:{stage},
  facts:{area:{name:'水戸市'},device:{name:'iPhone 13'}},
  media:[{privacyCheck:'pending',contentMatch:'pending'}],
  approval:{hp:{state:'draft'},gbp:{state:'draft'}},
  publishLog:{hp:null,gbp:null},
- drafts:{hp:status==='hold'?null:{slug:'demo'},gbp:status==='hold'?null:{summary:'demo'}}
+ drafts:{hp:stage==='hold'?null:{slug:'demo'},gbp:status==='hold'?null:{summary:'demo'}}
 });
 const iterator=a=>{let i=0;return {hasNext:()=>i<a.length,next:()=>a[i++]};};
 function harness({enabled=false,initial=[],data=draft(),headers=head}={}){
@@ -56,7 +56,7 @@ test('existing ID is never overwritten',()=>{
 });
 test('incomplete repair stays on hold and is not approved',()=>{
  const x=harness({enabled:true,data:draft('hold')});x.run();
- assert.equal(JSON.parse(x.rows[0][4]).status,'hold');
+ assert.equal(JSON.parse(x.rows[0][4]).workflow.stage,'hold');
  assert.equal(x.rows[0][2],'draft');
 });
 test('already approved report is rejected',()=>{
