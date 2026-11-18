@@ -72,9 +72,14 @@ function oshLegacyReadOnlyPreflight() {
     }
   }
   const futureRow=Number(val('OSH_LEGACY_AUTO_START_ROW'));
+  const responseLastRow = response && typeof response.getLastRow === 'function'
+    ? response.getLastRow() : null;
+  // 接続前にフォームに既に存在する行を自動取込対象へ含めない。
+  // この診断は新機能がOFFの状態で実施することを前提とする。
   add('new-rows-only',!!val('OSH_LEGACY_AUTO_START_ROW')&&
-    Number.isInteger(futureRow)&&futureRow>=2,
-    '自動化開始後の回答行を指定している（過去の回答は処理しない）','warning');
+    Number.isInteger(futureRow)&&futureRow>=2&&
+    Number.isInteger(responseLastRow)&&futureRow>responseLastRow,
+    '自動取込の開始行が、現在のフォーム回答の最終行より後にある','warning');
   const startMs=Date.parse(val('OSH_LEGACY_AI_START_AFTER'));
   add('new-files-only',Number.isFinite(startMs),
     'AIが扱うファイルの開始日時を指定している（過去の案件は処理しない）','warning');
