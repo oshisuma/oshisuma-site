@@ -14,7 +14,7 @@ function make(options={}){
   oshSandboxReviewRead:()=>({reportId:'R-20261118-demo0001',revision:2,
     title:'水戸市のiPhone 15画面修理',description:'架空の報告',
     review:{state:'confirmed'},sections:[{heading:'修理内容',paragraphs:['画面交換']}],
-    canPublish:false})},
+    canPublish:false}),
   HtmlService:{createHtmlOutput(html){
     log.push(html);
     return {html,setTitle(){return this}};
