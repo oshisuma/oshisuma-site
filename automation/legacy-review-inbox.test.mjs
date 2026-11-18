@@ -38,7 +38,7 @@ test('fresh item after initial load is displayed as review prompt',async()=>{
  await x.ctx.oshLegacyInboxCheck_(); // 最初の既存案件を新着と誤表示しない
  await x.ctx.oshLegacyInboxCheck_(); // 2回目に追加された報告だけ表示
  assert.equal(x.ui.length,1);
- assert.match(JSON.stringify(x.ui[0]),/iPad画面修理/);
+ assert.match/(JSON.stringify(x.ui[0]),/iPad画面修理/);
  x.ctx.oshLegacyInboxStop();
 });
 test('hidden page does not poll GAS',async()=>{
@@ -46,6 +46,13 @@ test('hidden page does not poll GAS',async()=>{
  await Promise.resolve();await Promise.resolve();
  assert.equal(x.calls.filter(c=>c[0]==='api').length,0);
  x.ctx.oshLegacyInboxStop();
+});
+test('all polling requests use read-only inbox API, not apiList',async()=>{
+ const x=fixture({lists:[[a],[a,b]]});
+ vm.runInContext('OSH_LEGACY_INBOX.target = {}',x.ctx);
+ await x.ctx.oshLegacyInboxCheck_();
+ await x.ctx.oshLegacyInboxCheck_();
+ assert.ok(x.calls.filter(c=>c[0]==='api').every(c=>c[1]==='oshLegacyReviewInbox'));
 });
 test('polling stops on navigation',()=>{
  const x=fixture();x.ctx.oshLegacyInboxStart({});
