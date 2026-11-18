@@ -3,86 +3,94 @@ import assert from 'node:assert/strict';
 import vm from 'node:vm';
 import {readFileSync} from 'node:fs';
 const code=readFileSync(new URL('./legacy-import-bridge.gs',import.meta.url),'utf8');
-const reports=[
- {key:'old',row:8,photos:2,imported:'R-20261117-a1b2c3d4'},
- {key:'new1',row:15,photos:2,imported:''},
- {key:'new2',row:16,photos:1,imported:''},
- {key:'new3',row:17,photos:3,imported:''}
-];
-function mock({enabled=false,halted=false,owner=true,start=15,max='2',failure=false,list=reports}={}){
- const props=new Map(Object.entries({
-   OSH_LEGACY_AUTO_IMPORT_ENABLED:String(enabled),
-   OSH_LEGACY_AUTO_HALTED:String(halted),
-   OSH_LEGACY_AUTO_START_ROW:String(start),
-   OSH_LEGACY_AUTO_MAX_PER_TICK:String(max)
+function harness({enabled=false,authorized=true,start=10,cursor=null,last=13,max=2,
+ missingDateRow=null,badPhotosRow=null,failAt=null,duplicates=[],persisted=true}={}){
+ const prop=new Map(Object.entries({
+ OSH_LEGACY_AUTO_IMPORT_ENABLED:String(enabled),
+ OSH_LEGACY_AUTO_START_ROW:String(start),
+ OSH_LEGACY_AUTO_MAX_PER_TICK:String(max)
  }));
- const imported=[];
- const context=vm.createContext({
+ if(cursor!==null)prop.set('OSH_LEGACY_IMPORT_CURSOR',String(cursor));
+ const calls={readRows:[],api:[],auth:0};
+ const rows=Array.from({length:last+1},(_,i)=>i);
+ const ledger={}; for(const x of duplicates)ledger['sent_'+x]='R-20261118-abc12345';
+ const ctx=vm.createContext({
+  CONFIG:{MODE:'production',RESPONSE_SPREADSHEET_ID:'fake-form',KEY_PREFIX:'sent_',MAX_PHOTOS:5},
   PropertiesService:{getScriptProperties:()=>({
-   getProperty:k=>props.get(k)??null,setProperty:(k,v)=>props.set(k,v)
+    getProperty:k=>prop.get(k)??null,
+    setProperty:(k,v)=>prop.set(k,v)
   })},
-  CONFIG:{MODE:'production',MAX_PHOTOS:5,RECENT_RESPONSES:15},
-  Logger:{log:()=>{}},
-  requireApprover_:()=>{
-   if(!owner)throw Error('権限がありません');
-   return 'owner@example.test';
+  requireApprover_:()=>{calls.auth++;if(!authorized)throw Error('許可されていません');return 'owner'},
+  responseSheet_:()=>({getLastRow:()=>last}),
+  getLayout_:()=>({}),
+  readReport_:(sheet,row)=>{
+    calls.readRows.push(row);
+    return {timestampKey:row===missingDateRow?'':'2026-11-18T04:00:00Z',photoIds:
+      row===badPhotosRow?[]:['fake-photo-'+row]};
   },
-  apiResponses:()=>list,
+  reportKey_:(sid,report)=>'sent_'+calls.readRows.at(-1),
+  importedKeys_:()=>({...ledger}),
   apiImport:key=>{
-   if(failure)throw Error('failed after partial Drive copy');
-   imported.push(key);
-   return {reportId:'R-20261118-'+(key==='new1'?'aaaaaaaa':key==='new2'?'bbbbbbbb':'cccccccc')};
-  }
+    calls.api.push(key);
+    if(key==='sent_'+failAt)throw Error('photo copy incomplete');
+    return {reportId:'R-20261118-1234abcd'};
+  },
+  Logger:{log:()=>{}}
  });
- vm.runInContext(code,context,{filename:'legacy-import-bridge.gs',timeout:1000});
- return {run:()=>vm.runInContext('oshLegacyAutoImportTick()',context,{timeout:1000}),props,imported};
+ vm.runInContext(code,ctx,{timeout:1000});
+ return {run:()=>vm.runInContext('oshLegacyAutoImportTick()',ctx,{timeout:1000}),prop,calls,ctx};
 }
-test('default OFF: does not touch intake',()=>{
- const a=mock();assert.equal(a.run().status,'disabled');assert.deepEqual(a.imported,[]);
+test('default OFF never accesses responses',()=>{
+ const x=harness();assert.equal(x.run().status,'disabled');assert.deepEqual(x.calls.readRows,[]);
 });
-test('only newly submitted, not-yet-imported rows are selected',()=>{
- const a=mock({enabled:true});const x=a.run();
- assert.deepEqual(a.imported,['new1','new2']);assert.equal(x.imported,2);
+test('new rows processed oldest-first and cursor advanced',()=>{
+ const x=harness({enabled:true,start:10,last:13,max:2});
+ const a=x.run();assert.deepEqual(x.calls.api,['sent_10','sent_11']);assert.equal(a.status,'more');
+ assert.equal(x.prop.get('OSH_LEGACY_IMPORT_CURSOR'),'12');
+ x.run();assert.deepEqual(x.calls.api,['sent_10','sent_11','sent_12','sent_13']);
+ assert.equal(x.prop.get('OSH_LEGACY_IMPORT_CURSOR'),'14');
 });
-test('each execution is capped at 3 imports',()=>{
- const a=mock({enabled:true,max:'3'});a.run();
- assert.deepEqual(a.imported,['new1','new2','new3']);
+test('a large backlog beyond old 15-response window is not missed',()=>{
+ const x=harness({enabled:true,start:10,last:31,max:3});
+ for(let i=0;i<8;i++)x.run();
+ assert.equal(x.calls.api.length,22);assert.equal(x.calls.api.at(-1),'sent_31');
 });
-test('past reports remain untouched by start row cutoff',()=>{
- const a=mock({enabled:true,start:17});a.run();
- assert.deepEqual(a.imported,['new3']);
+test('already imported report is skipped but cursor advances',()=>{
+ const x=harness({enabled:true,start:10,last:11,duplicates:[10]});x.run();
+ assert.deepEqual(x.calls.api,['sent_11']);assert.equal(x.prop.get('OSH_LEGACY_IMPORT_CURSOR'),'12');
 });
-test('no auto import if owner session is not confirmed',()=>{
- const a=mock({enabled:true,owner:false});
- assert.throws(()=>a.run(),/権限/);assert.equal(a.imported.length,0);
+test('one photo is accepted, zero photos stops safely',()=>{
+ const x=harness({enabled:true,start:10,last:11,badPhotosRow:11});
+ assert.throws(()=>x.run(),/自動取込を停止/);
+ assert.deepEqual(x.calls.api,['sent_10']);
+ assert.equal(x.prop.get('OSH_LEGACY_IMPORT_CURSOR'),'11');
+ assert.equal(x.prop.get('OSH_LEGACY_AUTO_HALTED'),'true');
 });
-test('a partially failed old import halts future automatic retries',()=>{
- const a=mock({enabled:true,failure:true});
- assert.throws(()=>a.run(),/自動取込を停止/);
- assert.equal(a.props.get('OSH_LEGACY_AUTO_HALTED'),'true');
- assert.throws(()=>a.run(),/前回の取込エラー/);
+test('failed apiImport never advances cursor and stops retries',()=>{
+ const x=harness({enabled:true,failAt:10});
+ assert.throws(()=>x.run(),/停止/);assert.equal(x.prop.get('OSH_LEGACY_IMPORT_CURSOR'),undefined);
+ assert.throws(()=>x.run(),/前回の取込エラー/);
+ assert.equal(x.calls.api.length,1);
 });
-test('already halted system never touches reports',()=>{
- const a=mock({enabled:true,halted:true});
- assert.throws(()=>a.run(),/停止/);assert.equal(a.imported.length,0);
+test('old rows are never read, unauthorized owner is rejected',()=>{
+ const x=harness({enabled:true,authorized:false,start:10,last:12});
+ assert.throws(()=>x.run(),/許可/);assert.deepEqual(x.calls.readRows,[]);
 });
-test('invalid import limits are rejected',()=>{
- for(const max of ['0','4','abc']){
-  const a=mock({enabled:true,max});
-  assert.throws(()=>a.run(),/最大取り込み件数/);
+test('cursor before start is refused without touching any report',()=>{
+ const x=harness({enabled:true,start:10,cursor:9});
+ assert.throws(()=>x.run(),/カーソル/);assert.deepEqual(x.calls.readRows,[]);
+});
+test('shrunk sheet row count is treated as inconsistency',()=>{
+ const x=harness({enabled:true,start:10,cursor:15,last:11});
+ assert.throws(()=>x.run(),/行数/);
+});
+test('invalid maximum batch size fails closed',()=>{
+ for(const max of [0,4,'xxx']){
+  const x=harness({enabled:true,max});assert.throws(()=>x.run(),/件数/);
  }
 });
-test('missing or incorrect start row is rejected',()=>{
- for(const start of ['1','NaN']){
-  const a=mock({enabled:true,start});
-  assert.throws(()=>a.run(),/開始する回答行/);
- }
-});
-test('photos outside 1..5 are not imported',()=>{
- const a=mock({enabled:true,list:[{key:'zero',row:18,photos:0,imported:''},{key:'six',row:19,photos:6,imported:''}]});
- a.run();assert.equal(a.imported.length,0);
-});
-test('new rows are handled oldest-first for predictable backlogs',()=>{
- const a=mock({enabled:true,list:[...reports].reverse()});a.run();
- assert.deepEqual(a.imported,['new1','new2']);
+test('date missing in a new row halts, rather than skipping potentially incomplete entry',()=>{
+ const x=harness({enabled:true,missingDateRow:10});
+ assert.throws(()=>x.run(),/停止/);
+ assert.equal(x.prop.get('OSH_LEGACY_AUTO_HALTED'),'true');
 });
