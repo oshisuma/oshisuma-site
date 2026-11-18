@@ -64,11 +64,11 @@ function oshLegacyAiGenerate_(report,settings){
     throw new Error('AI送信の許可がありません');
   if(!settings?.apiKey||!settings?.model)throw new Error('AI接続設定がありません');
   const prompt=oshLegacyAiPrompt_(report);
-  const version=p.getProperty('ANTHROPIC_API_VERSION')||'2026-10-21';
+  const version=p.getProperty('ANTHROPIC_API_VERSION')||'2023-06-01';
   if(!/^\d{4}-\d{2}-\d{2}$/.test(version))throw new Error('APIバージョンが不正です');
   const response=UrlFetchApp.fetch('https://api.anthropic.com/v1/messages',{
     method:'post',contentType:'application/json',muteHttpExceptions:true,
-    headers:{'Authorization':'Bearer '+settings.apiKey,'anthropic-version':version},
+    headers:{'x-api-key':settings.apiKey,'anthropic-version':version},
     payload:JSON.stringify({model:settings.model,max_tokens:2600,messages:[{role:'user',content:prompt}]})
   });
   if(response.getResponseCode()!==200)
