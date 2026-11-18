@@ -97,5 +97,7 @@ $('load').addEventListener('click',()=>{
   $('load').disabled=false;$('message').textContent=err?.message||'確認できませんでした';
  }).oshPreviewOwnerView(id);
 });
+// 本人確認と設定が有効な環境なら、画面を開くと一覧が自動表示される。
+$('refresh').click();
 })();
 </script></body></html>
