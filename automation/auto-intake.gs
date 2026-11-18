@@ -97,7 +97,8 @@ function oshIntakeMapRow_(values, rowNumber) {
     staff: String(staff || '').trim(), sourceKey,
     rowNumber, timestamp,
     report: {
-      schemaVersion: 1, reportId: id, status: 'needs-draft',
+      schemaVersion: 1, reportId: id, status: 'draft',
+      workflow: { stage: 'needs-ai-draft' },
       source: { type: 'google-form', key: sourceKey, mode: 'production' },
       facts: {
         workDate: Utilities.formatDate(timestamp, 'Asia/Tokyo', 'yyyy-MM-dd'),
