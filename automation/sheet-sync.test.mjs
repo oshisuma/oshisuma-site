@@ -7,11 +7,18 @@ const id='R-20261118-abcd1234';
 const head=['報告ID','版','HP','Google','報告データ（JSON）','更新日時'];
 const draft=(stage='needs-photo-review')=>({
  reportId:id,source:{mode:'production'},status:'draft',workflow:{stage},
- facts:{area:{name:'水戸市'},device:{name:'iPhone 13'}},
+ facts:{area:{name:'水戸市'},device:{name:'iPhone 13'},works:['画面修理'],result:'画面の動作を確認'},
  media:[{privacyCheck:'pending',contentMatch:'pending'}],
  approval:{hp:{state:'draft'},gbp:{state:'draft'}},
  publishLog:{hp:null,gbp:null},
- drafts:{hp:stage==='hold'?null:{slug:'demo'},gbp:stage==='hold'?null:{summary:'demo'}}
+ drafts:{
+  hp:stage==='hold'?null:{
+    slug:'2026-11-18-mito-iphone13-screen',date:'2026-11-18',
+    titleDevice:'iPhone 13',titleArea:'水戸市',titleServices:['画面修理'],
+    description:'画面修理のご相談',cardSummary:'iPhone 13の画面修理',
+    sections:[{heading:'ご相談',paragraphs:['画面が割れた']}]},
+  gbp:stage==='hold'?null:{summary:'iPhone 13の画面修理'}
+ }
 });
 const iterator=a=>{let i=0;return {hasNext:()=>i<a.length,next:()=>a[i++]};};
 function harness({enabled=false,initial=[],data=draft(),headers=head}={}){
@@ -93,4 +100,30 @@ test('an explicitly held report is never notified',()=>{
  x.settings.set('HOLD_REPORT_IDS',id);
  x.run();
  assert.equal(x.emails.length,0);
+});
+
+test('an AI title with work not actually reported is rejected before sheet write',()=>{
+ const data=draft();data.drafts.hp.titleServices=['バッテリー交換'];
+ const x=harness({enabled:true,data});
+ assert.throws(()=>x.run(),/対応内容/);
+ assert.equal(x.rows.length,0);
+ assert.equal(x.emails.length,0);
+});
+test('an AI title with a different device is rejected before sheet write',()=>{
+ const data=draft();data.drafts.hp.titleDevice='iPhone 15';
+ const x=harness({enabled:true,data});
+ assert.throws(()=>x.run(),/機種/);
+ assert.equal(x.rows.length,0);
+});
+test('Google draft containing a phone number is rejected before sheet write',()=>{
+ const data=draft();data.drafts.gbp.summary='お電話は090-1234-5678';
+ const x=harness({enabled:true,data});
+ assert.throws(()=>x.run(),/URLまたは電話番号/);
+ assert.equal(x.rows.length,0);
+});
+test('AI draft with a different area is rejected before sheet write',()=>{
+ const data=draft();data.drafts.hp.titleArea='東京';
+ const x=harness({enabled:true,data});
+ assert.throws(()=>x.run(),/地域/);
+ assert.equal(x.rows.length,0);
 });
