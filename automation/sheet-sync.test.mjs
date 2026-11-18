@@ -11,7 +11,7 @@ const draft=(stage='needs-photo-review')=>({
  media:[{privacyCheck:'pending',contentMatch:'pending'}],
  approval:{hp:{state:'draft'},gbp:{state:'draft'}},
  publishLog:{hp:null,gbp:null},
- drafts:{hp:stage==='hold'?null:{slug:'demo'},gbp:status==='hold'?null:{summary:'demo'}}
+ drafts:{hp:stage==='hold'?null:{slug:'demo'},gbp:stage==='hold'?null:{summary:'demo'}}
 });
 const iterator=a=>{let i=0;return {hasNext:()=>i<a.length,next:()=>a[i++]};};
 function harness({enabled=false,initial=[],data=draft(),headers=head}={}){
