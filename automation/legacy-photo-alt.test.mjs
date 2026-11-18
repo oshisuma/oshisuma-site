@@ -24,7 +24,7 @@ function fixture({photoOk=true,approved=false,published=false,revision=2}={}){
    context.oshLegacySetPhotoAlt(report.reportId,'p1',value,rev),report,d,actions};
 }
 test('approved photo may be given a descriptive alt by verified owner route',()=>{
- const x=fixture();x.run();assert.equal(x.d.revision,3);assert.ok(x.report.media[0].alt.includes('iPhone 15'));assert.equal(x.actions.length,1);
+ const x=fixture();x.run();assert.equal(x.d.revision,2);assert.ok(x.report.media[0].alt.includes('iPhone 15'));assert.equal(x.actions.length,1);
 });
 test('pending photos are never made publishable merely by entering alt',()=>{
  const x=fixture({photoOk:false});
@@ -42,7 +42,7 @@ test('an alt change invalidates all existing channel approvals',()=>{
 });
 test('unchanged text does not change revision or logs',()=>{
  const x=fixture();x.run();x.run(x.report.media[0].alt);
- assert.equal(x.d.revision,3);assert.equal(x.actions.length,1);
+ assert.equal(x.d.revision,2);assert.equal(x.actions.length,1);
 });
 test('stale revision is denied',()=>{
  const x=fixture();assert.throws(()=>x.run('水戸市のiPhone修理の写真',1),/版/);
@@ -58,4 +58,11 @@ test('too short alt is denied',()=>{
 });
 test('invalid report id is denied',()=>{
  const x=fixture(); assert.throws(()=>vm.runInNewContext(code+'\noshLegacySetPhotoAlt("invalid","p1","正しく確認した修理写真",2)',{withDraft_:()=>{throw Error('must not call');}}),/報告ID/);
+});
+
+test('withDraft_ owns revisioning; alt change does not independently increment the version',()=>{
+ const x=fixture({revision:7});
+ x.run();
+ assert.equal(x.d.revision,7);
+ assert.equal(x.actions.length,1);
 });
