@@ -23,3 +23,13 @@ jobs:
         with:
           node-version: '22'
       - run: node --test automation/*.test.mjs
+      # Secrets or real customer photos are NEVER part of this artifact.
+      - name: Assemble review-only Apps Script add-on
+        run: node automation/build-legacy-bundle.mjs --out "$RUNNER_TEMP/oshisuma-legacy-addon.gs"
+      - name: Upload review-only bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: oshisuma-legacy-addon-review
+          path: ${{ runner.temp }}/oshisuma-legacy-addon.gs
+          if-no-files-found: error
+          retention-days: 7
