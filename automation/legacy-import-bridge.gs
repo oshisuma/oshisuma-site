@@ -1,67 +1,78 @@
 /**
- * 既存の本番「承認.gs」専用：フォーム取込の安全な自動化アダプター
- * 【本番未導入・既定OFF】既存のapiResponses()/apiImport()を使う。
- * 新しいID生成、元フォームへの書き込み、別方式での管理シート追記、
- * 別のDriveフォルダ生成は一切行わない。
+ * オシスマ：現行本番 apiImport() のみを使う新規回答の自動取り込み。
+ * 【未導入・既定OFF】既存のフォーム回答シートは読むだけ。
+ * apiResponses() の最新15件制限を回避するため、専用カーソルで新しい行を順番に見る。
  *
- * 既存の本人認証（requireApprover_）、重複排除（apiImportのimportedKeys_）、
- * 写真コピー（writeIntake_）、管理シート・操作ログへの記録をそのまま使う。
+ * Script properties:
+ *  OSH_LEGACY_AUTO_IMPORT_ENABLED=false
+ *  OSH_LEGACY_AUTO_START_ROW=設置時点の最終行+1
+ *  OSH_LEGACY_IMPORT_CURSOR=任意。未設定なら開始行
+ *  OSH_LEGACY_AUTO_MAX_PER_TICK=2 （1〜3）
+ *  OSH_LEGACY_AUTO_HALTED=false
  *
- * GAS script properties:
- *   OSH_LEGACY_AUTO_IMPORT_ENABLED=false
- *   OSH_LEGACY_AUTO_START_ROW=（自動化開始後の新規回答行、必須）
- *   OSH_LEGACY_AUTO_HALTED=false
- *   OSH_LEGACY_AUTO_MAX_PER_TICK=2 (上限3)
- * 既存の会話中のGalaxy/iPad報告は過去の取り込み済み案件として対象外にする。
- *
- * 注意: apiResponses()は現行CONFIG.RECENT_RESPONSES件だけを返す。
- * 回答量が多いと古い未取込が残り得るため、実際の回答数・頻度を確認してから運用する。
+ * 既存の apiImport() が写真・管理シート・台帳の書込み、重複確認、本人認証を担当。
+ * 読み取れない行や写真異常で止め、連続再試行しない。Google投稿・HP公開機能なし。
  */
 function oshLegacyAutoImportTick() {
   const p=PropertiesService.getScriptProperties();
-  if(p.getProperty('OSH_LEGACY_AUTO_IMPORT_ENABLED')!=='true') {
+  if(p.getProperty('OSH_LEGACY_AUTO_IMPORT_ENABLED')!=='true')
     return {status:'disabled',imported:0};
-  }
-  if(p.getProperty('OSH_LEGACY_AUTO_HALTED')==='true') {
-    throw new Error('前回の取込エラー後に停止しています。管理シートの状態確認が必要です');
-  }
-  if(typeof CONFIG==='undefined' || CONFIG.MODE!=='production' ||
-    typeof requireApprover_!=='function' ||
-    typeof apiResponses!=='function' || typeof apiImport!=='function') {
-    throw new Error('本番の既存承認システムと接続できません');
-  }
-  // 時間トリガーで本人メールが取得できなければ失敗し、認証を迂回しない。
-  requireApprover_();
+  if(p.getProperty('OSH_LEGACY_AUTO_HALTED')==='true')
+    throw new Error('前回の取込エラー後に停止しています。管理シートと写真フォルダを確認してください');
+  if(typeof CONFIG==='undefined'||CONFIG.MODE!=='production'||
+     typeof requireApprover_!=='function'||typeof apiImport!=='function'||
+     typeof responseSheet_!=='function'||typeof getLayout_!=='function'||
+     typeof readReport_!=='function'||typeof reportKey_!=='function'||
+     typeof importedKeys_!=='function')
+    throw new Error('既存の本番取り込み機能と接続できません');
+  requireApprover_(); // 時間トリガーでも本人認証を省略しない
   const start=Number(p.getProperty('OSH_LEGACY_AUTO_START_ROW'));
-  if(!Number.isInteger(start) || start<2)
+  if(!Number.isInteger(start)||start<2)
     throw new Error('自動取込を開始する回答行を設定してください');
+  const cursorRaw=p.getProperty('OSH_LEGACY_IMPORT_CURSOR');
+  const cursor=cursorRaw==null||cursorRaw===''?start:Number(cursorRaw);
+  if(!Number.isInteger(cursor)||cursor<start)
+    throw new Error('自動取込カーソルが開始行より前になっています。処理を止めます');
   const configured=p.getProperty('OSH_LEGACY_AUTO_MAX_PER_TICK');
   const max=configured==null?2:Number(configured);
-  if(!Number.isInteger(max) || max<1 || max>3)
+  if(!Number.isInteger(max)||max<1||max>3)
     throw new Error('1回の最大取り込み件数が不正です');
-  const response=apiResponses();
-  if(!Array.isArray(response))throw new Error('既存の回答一覧が取得できません');
-  const pending=response.filter(x=>
-    x && Number.isInteger(x.row) && x.row>=start &&
-    typeof x.key==='string' && x.key.length>0 &&
-    !x.imported && Number.isInteger(x.photos) &&
-    x.photos>0 && x.photos<=CONFIG.MAX_PHOTOS
-  ).sort((a,b)=>a.row-b.row);
+  const sh=responseSheet_(),last=sh.getLastRow();
+  if(!Number.isInteger(last)||last<1||cursor>last+1)
+    throw new Error('回答シートの行数が以前と合いません。手動確認が必要です');
+  const layout=getLayout_(sh);
+  const seen=importedKeys_();
   const imported=[];
-  for(const item of pending.slice(0,max)) {
-    try{
-      const result=apiImport(item.key); // 写真・ログ・管理シートは既存機能が一括管理
-      if(!result || !/^R-\d{8}-[a-z0-9]{8}$/i.test(result.reportId||'')) {
-        throw new Error('既存の取り込み処理の返却値が不正です');
+  let current=cursor,scanned=0;
+  while(current<=last && imported.length<max && scanned<50){
+    const row=current; scanned++;
+    let info;
+    try {
+      info=readReport_(sh,row,layout);
+      if(!info || !info.timestampKey)
+        throw new Error('報告日時のない回答がありました');
+      if(!Array.isArray(info.photoIds)||info.photoIds.length<2||
+          info.photoIds.length>CONFIG.MAX_PHOTOS)
+        throw new Error('写真が2〜5枚の条件を満たしていません');
+      const key=reportKey_(CONFIG.RESPONSE_SPREADSHEET_ID,info);
+      if(typeof key!=='string'||!key.startsWith(CONFIG.KEY_PREFIX))
+        throw new Error('報告キーを生成できません');
+      if(!seen[key]){
+        const result=apiImport(key);
+        if(!result||!/^R-\d{8}-[a-z0-9]{8}$/i.test(result.reportId||''))
+          throw new Error('既存の取り込み結果に問題があります');
+        seen[key]=result.reportId;
+        imported.push(result.reportId);
       }
-      imported.push(result.reportId);
-    }catch(error){
-      // apiImportは写真やフォルダを作った後に失敗することがある。
-      // 自動再試行すると重複データができるため、明示的な再開までは停止。
+      // 保存に成功した行、または既存台帳にある行だけ進める。
+      current=row+1;
+      p.setProperty('OSH_LEGACY_IMPORT_CURSOR',String(current));
+    }catch(e){
       p.setProperty('OSH_LEGACY_AUTO_HALTED','true');
-      Logger.log('自動取込を安全停止。確認が必要な回答行:'+item.row);
-      throw new Error('自動取込を停止しました。取り込み済み・Drive・写真を確認してください');
+      Logger.log('自動取り込みを安全停止：回答行 '+row+' を確認してください');
+      throw new Error('自動取込を停止しました。回答行 '+row+' と管理シート・写真を確認してください');
     }
   }
-  return {status:'checked',imported:imported.length,reportIds:imported};
+  return {status:current<=last?'more':'checked',imported:imported.length,
+    reportIds:imported,nextRow:current};
 }
