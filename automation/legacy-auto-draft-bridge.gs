@@ -4,7 +4,7 @@
  * 既存 apiImport → intake/ に保存された報告だけを読み込み、
  * AI差分下書きを drafts/ に作成。既存 apiSyncDrafts() が管理シートに適用する。
  *
- * 事前条件: 本番既存共通.gs, 受け渡し.gs, 承認.gs, auto-draft.gs,
+ * 事前条件: 本番既存共通.gs, 受け渡し.gs, 承認.gs, legacy-ai-runtime.gs,
  * legacy-draft-payload.gs が同一スクリプトにあること。
  * 定期実行の本人認証が取得できない場合は停止し、認証を迂回しない。
  *
@@ -57,7 +57,7 @@ function oshLegacyAutoDraftTick() {
   if(typeof CONFIG==='undefined'||CONFIG.MODE!=='production'||
      typeof requireApprover_!=='function'||
      typeof readDrafts_!=='function'||typeof readDraftFiles_!=='function'||
-     typeof oshAutoGenerate_!=='function'||typeof oshAutoBudget_!=='function'||
+     typeof oshLegacyAiGenerate_!=='function'||typeof oshLegacyAiBudget_!=='function'||
      typeof oshLegacyCreateDraftPatch_!=='function'||
      typeof applyDraft_!=='function'||typeof createFile_!=='function'||
      typeof jsonBlob_!=='function')
@@ -109,10 +109,10 @@ function oshLegacyAutoDraftTick() {
         review.push(id);continue;
       }
       // APIへの通信はこの行より上の全条件、明確な許可、日次上限を通った場合のみ。
-      if(!oshAutoBudget_(p))break;
+      if(!oshLegacyAiBudget_(p))break;
       let ai,patch;
       try {
-        ai=oshAutoGenerate_(report,settings);
+        ai=oshLegacyAiGenerate_(report,settings);
         patch=oshLegacyCreateDraftPatch_(report,ai,
           Utilities.formatDate(new Date(),'Asia/Tokyo','yyyy-MM-dd'));
         if(!patch){
