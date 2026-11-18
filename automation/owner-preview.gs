@@ -61,6 +61,54 @@ function oshPreviewModel_(r,revision,held) {
   if(!model.device)throw new Error('機種が未入力です');
   return model;
 }
+/**
+ * オーナーだけが閲覧できる下書き一覧。
+ * 個人情報、スタッフ報告、元写真ID、記事本文、承認トークンは返さない。
+ * 「報告ID入力」を不要にするための読取専用API（GAS本番へは未接続）。
+ */
+function oshPreviewOwnerPending() {
+  const p=oshPreviewRequireOwner_();
+  const sheetId=p.getProperty('MANAGEMENT_SPREADSHEET_ID');
+  if(!sheetId)throw new Error('管理シートの設定がありません');
+  const sheet=SpreadsheetApp.openById(sheetId).getSheetByName('下書き');
+  if(!sheet)throw new Error('管理シート「下書き」が見つかりません');
+  const last=sheet.getLastRow();
+  if(last>5001)throw new Error('行数が多いため安全停止。検索方式の変更が必要です');
+  const hdr=sheet.getRange(1,1,1,6).getValues()[0].map(String);
+  if(JSON.stringify(hdr)!==JSON.stringify(['報告ID','版','HP','Google','報告データ（JSON）','更新日時']))
+    throw new Error('管理シートの形式が違います');
+  if(last<=1)return [];
+  const rows=sheet.getRange(2,1,last-1,5).getValues();
+  const held=new Set(String(p.getProperty('HOLD_REPORT_IDS')||'').split(',')
+    .map(x=>x.trim()).filter(Boolean));
+  const seen=new Set();
+  const out=[];
+  // 先に新着を表示。50件までに絞り、操作できる状態は返さない。
+  for(let i=rows.length-1;i>=0 && out.length<50;i--){
+    const row=rows[i];
+    const id=String(row[0]||'');
+    if(!/^R-\d{8}-[a-z0-9]{8}$/i.test(id) || seen.has(id))continue;
+    seen.add(id);
+    if(row[2]!=='draft' || row[3]!=='draft')continue;
+    let draft;
+    try{draft=JSON.parse(String(row[4]||'{}'));}catch(_){continue;}
+    if(!draft || draft.reportId!==id || draft.status!=='draft' ||
+       draft.approval?.hp?.state!=='draft' || draft.approval?.gbp?.state!=='draft' ||
+       draft.publishLog?.hp || draft.publishLog?.gbp)continue;
+    const device=oshPreviewEscapeValue_(draft.facts?.device?.name,160);
+    if(!device)continue;
+    out.push({
+      reportId:id,
+      device,
+      area:oshPreviewEscapeValue_(draft.facts?.area?.name,160),
+      stage:held.has(id)?'hold':oshPreviewEscapeValue_(draft.workflow?.stage||'needs-review',40),
+      revision:Number(row[1])||1,
+      canApprove:false
+    });
+  }
+  return out;
+}
+
 /** owner専用。Sheetは読取のみ。外部AI、Drive書込、公開、メール送信を行わない。 */
 function oshPreviewOwnerView(reportId) {
   const p=oshPreviewRequireOwner_();
