@@ -3,12 +3,14 @@ on:
   pull_request:
     paths:
       - 'automation/**'
+      - 'tools/cases/**'
       - '.github/workflows/case-automation-tests.yml'
   push:
     branches:
       - 'work/auto-case-pipeline-phase1-20261117'
     paths:
       - 'automation/**'
+      - 'tools/cases/**'
       - '.github/workflows/case-automation-tests.yml'
 permissions:
   contents: read
