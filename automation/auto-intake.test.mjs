@@ -119,7 +119,8 @@ test('rows below the configured starting point are never imported',()=>{
 test('no new field or any approval is created by the intake bridge',()=>{
   const a=mock({enabled:true});a.run();
   const r=JSON.parse([...a.intake.values()][0]);
-  assert.equal(r.status,'needs-draft');
+  assert.equal(r.status,'draft');
+  assert.equal(r.workflow.stage,'needs-ai-draft');
   assert.equal(r.drafts.hp,null);
   assert.equal(r.approval.gbp.state,'draft');
   assert.equal(r.publishLog.hp,null);
