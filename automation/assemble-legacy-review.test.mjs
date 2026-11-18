@@ -19,7 +19,7 @@ async function showDetail(id) {
   put(app, el('p', {}, '読み込み中'));
 }
 function render(v) {
-  const photos = el('div',{},v.photos.map((p)=>el('div',{},
+  const photos = el('div',{},v.photos.map((p)=>el('div',{},el('div',{},
     el('button', { class: 'b danger' + (p.decision === 'ng' ? ' on' : ''), 'aria-pressed': String(p.decision === 'ng'), onclick: () => decide(p.id, 'ng') }, '使わない')))));
   put(app, el('section',{},
     el('p',{},'公開OK'), photos),
