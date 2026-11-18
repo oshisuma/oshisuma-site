@@ -34,7 +34,7 @@ test('first load sees existing drafts as baseline, not new alerts',async()=>{
 });
 test('fresh item after initial load is displayed as review prompt',async()=>{
  const x=fixture({lists:[[a],[a,b]]});
- x.ctx.OSH_LEGACY_INBOX.target={};
+ vm.runInContext('OSH_LEGACY_INBOX.target = {}',x.ctx);
  await x.ctx.oshLegacyInboxCheck_(); // 最初の既存案件を新着と誤表示しない
  await x.ctx.oshLegacyInboxCheck_(); // 2回目に追加された報告だけ表示
  assert.equal(x.ui.length,1);
