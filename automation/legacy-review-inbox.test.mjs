@@ -33,10 +33,10 @@ test('first load sees existing drafts as baseline, not new alerts',async()=>{
  x.ctx.oshLegacyInboxStop();
 });
 test('fresh item after initial load is displayed as review prompt',async()=>{
- const x=fixture({lists:[[a],[a,b]]});x.ctx.oshLegacyInboxStart({});
- await Promise.resolve();await Promise.resolve();
- await x.ctx.oshLegacyInboxCheck_();
- await Promise.resolve();await Promise.resolve();
+ const x=fixture({lists:[[a],[a,b]]});
+ x.ctx.OSH_LEGACY_INBOX.target={};
+ await x.ctx.oshLegacyInboxCheck_(); // 最初の既存案件を新着と誤表示しない
+ await x.ctx.oshLegacyInboxCheck_(); // 2回目に追加された報告だけ表示
  assert.equal(x.ui.length,1);
  assert.match(JSON.stringify(x.ui[0]),/iPad画面修理/);
  x.ctx.oshLegacyInboxStop();
