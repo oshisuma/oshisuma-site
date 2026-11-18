@@ -51,9 +51,9 @@ function oshLegacyAutoImportTick() {
       info=readReport_(sh,row,layout);
       if(!info || !info.timestampKey)
         throw new Error('報告日時のない回答がありました');
-      if(!Array.isArray(info.photoIds)||info.photoIds.length<2||
+      if(!Array.isArray(info.photoIds)||info.photoIds.length<1||
           info.photoIds.length>CONFIG.MAX_PHOTOS)
-        throw new Error('写真が2〜5枚の条件を満たしていません');
+        throw new Error('写真が1〜5枚の条件を満たしていません');
       const key=reportKey_(CONFIG.RESPONSE_SPREADSHEET_ID,info);
       if(typeof key!=='string'||!key.startsWith(CONFIG.KEY_PREFIX))
         throw new Error('報告キーを生成できません');
