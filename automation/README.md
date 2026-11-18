@@ -242,3 +242,19 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 これは**形式と入力データの整合性確認**であり、AIがスタッフの報告から事実を捏造していないことまで証明するものではない。今の `facts.works` と `facts.result` もAIが報告文から抽出するため、実際の修理完了・修理箇所・顧客の反応はオーナーがプレビューで最終確認する。
 
 `sheet-sync.test.mjs` に、異なる機種・実施していない作業・違う地域・電話番号の混入を拒否するテストを追加。**既存の承認画面への接続・写真確認・公開は未実施のまま**。
+
+## 第13段階：実際の本番 Apps Script を受け取って統合方針を改訂（2026-11-18）
+
+オーナーから現行 `共通.gs`、`受け渡し.gs`、`承認.gs` のソースを確認。従来の設計と異なり、**本番では既存の** `apiImport` がフォームの報告と写真を受け渡しフォルダへ保存し、同時に管理シート「下書き」に1行作る。`apiSyncDrafts` が `drafts/` の差分下書きを既存行に適用する。
+
+### 確定した統合方針
+1. **新しい `auto-intake.gs` と `sheet-sync.gs` を既存GASにそのまま追加しない。** 既存と重複する読み書き・報告キー作成があり、不整合の原因になる。
+2. `legacy-import-bridge.gs` を新設（本番未導入・既定OFF）。既存の `apiResponses` / `apiImport` をそのまま利用して、導入後の新しい回答だけ自動で取り込む。失敗したら安全停止して無限再試行しない。本人認証を迂回しない。
+3. AI下書きは**完成済み報告JSONを管理シートに追加する形式ではなく、既存の `applyDraft_` が受け付ける差分JSON**を作り、既存 `apiSyncDrafts` に読み込ませる方向に作り直す。現状の `auto-draft.gs` は要改修。
+4. 承認画面にはすでに `apiList`、`apiGet`、`apiPhoto`、`apiApprove` があり、独立した新画面の作成ではなく既存UIの機能拡張を優先する。
+5. 既存 `exchangeFolders_` はDrive Advanced Serviceで管理し、スクリプト権限は `spreadsheets.currentonly`、`spreadsheets.readonly`、`drive.readonly`、`drive.file` などで制限。試験コードのDriveApp/SpreadsheetAppによる別方式の書込みは、そのままでは権限不足や二重作成の可能性がある。
+6. 公開前に承認する既存の2段階手順は、今後オーナーが**完成プレビューを確認してから最終公開承認**できるよう整理する。Google APIの live 投稿は別承認が必要。
+
+`legacy-import-bridge.test.mjs` で導入開始行、本人確認、古い案件の除外、エラー時停止、件数上限など11件をモック検証。
+
+**本番は未変更。** 追加で `回答の取り込み.gs` と `承認画面_表示.html` の現行コードを確認してから、上記アダプターの実接続方法を確定する。
