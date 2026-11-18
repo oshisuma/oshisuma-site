@@ -89,6 +89,56 @@ function oshSyncFindFolder_(parent,name) {
   if(!f.hasNext())throw new Error('指定フォルダなし: '+name);
   return f.next();
 }
+/**
+ * AIが作ったHP/Google下書きの事実関係を、管理シート登録前に独立確認。
+ * 公開判定ではない。写真の個人情報判定は別で必要。
+ * 「回答にない修理をタイトルに加える」等を止める。スタッフ報告との意味的一致は別途人が確認する。
+ */
+function oshSyncNormalizeDevice_(value) {
+  return String(value || '').normalize('NFKC').replace(/\s+/g,'').toLowerCase();
+}
+function oshSyncValidateContent_(d) {
+  const hp=d.drafts && d.drafts.hp, gbp=d.drafts && d.drafts.gbp;
+  const facts=d.facts || {};
+  const fail=reason=>{throw new Error('AI下書きの内容を確認してください：'+reason);};
+  if (!hp || !gbp || !Array.isArray(facts.works) || !facts.works.length)
+    fail('修理内容またはHP・Google下書きがありません');
+  if (!hp.titleDevice || oshSyncNormalizeDevice_(hp.titleDevice)!==oshSyncNormalizeDevice_(facts.device?.name))
+    fail('タイトルの機種がスタッフ報告と一致しません');
+  if (String(hp.titleArea||'')!==String(facts.area?.name||''))
+    fail('記事の地域がスタッフ報告と一致しません');
+  if (!Array.isArray(hp.titleServices) || !hp.titleServices.length ||
+      !hp.titleServices.every(s=>typeof s==='string' && facts.works.includes(s)))
+    fail('タイトルに報告されていない対応内容が含まれています');
+  if (!/^\d{4}-\d{2}-\d{2}-[a-z0-9-]+$/.test(hp.slug||'') ||
+      !/^\d{4}-\d{2}-\d{2}$/.test(hp.date||''))
+    fail('掲載日または記事URLの形式が不正です');
+  if (hp.slug.slice(0,10)!==hp.date)fail('記事URLの日付が掲載日と異なります');
+  if (!hp.description || !hp.cardSummary || !Array.isArray(hp.sections) || !hp.sections.length)
+    fail('記事の基本情報が不足しています');
+  const texts=[hp.description,hp.cardSummary];
+  for(const s of hp.sections) {
+    if(!s || typeof s.heading!=='string' || !Array.isArray(s.paragraphs) ||
+       !s.paragraphs.length)fail('本文の構造が不正です');
+    texts.push(s.heading);
+    for(const paragraph of s.paragraphs) {
+      if(typeof paragraph!=='string' || !paragraph.trim())fail('本文に未対応の形式または空欄があります');
+      texts.push(paragraph);
+    }
+  }
+  if(typeof gbp.summary!=='string' || !gbp.summary.trim() ||
+     gbp.summary.length>1500)fail('Google投稿文が空欄または長すぎます');
+  const hpText=texts.join('\n');
+  const prohibited=/(?:[0-9０-９,，]+\s*円|¥|￥|税込|税抜)/;
+  if(prohibited.test(hpText)||prohibited.test(gbp.summary))
+    fail('価格情報が本文に含まれています');
+  if(/(?:https?:\/\/|\btel:)/i.test(gbp.summary) ||
+     /0\d{1,4}[-‐－ー]?\d{1,4}[-‐－ー]?\d{3,4}/.test(gbp.summary))
+    fail('Google投稿文にURLまたは電話番号が含まれています');
+  // 完了したことが明確でない案件は needs-photo-review へ進めない。
+  if(!facts.result || !String(facts.result).trim())
+    fail('修理結果が未確認です');
+}
 function oshSyncValidate_(d,id) {
   if(!d || d.reportId !== id || d.source?.mode !== 'production' ||
     d.status !== 'draft' ||
@@ -100,8 +150,11 @@ function oshSyncValidate_(d,id) {
       !Array.isArray(d.media) ||
       !d.media.every(m=>m.privacyCheck==='pending' && m.contentMatch==='pending'))
     throw new Error('写真が未確認の安全な形式ではありません: '+id);
-  if(d.workflow?.stage === 'needs-photo-review' && (!d.drafts?.hp || !d.drafts?.gbp))
-    throw new Error('HPまたはGoogle用の下書きが欠落: '+id);
+  if(d.workflow?.stage === 'needs-photo-review') {
+    if(!d.drafts?.hp || !d.drafts?.gbp)
+      throw new Error('HPまたはGoogle用の下書きが欠落: '+id);
+    oshSyncValidateContent_(d);
+  }
 }
 /** インストール済みの管理GASに統合した後の定期実行候補。
  * 3つの処理は各スイッチが個別にOFF。実運用では一つずつ検証してONにする。
