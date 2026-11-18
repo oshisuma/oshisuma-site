@@ -281,3 +281,19 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 - 内容変更時は既存のHP・Google最新情報・Google写真一覧の承認を一律取り消し、報告版番号を増やして操作記録へ残す。写真原本は変更しない。
 - `legacy-photo-alt.test.mjs` 9件のVM模擬テスト通過。
 - **未実装**：実際の `承認画面_表示.html` に入力欄と `google.script.run.oshLegacySetPhotoAlt` の呼び出しを追加すること、写真品質・プライバシー検査自動化、実写真を含む完成HPプレビュー、本番GASでの試験。追加前に利用者レビューとデプロイ許可が必要。
+
+## 第16段階：既存承認画面の写真説明文編集・内容プレビュー部品（2026-11-18）
+
+- `legacy-owner-review-ui.js` を追加。本番 `承認画面_表示.html` の既存 `el` / `put` / `call` / `render` / `toast` / `current` を流用する**部分コード**。GitHubには本番画面のHTML全文を転記しない。
+- `oshEditPhotoAlt_(photo)` はオーナーが既存 `apiPhoto` で写真を「公開OK」にした場合だけ編集フォームを開く。保存時に現行の報告ID・版・写真IDを `oshLegacySetPhotoAlt` に送る。バックエンドで本人認証、版確認、写真OK、再承認が必要かを判定。
+- `oshReviewPreview_(v)` は既存 `apiGet` のHP記事本文・見出し・Google最新情報・オーナーが公開OKと判断した写真の縮小画像だけを表示する**内容確認用プレビュー**。写真のsrcは画像data URIのみ許可し、外部画像URLは表示しない。
+- `legacy-owner-review-ui.test.mjs` 8件の模擬テストで、未承認写真をプレビューに出さない・未確認写真のalt編集不可・サーバーへの保存パラメータ・未作成記事の停止などを確認。
+
+### 実際の承認画面への組み込みに必要なレビュー差分（未実行）
+1. `<script>` の既存関数群に、`legacy-owner-review-ui.js` の2関数を追加。元の `doGet`、`apiApprove`、既存認証や権限設定は変更しない。
+2. `render(v)` の写真セクション直後に `el('div',{id:'osh-photo-alt-editor',hidden:true})` を挿入し、写真カードの既存「公開OK/使わない」ボタンの後に `el('button',{class:'b',disabled:p.decision!=='ok',onclick:()=>oshEditPhotoAlt_(p)},'説明文を編集')` を挿入。
+3. `render(v)` の `!v.needsDraft` で、`channelSection('hp',v)` より前に `oshReviewPreview_(v)` を追加。
+4. バックエンドに `legacy-photo-alt.gs` を同一スクリプトとして追加し、実GASの権限・関数の競合がないかテスト環境で確認してから、オーナーの明示承認後に本番へ適用する。
+5. この確認用プレビューは**本番サイトに近いCloudflareプレビューの代わりではない**。サイト全体の見た目を検証するCloudflareプレビューとオーナー最終公開承認は別工程で必須。
+
+**現状**：本番未変更、プレビューURL未作成、写真自動検査未完了。GitHub Actionsの模擬テストは成功しても実機確認にはならない。
