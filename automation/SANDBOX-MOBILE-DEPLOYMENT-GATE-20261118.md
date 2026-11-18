@@ -1,42 +1,53 @@
-# スマホ本人限定プレビュー：導入ゲート（2026-11-18）
+# スマホ本人限定プレビュー：導入ゲート（2026-11-18・改訂）
 
-## 結果
-- 合成テスト用「確認済み」記録は Google Sheets に**実保存済み**：報告ID `R-20261118-demo0001`、版 `2`、`sandboxReview.state=confirmed`、本番承認は `draft`、公開記録なし。
-- スマホプレビューのコード：`automation/sandbox-mobile-readonly.gs`
-- モックテスト：`automation/sandbox-mobile-readonly.test.mjs`
-- **本番 Apps Script への導入・スマホ Web アプリのデプロイは未実施。**
+## 現状
+- 合成テスト用シートでは報告ID `R-20261118-demo0001` を版2で「確認済み（合成テスト）」として実際に保存できた。**本番承認はdraft、公開記録なし**。
+- スマホコードは `automation/sandbox-mobile-readonly.gs`、テストは `automation/sandbox-mobile-readonly.test.mjs`。
+- **スマホからの実機アクセス、Webアプリのデプロイ、実顧客データ連携は未実施**。
+- GitHubの作業用ブランチのみ。本番の既存スクリプトやHPは変更しない。
 
-## 必要な修正を終えた理由
-コンテナバインドGASの `SpreadsheetApp.getActiveSpreadsheet()` に頼った旧試作は、ウェブアプリでスプレッドシートを特定できない場合があるため、スマホ用だけを **Sheets Advanced Service v4 の読取API** に分離した。
+## 設計変更
+以前の試作は「Google Sheets API v4 + `spreadsheets.readonly`」を要求し、OAuth同意画面で **すべてのGoogleスプレッドシートを参照** する広い権限が表示された。ユーザーに許可せずキャンセルしてもらう方針へ変更。
 
-外部ユーザーがアクセスできるようにしてはいけない。読み取りAPI自体にはユーザーアクセスを認可する仕組みが別に必要で、本文の非公開と本人確認を実機で確認する。
+**現在の採用方式：合成プレビューのスナップショットのみ**
+1. 既存のテスト用GASエディタで、検証済みの `oshSandboxReviewReadContext_()` と `oshSandboxReviewRead()` を呼び、架空・確認済み・写真なし・未公開を厳格に検証する。
+2. `oshSandboxMobileCaptureSnapshot()` は必要最小限の表示データだけを `PropertiesService.getScriptProperties()` に保存する（架空の記事、個人情報なし）。
+3. Web側の `oshSandboxMobileRead()` は本人を `Session.getActiveUser().getEmail()` と専用プロパティで照合し、保存済みの合成スナップショットを読む。SheetやDriveへのリクエストなし。
+4. `doGet()` は不一致・エラー時にアクセス拒否ページを出す。成功時の画面にも公開・承認・差戻しボタンなし。
+5. スナップショットの期限は7日。期限切れ後は表示不可で再作成が必要。
 
-## 事前準備（まだ実行しない）
-1. テスト用Apps Scriptの **現行 `appsscript.json` を保存・バックアップ**。
-2. `sandbox-mobile-readonly.gs` を新規ファイルとして追加。元の承認画面・他の本番機能は変更しない。
-3. **サービス +** から Google Sheets API (v4) を追加（サービス名 `Sheets`）。
-4. 明示 `oauthScopes` に `https://www.googleapis.com/auth/spreadsheets.readonly` を追加。これまでの `spreadsheets.currentonly` / `script.container.ui` は維持。
-5. スクリプトプロパティ `OSH_SANDBOX_OWNER_EMAIL` は本人のみが登録する。GitHubやログへメールアドレス・秘密を貼らない。
-6. `oshSandboxMobileRead` を **テスト用の本人アカウントで一度実行してから** Webアプリへのアクセス経路を検討する。
+## テスト用Apps Scriptのマニフェスト
+```json
+{
+  "timeZone": "Asia/Tokyo",
+  "dependencies": {},
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "oauthScopes": [
+    "https://www.googleapis.com/auth/spreadsheets.currentonly",
+    "https://www.googleapis.com/auth/script.container.ui",
+    "https://www.googleapis.com/auth/userinfo.email"
+  ]
+}
+```
+Google Sheets API v4の**拡張サービスは不要**。追加したサービスは削除してよい（この合成テスト用GASに限る）。`spreadsheets.readonly` を残してOAuth許可を求めない。
 
-## Webアプリにする場合の追加ゲート
-- 権限と実行主体（`実行ユーザー` と `アクセスできるユーザー`）をプレビューで確認し、**アクセスできるユーザーは「自分のみ」**。
-- `Session.getActiveUser().getEmail()` が空欄の場合は**拒否のまま**。認証を弱めたり、`getEffectiveUser()` へ自動フォールバックしたりしない。
-- ログインしていないアクセス・別アカウントでの記事表示不可を検証。**個人情報・写真は未投入**。
-- `/exec` のURLは第三者へ渡さず、将来の本番Webアプリと混同しない。
-- `doGet` はテスト用スクリプトのみに追加。本番管理GASの既存 `doGet` を置換しない。
-- スマホ画面は **表示専用**。「確認済み」「差戻し」は既存テストGASのモーダル経路だけで記録される。
+## 実装・実機検証の順番
+1. OAuth同意画面で「キャンセル」。**広い権限を許可しない**。
+2. テスト用 `appsscript.json` のバックアップを確認し、上記の3スコープ構成に戻す。
+3. 既存 `スマホ閲覧テスト.gs` の内容を **更新されたGitHubファイル全文** へ置き換える。**同名の doGet を2つ作らない**。
+4. 本番GASとは異なる、合成テストだけのファイルで `oshSandboxMobileCaptureSnapshot()` を手動実行し、合成確認済みプレビューの保存成功ログを確認。
+5. `oshSandboxMobileRead()` の読み取りのみを検証。OAuthに不審な権限が出たら停止。
+6. Webアプリデプロイに進む際は、公開範囲を **「自分のみ」** に制限し、実行主体は **「アクセスしているユーザー」** で本人ログインが取得できるか事前確認。`execute as me` では本人メールが空になる場合があり、その際はアクセスを広げるのでなく停止。
+7. スマホの本人アカウントで記事が見られるか、別アカウントやログアウトで拒否されるか、写真・個人情報が含まれないかを検証。
 
-## 注意
-- Google Sheets API を有効にしても、このモジュールは **書き込みしない**。ただし権限画面の追加許可は本人が判断する。
-- 現段階でAI文章生成、写真へのぼかし、プレビュー承認、本番HP公開、Google投稿は行わない。
-- 既存GitHub PR #14はDraftのまま維持し、本番統合・マージの許可とはしない。
+## 停止条件
+- ユーザーの本人確認メールが取得できない
+- Googleが「すべてのスプレッドシート」等の広い権限を要求
+- 実際のフォーム・本番記事・写真を読み込む必要が出た
+- Webアプリの共有範囲が「全員」や「リンクを知っている全員」になる
+- プレビュー自体のGoogleアカウント本人確認が不完全
 
-## 導入停止条件
-- 本人メールが取得できない
-- 別のシートID / タイトル / 列見出し / 複数下書き
-- 正式承認・公開済み・写真付き・本番フォームのレコードを検出
-- 読取権限が不十分、または必要以上の OAuth 権限を求める
-- アクセス設定に「全員」「リンクを知っている全員」が現れた
+この段階で **AI APIの顧客データ送信、写真処理、Cloudflareプレビュー、本番HP公開、Google投稿は行わない**。
 
-以上の場合はそのまま停止。公開範囲を広げて回避しない。
+`main` マージ、追加課金、個人情報送信、サイト公開には必ず別のオーナー承認が必要。
