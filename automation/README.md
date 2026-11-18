@@ -380,3 +380,13 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 1. テスト専用のGoogle Apps Script/管理用スプレッドシートへの適用構成と復旧方法を確定。
 2. 架空データで時間トリガーの本人確認・既存Driveフォルダへのアクセス・実Apps Scriptのサービス呼出しを検証。
 3. HP記事だけをCloudflareの作業ブランチに出力し、スマホで完成プレビューを確認。公開承認前にはmainへマージしない。
+
+## 第24段階：完成を阻む実運用の不具合を修正（2026-11-18）
+
+- **新規回答が15件を超えると取り逃す問題**: 既存 `apiResponses()` は最新 `CONFIG.RECENT_RESPONSES` 件しか返さないため、`legacy-import-bridge.gs` を回答行の**保存済みカーソル方式**へ変更。既存 `responseSheet_()` / `getLayout_()` / `readReport_()` / `reportKey_()` / `importedKeys_()` / `apiImport()` を使用し、管理シートへの独自追記をしない。新規1〜5枚の写真、旧回答の除外、未完了行では止まる、異常時に位置を進めない、1回3件までの処理を11件の模擬テストで検証。
+- **写真説明文保存で版が二重に増える問題**: 現行 `withDraft_()` が更新と保存を一括で管理しているため、`legacy-photo-alt.gs` 独自の `d.revision+=1` を撤廃。既存の承認指紋と再承認チェックに依存する設計に修正し、回帰テストも更新。
+- 最新のGitHub Actionsの `node --test automation/*.test.mjs` **成功**。これらは既存GASの本番設置・実API接続の成功を意味しない。
+
+### 試験環境への切替基準
+
+接続先のGoogle Apps Scriptを直接作成・編集する権限付きAPIが当面利用できない場合は、**コードを本番スクリプトへ直接反映しない**。別のGASプロジェクトと架空の管理シートでトリガーの実行主体と認証を検証するまで自動スイッチをOFFのまま維持すること。新しいAPI契約・顧客情報の外部AI送信は事前の明確な許可を要する。既存HPの本番公開にはオーナーがプレビューを承認した後にGitHubレビュー・マージが必要。
