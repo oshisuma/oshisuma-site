@@ -63,7 +63,8 @@ function oshAutoDraftSheetSyncTick() {
 function oshSyncNotifyEligible_(d,id) {
   return d && d.reportId === id &&
     d.source?.mode === 'production' &&
-    ['hold','needs-photo-review'].includes(d.status) &&
+    d.status === 'draft' &&
+    ['hold','needs-photo-review'].includes(d.workflow?.stage) &&
     d.approval?.hp?.state === 'draft' &&
     d.approval?.gbp?.state === 'draft' &&
     !d.publishLog?.hp && !d.publishLog?.gbp;
@@ -72,7 +73,7 @@ function oshSyncNotify_(p, to, url, draft) {
   const key = 'OSH_AUTO_SYNC_NOTIFY_' + draft.reportId;
   if (p.getProperty(key) === 'true') return;
   if (!oshSyncNotifyEligible_(draft, draft.reportId)) return;
-  const isHold = draft.status === 'hold';
+  const isHold = draft.workflow?.stage === 'hold';
   const subject = isHold ? '【オシスマ】確認が必要な修理報告' : '【オシスマ】修理事例の下書きを保存しました';
   // プレビュー完成ではないことを明示する。公開操作に直接つながる承認リンクは送らない。
   MailApp.sendEmail(to, subject,
@@ -90,7 +91,8 @@ function oshSyncFindFolder_(parent,name) {
 }
 function oshSyncValidate_(d,id) {
   if(!d || d.reportId !== id || d.source?.mode !== 'production' ||
-    !['hold','needs-photo-review'].includes(d.status) ||
+    d.status !== 'draft' ||
+    !['hold','needs-photo-review'].includes(d.workflow?.stage) ||
     d.approval?.hp?.state !== 'draft' || d.approval?.gbp?.state !== 'draft' ||
     d.publishLog?.hp || d.publishLog?.gbp)
     throw new Error('未承認の安全な下書きではありません: '+id);
@@ -98,7 +100,7 @@ function oshSyncValidate_(d,id) {
       !Array.isArray(d.media) ||
       !d.media.every(m=>m.privacyCheck==='pending' && m.contentMatch==='pending'))
     throw new Error('写真が未確認の安全な形式ではありません: '+id);
-  if(d.status === 'needs-photo-review' && (!d.drafts?.hp || !d.drafts?.gbp))
+  if(d.workflow?.stage === 'needs-photo-review' && (!d.drafts?.hp || !d.drafts?.gbp))
     throw new Error('HPまたはGoogle用の下書きが欠落: '+id);
 }
 /** インストール済みの管理GASに統合した後の定期実行候補。
