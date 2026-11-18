@@ -42,8 +42,9 @@ test('explicitly enabled mock sends report text only; no photos or Drive IDs',()
  const x=fixture({approved:true,enabled:true});const a=x.generate();
  assert.equal(a.ready,true);assert.equal(x.requests.length,1);
  assert.equal(x.requests[0].url,'https://api.anthropic.com/v1/messages');
- assert.equal(x.requests[0].options.headers['anthropic-version'],'2026-10-21');
- assert.equal(x.requests[0].options.headers.Authorization,'Bearer dummy-test');
+ assert.equal(x.requests[0].options.headers['anthropic-version'],'2023-06-01');
+ assert.equal(x.requests[0].options.headers['x-api-key'],'dummy-test');
+ assert.equal(x.requests[0].options.headers.Authorization,undefined);
  const body=x.requests[0].options.payload;
  assert.ok(body.includes('iPhone 15'));assert.ok(!body.includes('drive:'));
 });
