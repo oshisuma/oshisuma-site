@@ -7,6 +7,10 @@
 function oshAutoDraftSheetSyncTick() {
   const p = PropertiesService.getScriptProperties();
   if (p.getProperty('AUTO_DRAFT_SHEET_SYNC_ENABLED') !== 'true') return;
+  // 本番承認.gsはapiImportで管理シートに行を作り、apiSyncDraftsで同じ行へ下書きを適用する。
+  // 別方式でappendRowすると管理上の報告キーがずれる危険があるため拒否する。
+  if (typeof apiSyncDrafts === 'function')
+    throw new Error('既存のapiSyncDraftsがあるため、別方式の管理シート同期を停止しました');
   const rootId = p.getProperty('HANDOFF_FOLDER_ID');
   const sheetId = p.getProperty('MANAGEMENT_SPREADSHEET_ID');
   const cut = Date.parse(p.getProperty('AUTO_START_AFTER') || '');
