@@ -8,6 +8,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
 import { resolve, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { Script } from 'node:vm';
 
 const HERE=dirname(fileURLToPath(import.meta.url));
 export function insertOnce(source,oldText,newText,step){
@@ -55,6 +56,14 @@ export function assembleLegacyReview(html,reviewFunctions,inboxFunctions){
     "if (ALLOWED) showList();",
     reviewFunctions+"\n\n"+inboxFunctions+"\n\nif (ALLOWED) showList();",
     '画面部品の組み込み');
+  // 画面全体のJS構文が壊れていないことを検証してから別ファイルへ出力する。
+  // Apps Scriptのテンプレート式のみテスト用のbooleanに置換し、実ユーザー情報は埋めない。
+  const begin=result.indexOf('<script>');
+  const end=result.indexOf('</script>',begin+8);
+  if(begin<0 || end<=begin)throw new Error('承認画面のscript部分が見つかりません');
+  const js=result.slice(begin+8,end).replace('<?= allowed ?>','false');
+  try { new Script(js, { filename:'承認画面_表示.html' }); }
+  catch(e) { throw new Error('画面全体のJavaScript構文確認に失敗したため、出力を中止しました: '+e.message); }
   return result;
 }
 const argv=process.argv.slice(2);
