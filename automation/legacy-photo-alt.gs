@@ -52,7 +52,8 @@ function oshLegacySetPhotoAlt(reportId,mediaId,alt,revision) {
           note:'写真の説明文が変更されたため、再承認が必要です。'};
       }
     });
-    d.revision+=1;
+    // 既存 withDraft_ は自動で保存し版は増やさない。ここで版を二重加算しない。
+    // 内容が変われば承認指紋で検知し、再承認が必要になる。
     log_(user,r.reportId,'photo','写真の説明文を保存',mediaId+'・版'+d.revision);
   });
 }
