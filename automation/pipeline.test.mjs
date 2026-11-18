@@ -132,7 +132,8 @@ test('all three stages exchange a synthetic report and photo exactly once',()=>{
   assert.match(a.email[0][1], /下書きを保存/);
   assert.equal(a.email[0][0], 'owner@example.test');
   const saved=JSON.parse(a.draftRows[0][4]);
-  assert.equal(saved.status,'needs-photo-review');
+  assert.equal(saved.status,'draft');
+  assert.equal(saved.workflow.stage,'needs-photo-review');
   assert.equal(saved.approval.hp.state,'draft');
   assert.equal(saved.approval.gbp.state,'draft');
   assert.equal(saved.publishLog.hp,null);
