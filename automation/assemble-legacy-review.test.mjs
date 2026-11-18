@@ -58,7 +58,8 @@ test('missing helper scripts cannot generate approval UI',()=>{
 
 test('assembled HTML script compiles after Apps Script template substitution',()=>{
  const s=assembleLegacyReview(synthetic,ui,inbox);
- const script=s.match(/<script>([\\s\\S]*?)<\\/script>/);
- assert.ok(script,'HTML must include the target script');
- assert.doesNotThrow(()=>new vm.Script(script[1].replace('<?= allowed ?>','true')));
+ const start=s.indexOf('<script>')+'<script>'.length;
+ const end=s.indexOf('</script>',start);
+ assert.ok(start>=8 && end>start,'HTML must include the target script');
+ assert.doesNotThrow(()=>new vm.Script(s.slice(start,end).replace('<?= allowed ?>','true')));
 });
