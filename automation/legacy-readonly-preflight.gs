@@ -18,7 +18,8 @@ function oshLegacyReadOnlyPreflight() {
     throw new Error('本番用スクリプトではないため接続診断を停止しました');
   const off=[
     'AUTO_INTAKE_ENABLED','AUTO_DRAFT_ENABLED','AUTO_DRAFT_SHEET_SYNC_ENABLED',
-    'OSH_LEGACY_AUTO_IMPORT_ENABLED','OSH_LEGACY_AUTO_DRAFT_ENABLED'
+    'OSH_LEGACY_AUTO_IMPORT_ENABLED','OSH_LEGACY_AUTO_DRAFT_ENABLED',
+    'OSH_LEGACY_SYNC_ENABLED'
   ].every(key=>val(key)!=='true');
   add('legacy-switches-off',off,'本番への新しい自動処理はまだすべて停止状態である');
   add('consent-off',val('AI_DATA_SHARING_APPROVED')!=='true',
