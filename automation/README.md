@@ -141,3 +141,38 @@ Googleに投稿する前に、Google Business Profile APIの利用承認・ア�
 **次の優先事項**：写真処理と文章プレビューを統合した「本人だけが確認できる下書きプレビュー」画面を既存の管理Apps Script内に用意すること。現状のCloudflare公開用プレビューは承認後にしか作れない構造であり、最終的に必要な「プレビュー→承認→公開」の順序と異なる。未承認の元写真や個人情報を含む下書きを誰でも見られる公開プレビューへ置かないこと。既存GASの認証・画面ロジックを確認した後に接続する。
 
 重要：この段階は **Google Apps Script本番への導入未実行**。実データをAIへ送信する同意・課金確認を得るまで試験OFF。
+
+## 第8段階：承認前の非公開プレビュー（ローカル実装）
+
+新規ファイル：`automation/private-preview.mjs` / `automation/private-preview.test.mjs`
+
+実行例（**テスト専用、未公開のローカル環境**）：
+
+```sh
+node automation/private-preview.mjs --report /path/to/report.json --out /path/to/private-preview.html
+# 写真を明示的に組み込む場合（元画像の個人情報が残り得るので保管注意）
+node automation/private-preview.mjs --report /path/to/report.json --out /path/to/private-with-photos.html --photos /path/to/photos/<報告ID>
+```
+
+- HP記事本文・Google投稿文・写真の確認状況を、スマホでも見やすい幅に整理した1つのHTMLとして生成する
+- 未完了の場合は「公開保留」、未確認の写真は「未確認・公開不可」と明示する
+- 公開用のサーバー・共有URL・投稿API・承認ボタン・自動通信を一切作らない
+- フォームの生の報告文・写真の元ファイルIDを表示しない
+- 写真はデフォルトでは埋め込まず、`--photos` で明示指定したローカル画像のみ使う。JPEG/PNG/WebPに対応
+- 内容はHTMLエスケープ、CSPで外部通信やスクリプトを無効化。既存ファイルの上書きは禁止
+- **写真を埋め込んだHTML自体には個人情報が残る可能性がある。** 絶対にGitHub・Cloudflare・一般公開URLへ送らないこと。テスト後は適切に保管・削除する
+- このローカルプレビューはまだ**ユーザー本人限定のスマホ承認画面ではない**。実際の既存Apps Scriptの認証・写真アクセス・承認操作と接続する必要がある
+
+### 既存システムとの互換性修正
+
+元の `tools/cases/lib.mjs` は公開前の状態 `status: 'draft'` を認識する。一方、以前の試験コードは `status:'needs-draft'`、`status:'needs-photo-review'`、`status:'hold'` という未対応の値を使っていた。
+
+これを **`status:'draft'` に統一**し、下書きの進捗だけを別項目の `workflow.stage`（`needs-ai-draft` / `needs-photo-review` / `hold`）で管理する。記事承認と進行状態を混同しない。
+
+実際の既存GAS承認UIは `workflow.stage` への対応が未確認。統合前に現在のGAS本体と照合し、既存の承認レコードは一切書き換えない。
+
+### テスト状況
+
+`node --test automation/*.test.mjs` で計57項目の模擬テストが成功。これには非公開プレビューの出力、XSS文字列の無害化、上書き防止、写真の明示指定、既存状態との互換性を含む。
+
+公開前に必須の残作業：現在の本番Apps Script取得・差分照合／認証付きのスマホ確認画面／自動写真判定／画質の実画像チェック／有料APIとデータ送信許可／Cloudflareプレビューを含む最終承認の分離。
