@@ -119,6 +119,10 @@ function oshIntakeMapRow_(values, rowNumber) {
 function oshAutoIntakeTick() {
   const c = oshIntakeConfig_();
   if (!c.enabled) return;
+  // 本番承認.gsには既存のapiImportがあり、同じフォーム回答の別ルート取り込みは禁止。
+  // 既存の報告キーとロックの互換性を検証するまでは、新方式を同時起動しない。
+  if (typeof apiImport === 'function')
+    throw new Error('既存のapiImportがあるため、重複取り込みを停止しました。承認.gsとの統合が必要です');
   if (!c.sourceId || !c.managementId || !c.handoffId ||
       !Number.isInteger(c.minRow) || c.minRow < 2)
     throw new Error('取り込み接続設定が不正。処理を停止');
