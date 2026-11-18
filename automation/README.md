@@ -406,3 +406,12 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 - 古い版での再編集を拒否
 
 更新した回帰テストを含めGitHub Actions成功。**本番のGASは未変更**。
+
+## 第26段階：接続候補7モジュールの一括安全検証（2026-11-18）
+
+- Anthropic API接続の認証ヘッダーと既定APIバージョンを公式仕様に合わせて修正。顧客情報・APIキーを用いた実通信は未実施。
+- `verify-legacy-bundle.mjs` は実際のGAS連携候補7ファイルを1本として構文チェックし、名前の衝突・新しいGASの初期OFF・外部送信・管理シート書込みがない状態を検証する。
+- `verify-legacy-bundle.test.mjs` に6項目の一括テストを追加、GitHub Actions成功。
+- `INSTALLATION_GATE.md` に本番コードの保護、合成データだけのテスト環境、最小限の権限設定、エラー時の復旧、オーナーの公開承認を整理。
+- 現在接続できるGoogle Drive・GitHubのツールには、Google Apps Scriptプロジェクトのコード直接編集・新規作成・デプロイがない。プラグインの追加検索でも対応する直接接続は確認できていないため、実機への最初の組込みにはユーザーの画面操作が必要。
+- 実API接続、写真原本のCloudflareプレビュー、本番デプロイ、Google投稿は未実施。
