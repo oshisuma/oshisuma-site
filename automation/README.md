@@ -315,3 +315,16 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 - 現行GASの追加権限なしでメール通知は送れない可能性があるため、同意・権限検証までは通知メールを追加しない。
 - GitHub Actionsにて新規模擬テスト通過。ただし同期先の現行 `承認.gs` の内部関数シグネチャ、実際のGAS権限、定期トリガー時の本人確認、フォーム添付写真を含む実運用は未検証。
 - HP/Googleの公開、Driveの実データ更新、Apps Scriptの変更は一切行っていない。Google Business Profileへの自動投稿は審査終了まで保留。
+
+## 第19段階：実物の承認.gsで新着確認の副作用を点検（2026-11-18）
+
+オーナーから提供された本番 `承認.gs` の実コードを再照合した結果：
+- `apiList()` は見かけ上は「一覧取得」だが、内部の `saveAutoFixes_(user)` が承認指紋の不一致を自動記録・保存する場合がある。よって**定期ポーリングには使わない**。
+- 新着表示 `legacy-review-inbox.js` は本人認証付きの専用 `oshLegacyReviewInbox()`（管理シートの `readDrafts_()` のみを利用）へ切替。未承認下書きだけを読む。新着画面は表示だけで承認しない。
+- 実コードの `apiSyncDrafts()` は `loadDraft_(drafts, payload, source, user, result)` により既存行を更新する構造。新 `legacy-safe-sync.gs` は同関数を利用するが、本番GASには**まだ追加していない**。
+- `apiImport()` は既存 `importedKeys_()` と `withLock_()` を持つため、新規 `auto-intake.gs` による別処理との二重運用は禁止。
+- Google投稿APIは審査待ちのため、HP記事作成・写真確認・最終プレビューに優先順位を変更。ただし既存の管理画面は `drafts.gbp` を受け付け必須としているため、内部用Google文章フィールドは残してもGoogleへは投稿しない。
+
+対応確認：GitHub Actions `node --test automation/*.test.mjs` 成功。
+
+**未完了の最重要事項**：`legacy-*` モジュールの本番GASへの安全な統合、時間トリガーでの本人認証、AI API利用同意・課金とデータ保護、写真の目視確認、Cloudflare完成プレビュー、オーナー最終承認。現在も初期OFF、本番反映なし。
