@@ -37,7 +37,8 @@ function harness({enabled=true,email='owner@example.test',owner='owner@example.t
  });
  vm.runInContext(source,context,{timeout:1000});
  const view=rid=>vm.runInContext('oshPreviewOwnerView('+JSON.stringify(rid)+')',context,{timeout:1000});
- return {view,get sheetsRead(){return sheetsRead},settings};
+ const pending=()=>vm.runInContext('oshPreviewOwnerPending()',context,{timeout:1000});
+ return {view,pending,rows,get sheetsRead(){return sheetsRead},settings};
 }
 test('owner can read a pending draft with no approval action',()=>{
  const v=harness().view(id);
@@ -77,5 +78,55 @@ test('duplicate IDs are rejected rather than selecting arbitrarily',()=>{
 test('invalid report ID is rejected before sheet lookup',()=>{
  const x=harness();
  assert.throws(()=>x.view('../private'),/報告ID/);
+ assert.equal(x.sheetsRead,0);
+});
+
+test('owner can list pending reports without manually typing IDs',()=>{
+ const x=harness();
+ const list=x.pending();
+ assert.equal(list.length,1);
+ assert.equal(list[0].reportId,id);
+ assert.equal(list[0].device,'iPhone 13');
+ assert.equal(list[0].canApprove,false);
+ assert.equal(JSON.stringify(list).includes('some-personal-photo'),false);
+ assert.equal(JSON.stringify(list).includes('非公開のスタッフメモ'),false);
+});
+test('unauthorized viewer cannot list any repair reports',()=>{
+ for(const email of ['', 'stranger@example.test']){
+  const x=harness({email});
+  assert.throws(()=>x.pending(),/権限/);
+  assert.equal(x.sheetsRead,0);
+ }
+});
+test('list hides approved or published report rows',()=>{
+ const x=harness({state:'approved'});
+ assert.equal(x.pending().length,0);
+ const y=harness();const r=report();
+ r.publishLog.hp={published:true};
+ y.rows[0][4]=JSON.stringify(r);
+ assert.equal(y.pending().length,0);
+});
+test('list clearly marks held reports and does not enable approval',()=>{
+ const x=harness({hold:id});
+ const list=x.pending();
+ assert.equal(list[0].stage,'hold');
+ assert.equal(list[0].canApprove,false);
+});
+test('duplicate IDs in the sheet do not create additional selectable entries',()=>{
+ const x=harness({dupe:true});
+ assert.equal(x.pending().length,1);
+});
+test('list is empty when only the header exists',()=>{
+ const x=harness();x.rows.length=0;
+ assert.equal(x.pending().length,0);
+});
+test('a report with inconsistent stored ID is not listed',()=>{
+ const x=harness();const r=report();r.reportId='R-20261118-zzzz9999';
+ x.rows[0][4]=JSON.stringify(r);
+ assert.equal(x.pending().length,0);
+});
+test('preview disabled rejects listing before reading spreadsheet',()=>{
+ const x=harness({enabled:false});
+ assert.throws(()=>x.pending(),/無効/);
  assert.equal(x.sheetsRead,0);
 });
