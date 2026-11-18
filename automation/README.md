@@ -338,3 +338,12 @@ node automation/private-preview.mjs --report /path/to/report.json --out /path/to
 - 開発用の合成HTMLだけを `assemble-legacy-review.test.mjs` で検証（5項目通過）。本番のHTML全文はGitHubにコミットしない。
 
 **重要：この画面はまだ本番未導入です。** ローカルで合成した画面と写真を含む実データは、GitHubや一般公開URLに置かないこと。完了には実環境の権限・実写真・Cloudflareプレビュー・本人公開承認の検証が必要。
+
+## 第21段階：実際の承認画面を使った安全性・構文検証（2026-11-18）
+
+- オーナーが共有した現行 `承認画面_表示.html` と7か所の統合アンカーが一致することを確認。プライベートな作業環境で新機能の挿入を再現し、生成後のJavaScript全体の構文チェックを実施して合格した（元のHTMLはGitHubに入れない）。
+- 差分生成 `assemble-legacy-review.mjs` に**画面全体のJavaScript構文が正しくなければ別ファイルの出力を禁止する安全ゲート**を追加。作成時に括弧の不整合が見つかったため修正した。構文を確認する回帰テストも追加。
+- オーナーの現行 `承認.gs` をプライベート環境で読み込み、合成報告・合成下書きを使って `applyDraft_` を実行。既存の下書き形式を受け入れ、未確認写真では `approvalProblems_('hp')` が承認を拒否することを確認。
+- GitHub Actions の `node --test automation/*.test.mjs` は成功。実データをGASへ送信したり、本番シート・Drive・HPを書き換えたりしていない。
+
+残る実機検証：本番Apps Scriptの安全なコピーへの各モジュール取り込み、写真alt編集と本人認証の実動作、API課金・個人情報送信の承認、Cloudflareの完成プレビュー生成、最終公開承認。模擬テスト合格を本番完了とは見なさない。
