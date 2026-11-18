@@ -1,15 +1,8 @@
 /**
- * オシスマ：既存のスマホ承認画面へ追加する安全な新着確認表示。
- * 本番未導入。既存のapiList()が返す「すでに管理シートに反映された」案件だけを見る。
- * GoogleフォームやDriveへの書込み、自動承認、外部通知、API実行権限の追加はしない。
- * 既存のapiSyncDrafts()は書き込み処理なので、ここから勝手には呼ばない。
- *
- * 接続先の既存HTML関数: call(), el(), put(), showDetail(), toast()
- * 接続方法: showList() の「下書き一覧」を描画後、
- *   oshLegacyInboxStart(document.querySelector('#osh-new-draft-notice'));
- *     を呼ぶ。該当要素は最初に <div id="osh-new-draft-notice"></div> を配置。
- * showDetail() のとき oshLegacyInboxStop() で二重タイマーを解消する。
- * ブラウザがページを閉じればタイマーは終了する。
+ * オシスマ：承認画面で新着下書きを表示する部品（本番未導入）。
+ * 専用の本人認証付き oshLegacyReviewInbox() を定期的に読むだけ。
+ * apiList() は承認状態の自動整理時に管理シートを書き得るため使用しない。
+ * 画面を閉じた後は通信しない。メールやプッシュ通知は行わない。
  */
 const OSH_LEGACY_INBOX = {
   intervalMs: 90000, // 90秒ごとの読み取り。管理シートに新規下書きが入った場合のみ通知
@@ -44,7 +37,7 @@ async function oshLegacyInboxCheck_() {
   if(typeof document!=='undefined'&&document.visibilityState==='hidden')return;
   state.running=true;
   try{
-    const list=await call('apiList'); // 読み取り専用。既存の本人確認を使用。
+    const list=await call('oshLegacyReviewInbox'); // 本人確認付きの書込みなし専用API
     const ids=new Set(oshLegacyInboxIds_(list));
     if(state.seen===null){
       state.seen=ids; // 初回の既存案件は新着として扱わない
