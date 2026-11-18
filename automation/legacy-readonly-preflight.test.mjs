@@ -14,7 +14,7 @@ function fakeSheet(values){
  getRange:()=>({getValues:()=>[values]})
  };
 }
-function setup({authorized=true,changedHeaders=false,missingFolder=false,triggerOn=false,noFolderIds=false}={}){
+function setup({authorized=true,changedHeaders=false,missingFolder=false,triggerOn=false,noFolderIds=false,responseLastRow=99}={}){
  const p=new Map(Object.entries({
  OSH_LEGACY_AUTO_IMPORT_ENABLED:triggerOn?'true':'false',
  OSH_LEGACY_AUTO_DRAFT_ENABLED:'false',
@@ -39,7 +39,7 @@ function setup({authorized=true,changedHeaders=false,missingFolder=false,trigger
  requireApprover_:()=>{if(!authorized)throw Error('権限なし')},
  PropertiesService:{getScriptProperties:()=>({getProperty:k=>p.get(k)??null})},
  book_:()=>book,
- responseSheet_:()=>{calls.reads++;return fakeSheet(['タイムスタンプ','機種','修理内容','写真'])},
+ responseSheet_:()=>{calls.reads++;return {...fakeSheet(['タイムスタンプ','機種','修理内容','写真']), getLastRow:()=>responseLastRow}},
  getLayout_:()=>({map:{timestamp:[0],model:[1],details:[2],photos:[3]}}),
  Drive:{Files:{get:(id)=>{
  calls.reads++;const which=id.split('-')[0];
@@ -80,4 +80,14 @@ test('auto-import being ON is reported as unsafe for preflight',()=>{
 test('diagnosis does not expose secret configuration values',()=>{
  const x=setup();const raw=JSON.stringify(x.call());
  assert.ok(!raw.includes('SECRET'));assert.ok(!raw.includes('root-012345'));assert.ok(!raw.includes('test-model'));
+});
+
+test('starting at an already existing response row is unsafe',()=>{
+ const x=setup({responseLastRow:120});const r=x.call();
+ assert.equal(r.items.find(y=>y.key==='new-rows-only').ok,false);
+ assert.equal(r.readyForReview,false);
+});
+test('start after current final response row remains safe for historical reports',()=>{
+ const x=setup({responseLastRow:99});const r=x.call();
+ assert.equal(r.items.find(y=>y.key==='new-rows-only').ok,true);
 });
