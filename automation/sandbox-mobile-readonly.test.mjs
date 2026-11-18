@@ -1,119 +1,115 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
+import {readFileSync} from 'node:fs';
 
-const script=readFileSync(new URL('./sandbox-mobile-readonly.gs',import.meta.url),'utf8');
-const ID='1JB-duIYGsyzSzJXEdHB5SAqRJkQFtxeYmWmXBWm5P-I';
-const NAME='オシスマ_修理事例自動化_合成テスト専用_20261118';
-const HEAD=['報告ID','版','HP','Google','報告データ（JSON）','更新日時'];
-function fixture(){
- return {
-   reportId:'R-20261118-demo0001',status:'draft',
-   source:{type:'synthetic-test',mode:'sandbox'},
-   media:[],approval:{hp:{state:'draft'},gbp:{state:'draft'}},
-   publishLog:{hp:null,gbp:null},
-   sandboxReview:{state:'confirmed',reason:'',at:'2026-11-18T10:18:54.989Z',testOnly:true},
-   drafts:{hp:{titleArea:'水戸市',titleDevice:'iPhone 15',titleServices:['画面交換'],
-     description:'架空の記事です',sections:[{heading:'ご相談',paragraphs:['画面割れ']}]} }
- };
+const code=readFileSync(new URL('./sandbox-mobile-readonly.gs',import.meta.url),'utf8');
+const KEY='OSH_SANDBOX_MOBILE_PREVIEW_V1';
+function context(options={}){
+  const records=new Map();
+  const errors=[],writes=[];
+  if(options.snapshot!==undefined) records.set(KEY,options.snapshot);
+  const props={
+    getProperty:k=>k==='OSH_SANDBOX_OWNER_EMAIL'?(options.owner??'owner@example.test'):(records.get(k)||null),
+    setProperty:(k,v)=>{writes.push([k,v]);records.set(k,v);}
+  };
+  const raw={
+    reportId:'R-20261118-demo0001',source:{mode:'sandbox',type:'synthetic-test'},
+    sandboxReview:{state:'confirmed',testOnly:true},media:[],publishLog:{hp:null,gbp:null}
+  };
+  if(options.reportEdit)options.reportEdit(raw);
+  const ctx=vm.createContext({
+    PropertiesService:{getScriptProperties:()=>props},
+    Session:{getActiveUser:()=>({getEmail:()=>options.actor??'owner@example.test'})},
+    oshSandboxReviewReadContext_:()=>({report:raw,revision:2}),
+    oshSandboxReviewRead:()=>({
+      reportId:raw.reportId,revision:2,title:'水戸市のiPhone 15画面交換',
+      description:'架空の画面修理',sections:[{heading:'修理内容',paragraphs:['画面を交換しました']}],
+      review:{state:'confirmed'},photoCount:0,canPublish:false
+    }),
+    HtmlService:{createHtmlOutput(html){return {html,setTitle(){return this}}}},
+    Logger:{log:x=>errors.push(x)},
+    Date,JSON,Object,Error,Number,String,Array
+  });
+  vm.runInContext(code,ctx,{timeout:1000});
+  return {ctx,records,writes,errors};
 }
-function environment(options={}){
- const calls=[],report=fixture();
- if(options.change)options.change(report);
- const rows=options.rows||[HEAD,['R-20261118-demo0001','2','draft','draft',JSON.stringify(report),'2026-11-18T10:18:54.989Z']];
- const sheets={
-  Spreadsheets:{
-   get(id,opts){calls.push(['meta',id,opts]);return {
-     spreadsheetId:options.id??ID,properties:{title:options.title??NAME}
-   }},
-   Values:{get(id,range,opts){calls.push(['range',id,range,opts]);return {values:rows}}}
-  }
- };
- const htmls=[];
- const ctx=vm.createContext({
-  PropertiesService:{getScriptProperties:()=>({getProperty:key=>
-    key==='OSH_SANDBOX_OWNER_EMAIL'?(options.allowed??'owner@example.test'):''
-  })},
-  Session:{getActiveUser:()=>({getEmail:()=>options.actor??'owner@example.test'})},
-  Sheets:options.missingService?undefined:sheets,
-  HtmlService:{createHtmlOutput(html){htmls.push(html);return {html,setTitle(){return this}}}},
-  JSON,Error,String,Object,Number,Array
- });
- vm.runInContext(script,ctx,{timeout:1000});
- return {ctx,calls,htmls};
+function prepared(options={}){
+ const e=context(options);
+ e.ctx.oshSandboxMobileCaptureSnapshot();
+ return e;
 }
-test('server code has valid syntax',()=>{
- assert.doesNotThrow(()=>new vm.Script(script));
+test('GAS source and embedded browser script parse',()=>{
+ const e=prepared(),html=e.ctx.doGet().html;
+ assert.doesNotThrow(()=>new vm.Script(code));
+ const browser=html.match(/<script>([\s\S]+?)<\/script>/)?.[1];
+ assert.ok(browser);assert.doesNotThrow(()=>new vm.Script(browser));
 });
-test('synthetic-only owner can read confirmed article without any writes',()=>{
- const e=environment(),data=e.ctx.oshSandboxMobileRead();
- assert.match(data.title,/水戸市.*iPhone 15/);
- assert.equal(data.revision,2);
+test('owner can snapshot an already confirmed synthetic article once and read it without Google Sheets API',()=>{
+ const e=prepared();
+ assert.equal(e.writes.length,1);
+ assert.equal(e.writes[0][0],KEY);
+ const payload=JSON.parse(e.records.get(KEY));
+ assert.equal(payload.type,'osh-sandbox-mobile-v1');
+ assert.equal(payload.reportId,'R-20261118-demo0001');
+ assert.equal(payload.review.state,'confirmed');
+ const data=e.ctx.oshSandboxMobileRead();
  assert.equal(data.review.state,'confirmed');
  assert.equal(data.canPublish,false);
  assert.equal(data.photoCount,0);
- assert.deepEqual(e.calls.map(c=>c[0]),['meta','range']);
- assert.equal(e.calls[1][2],"'下書き'!A1:F100");
+ assert.match(data.title,/iPhone 15/);
+ assert.equal(e.writes.length,1);
 });
-test('no owner configured, missing active user, or another account blocks before any API calls',()=>{
- for(const opt of [{allowed:''},{actor:''},{actor:'another@example.test'}]){
-  const e=environment(opt);
+test('owner gate prevents reading and snapshot creation for missing email or another user',()=>{
+ for(const options of [{owner:''},{actor:''},{actor:'other@example.test'}]){
+  const e=context(options);
   assert.throws(()=>e.ctx.oshSandboxMobileRead());
-  assert.equal(e.calls.length,0);
-  const page=e.ctx.doGet();
-  assert.match(page.html,/アクセスできません/);
-  assert.equal(e.calls.length,0);
+  assert.throws(()=>e.ctx.oshSandboxMobileCaptureSnapshot());
+  assert.equal(e.writes.length,0);
+  assert.match(e.ctx.doGet().html,/このページにはアクセスできません/);
  }
 });
-test('all file identity, header, and record-quantity changes fail closed',()=>{
- const cases=[
-  {id:'different'}, {title:'production'},
-  {rows:[HEAD]},
-  {rows:[HEAD,['R-20261118-demo0001','2','draft','draft','{}'],['extra']]},
-  {rows:[['wrong'],['R-20261118-demo0001','2','draft','draft','{}']]}
- ];
- for(const opt of cases){
-  const e=environment(opt);
-  assert.throws(()=>e.ctx.oshSandboxMobileRead());
+test('fresh snapshot required and malformed payload rejected',()=>{
+ const cases=['','no-json','{}',JSON.stringify({type:'osh-sandbox-mobile-v1',reportId:'wrong'})];
+ for(const snapshot of cases){
+   const e=context({snapshot});
+   assert.throws(()=>e.ctx.oshSandboxMobileRead());
  }
 });
-test('data from production or any approved/published/photo-bearing case is refused',()=>{
- const changes=[
-  r=>r.source.mode='production',
-  r=>r.source.type='google-form',
-  r=>r.approval.hp.state='approved',
-  r=>r.approval.gbp.state='approved',
-  r=>r.publishLog.hp={published:true},
-  r=>r.publishLog.gbp={published:true},
-  r=>r.media.push({id:'p1'}),
-  r=>{r.drafts.hp.sections=null},
-  r=>{r.sandboxReview.testOnly=false},
-  r=>{r.sandboxReview.state='published'}
- ];
- for(const change of changes){
-  const e=environment({change});
-  assert.throws(()=>e.ctx.oshSandboxMobileRead());
- }
-});
-test('missing or unconfigured Sheets Advanced Service is a safe failure',()=>{
- const e=environment({missingService:true});
+test('stale and future-dated snapshots rejected',()=>{
+ const e=prepared();
+ const snap=JSON.parse(e.records.get(KEY));
+ snap.createdAt='2024-01-01T00:00:00.000Z';
+ e.records.set(KEY,JSON.stringify(snap));
+ assert.throws(()=>e.ctx.oshSandboxMobileRead());
+ snap.createdAt='2099-01-01T00:00:00.000Z';
+ e.records.set(KEY,JSON.stringify(snap));
  assert.throws(()=>e.ctx.oshSandboxMobileRead());
 });
-test('successful owner page embeds no raw report body or identifiers',()=>{
- const e=environment();
- const page=e.ctx.doGet();
- assert.match(page.html,/架空データ専用/);
- assert.doesNotMatch(page.html,/20261118-demo0001/);
- assert.doesNotMatch(page.html,/owner@example.test/);
- assert.doesNotMatch(page.html,/onclick=/);
- assert.doesNotMatch(page.html,/oshSandboxReviewSave/);
- const client=page.html.match(/<script>([\s\S]+?)<\/script>/)?.[1];
- assert.ok(client);
- assert.doesNotThrow(()=>new vm.Script(client));
+test('published, production, photo and other report prevented from snapshot creation',()=>{
+ const changes=[
+   r=>r.source.mode='production',r=>r.source.type='google-form',
+   r=>r.reportId='other',r=>r.sandboxReview.state='returned',
+   r=>r.sandboxReview.testOnly=false,r=>r.media.push({id:'p1'}),
+   r=>r.publishLog.hp={published:true},r=>r.publishLog.gbp={published:true}
+ ];
+ for(const reportEdit of changes){
+   const e=context({reportEdit});
+   assert.throws(()=>e.ctx.oshSandboxMobileCaptureSnapshot());
+   assert.equal(e.writes.length,0);
+ }
 });
-test('no mutation, emails, AI transfer, or unexpected execution entrypoints',()=>{
- assert.doesNotMatch(script,/\b(?:appendRow|setValues|setValue|UrlFetchApp|GmailApp|MailApp|DriveApp|LockService)\b/);
- assert.doesNotMatch(script,/function\s+doPost\s*\(/);
- assert.doesNotMatch(script,/oshSandboxReviewSave\s*\(/);
+test('no broad spreadsheet scopes, outbound networks, email, deployment or public mutations',()=>{
+ assert.doesNotMatch(code,/spreadsheets\.readonly|Sheets\.Spreadsheets|SpreadsheetApp\.openById/);
+ assert.doesNotMatch(code,/\b(?:UrlFetchApp|MailApp|GmailApp|DriveApp)\b/);
+ assert.doesNotMatch(code,/function\s+doPost\s*\(/);
+ assert.doesNotMatch(code,/oshSandboxReviewSave\s*\(/);
+ assert.doesNotMatch(code,/\.appendRow\s*\(/);
+ assert.doesNotMatch(code,/\.setValues\s*\(/);
+});
+test('HTML template contains no raw report text, owner email, script property contents or buttons',()=>{
+ const e=prepared(),html=e.ctx.doGet().html;
+ assert.match(html,/架空データ専用/);
+ assert.doesNotMatch(html,/owner@example\.test|20261118-demo0001|画面を交換しました/);
+ assert.doesNotMatch(html,/<button/);
 });
