@@ -55,3 +55,10 @@ test('unknown HTML template cannot receive the integrations',()=>{
 test('missing helper scripts cannot generate approval UI',()=>{
  assert.throws(()=>assembleLegacyReview(synthetic,'',''),/部品が不足/);
 });
+
+test('assembled HTML script compiles after Apps Script template substitution',()=>{
+ const s=assembleLegacyReview(synthetic,ui,inbox);
+ const script=s.match(/<script>([\\s\\S]*?)<\\/script>/);
+ assert.ok(script,'HTML must include the target script');
+ assert.doesNotThrow(()=>new vm.Script(script[1].replace('<?= allowed ?>','true')));
+});
