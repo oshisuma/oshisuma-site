@@ -8,7 +8,7 @@
 :root{font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;color:#262626;background:#fff8f2}
 *{box-sizing:border-box}body{margin:0}header{background:#ef7625;padding:16px;color:#fff;font-weight:800}
 main{max-width:760px;margin:auto;padding:18px}.notice{padding:14px;background:#fff1df;border-radius:12px;margin:16px 0}
-.panel{background:#fff;border:1px solid #edddcd;border-radius:12px;padding:16px;margin:16px 0}
+.panel{background:#fff;border:1px solid #edddcd;border-radius:12px;padding:16px;margin:16px 0}.choice{display:block;width:100%;text-align:left;color:#262626;background:#fff;border:1px solid #e6d9ce;margin:8px 0;padding:12px;border-radius:10px}.choice:hover{background:#fff1df}.choice small{display:block;color:#666}.choice:focus-visible{outline:3px solid #ed7625}
 h1{font-size:1.45rem;margin:14px 0}h2{font-size:1.2rem}h3{font-size:1.05rem}
 p{line-height:1.75;overflow-wrap:anywhere}label{font-weight:700}input{font:inherit;padding:12px;border:1px solid #aaa;border-radius:8px;width:100%;margin:8px 0}
 button{font:inherit;color:white;background:#a34b13;padding:12px;border:0;border-radius:9px;width:100%;cursor:pointer}
@@ -16,7 +16,8 @@ button:disabled{background:#aaa;cursor:default}.small{color:#666;font-size:.9rem
 </style></head><body>
 <header>オシスマ｜本人限定・公開前の下書き確認</header>
 <main><div class="notice">この画面は記事の確認専用です。公開・承認操作はできません。写真はまだ読み込まれません。</div>
-<section class="panel"><label for="reportId">報告ID</label><input id="reportId" autocomplete="off" placeholder="R-20261118-xxxxxxxx">
+<section class="panel"><h2>確認待ちの修理報告</h2><button id="refresh" type="button">確認待ちの一覧を表示</button><div id="cases"></div><p class="small">公開保留の記事は「保留」と表示します。ここからの承認・公開はできません。</p></section>
+<section class="panel"><label for="reportId">報告ID（一覧にない場合だけ入力）</label><input id="reportId" autocomplete="off" placeholder="R-20261118-xxxxxxxx">
 <button id="load">下書きを確認する</button><p id="message" role="status"></p></section>
 <div id="result" hidden><section class="panel"><h1 id="title"></h1><p id="stage"></p></section>
 <section class="panel"><h2>HP記事の下書き</h2><div id="hp"></div></section>
@@ -32,6 +33,22 @@ const add=(parent,tag,text,cls)=>{
  const element=document.createElement(tag);if(cls)element.className=cls;
  element.textContent=String(text??'');parent.appendChild(element);return element;
 };
+function renderList(list){
+ const area=$('cases');area.replaceChildren();
+ if(!Array.isArray(list)||!list.length){add(area,'p','現在確認待ちの記事はありません。');return;}
+ for(const item of list){
+  if(!/^R-\d{8}-[a-z0-9]{8}$/i.test(item.reportId))continue;
+  const button=document.createElement('button');button.type='button';button.className='choice';
+  const flag=item.stage==='hold'?'【公開保留】':'【下書き】';
+  add(button,'span',flag+' '+item.device+'｜'+item.area);
+  add(button,'small','報告ID：'+item.reportId+' ／ 版：'+item.revision);
+  button.addEventListener('click',()=>{
+   $('reportId').value=item.reportId;
+   $('load').click();
+  });
+  area.appendChild(button);
+ }
+}
 function render(data){
  const root=$('result');root.hidden=false;
  $('title').textContent=data.device+'｜'+data.area;
@@ -54,6 +71,18 @@ function render(data){
  }
  $('gbp').textContent=data.gbp||'Google投稿用の文章はありません。';
 }
+$('refresh').addEventListener('click',()=>{
+ if(!(typeof google!=='undefined'&&google.script&&google.script.run)){
+  $('message').textContent='Google Apps Scriptから開いてください。';return;
+ }
+ $('refresh').disabled=true;$('message').textContent='確認待ちを読み込んでいます…';
+ google.script.run.withSuccessHandler(items=>{
+  $('refresh').disabled=false;$('message').textContent='';
+  renderList(items);
+ }).withFailureHandler(err=>{
+  $('refresh').disabled=false;$('message').textContent=err?.message||'一覧を取得できませんでした';
+ }).oshPreviewOwnerPending();
+});
 $('load').addEventListener('click',()=>{
  const id=$('reportId').value.trim();
  if(!/^R-\d{8}-[a-z0-9]{8}$/i.test(id)){$('message').textContent='報告IDを確認してください。';return;}
