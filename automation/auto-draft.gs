@@ -63,7 +63,8 @@ function oshAutoTick() {
       try { report = JSON.parse(file.getBlob().getDataAsString('utf-8')); }
       catch (e) { Logger.log('不正なJSON: ' + name); continue; }
       if (!report || report.reportId + '.json' !== name || report.source?.mode !== 'production') continue;
-      if (c.held.includes(report.reportId) || report.status === 'hold') continue;
+      if (c.held.includes(report.reportId) || report.workflow?.stage === 'hold') continue;
+      if (report.status !== 'draft' || report.workflow?.stage !== 'needs-ai-draft') continue;
       if (report.approval?.hp?.state !== 'draft' || report.publishLog?.hp || report.drafts?.hp) continue;
       if (!report.intake?.reportText || !report.facts?.area?.name || !report.facts?.device?.name) continue;
       if (oshAutoFile_(drafts, name)) {
@@ -151,7 +152,8 @@ function oshAutoMerge_(r, v) {
   d.approval.hp = { state: 'draft' };
   d.approval.gbp = { state: 'draft' };
   if (!v.ready) {
-    d.status = 'hold';
+    d.status = 'draft';
+    d.workflow = { stage: 'hold' };
     d.facts.uncertain.push('修理完了または結果が未確認のため公開保留');
     return d;
   }
@@ -166,7 +168,8 @@ function oshAutoMerge_(r, v) {
     sections: v.hp.sections, featureMedia: p1, cardMedia: p2 };
   d.drafts.gbp = { summary: v.gbp.summary, media: p1 };
   // 画像の検査・補正が終わるまで公開不可。承認状態は常に draft。
-  d.status = 'needs-photo-review';
+  d.status = 'draft';
+  d.workflow = { stage: 'needs-photo-review' };
   d.media = (d.media || []).map(m => ({ ...m, privacyCheck: 'pending', contentMatch: 'pending', alt: '', caption: '' }));
   d.facts.uncertain.push('写真のプライバシー・品質・内容照合が未完了。承認前に確認が必要');
   return d;
