@@ -107,9 +107,11 @@ test('no broad spreadsheet scopes, outbound networks, email, deployment or publi
  assert.doesNotMatch(code,/\.appendRow\s*\(/);
  assert.doesNotMatch(code,/\.setValues\s*\(/);
 });
-test('HTML template contains no raw report text, owner email, script property contents or buttons',()=>{
+test('HTML template contains no raw report text, owner email, script property contents or production publish button',()=>{
  const e=prepared(),html=e.ctx.doGet().html;
  assert.match(html,/架空データ専用/);
  assert.doesNotMatch(html,/owner@example\.test|20261118-demo0001|画面を交換しました/);
- assert.doesNotMatch(html,/<button/);
+ assert.match(html,/確認済みにする（テスト）/);
+ assert.match(html,/差し戻す（テスト）/);
+ assert.doesNotMatch(html,/id="publish"|公開する（本番）/);
 });
