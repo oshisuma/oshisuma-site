@@ -92,6 +92,15 @@ function oshSandboxMobileRead(){
 }
 
 function doGet(e){
+  // 別の架空記事だけを表示する差し戻し専用テスト画面。
+  // 通常の記事や前回の確認記録には触れない。
+  if(e && e.parameter && e.parameter.mode==='return'){
+    try{return oshSandboxReturnPage();}
+    catch(_){return HtmlService.createHtmlOutput(
+      '<!doctype html><html lang="ja"><meta charset="utf-8">'+
+      '<title>閲覧できません</title><p>このページにはアクセスできません。</p></html>'
+    ).setTitle('オシスマ｜アクセスできません');}
+  }
   try{oshSandboxMobileRead();}
   catch(_){
     return HtmlService.createHtmlOutput(
