@@ -28,7 +28,7 @@ import { join, resolve, relative, isAbsolute } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ROOT, SITE, CASES_URL, fingerprint, hpTitle } from './lib.mjs';
 import { isPublishable } from './photos.mjs';
-import { loadPrivacy } from './privacy.mjs';
+import { loadPrivacy, CHECK_ITEMS } from './privacy.mjs';
 
 export const PAGES_PROJECT = 'oshisuma-site';
 
@@ -62,6 +62,8 @@ export function readSet(file) {
   const c = s.candidates[0];
   const r = c.report;
   if (!r || r.reportId !== c.reportId || !r.drafts || !r.drafts.hp) throw new Error('公開セットの報告データが正しくありません。');
+  // 保留中の記事は公開しない
+  if (r.hold && r.hold.on) throw new Error('この記事は保留中です（承認画面で保留を解除し、承認し直してください）。');
   // 承認：HP記事は必須。Google最新情報・写真一覧は、承認済みなら内容が変わっていないこと
   const a = c.approval || {};
   if (!a.hp || a.hp.state !== 'approved') throw new Error('HP記事が承認済みではありません。');
@@ -77,6 +79,9 @@ export function readSet(file) {
   if (missing.length) throw new Error(`「公開OK」の写真 ${missing.join('・')} が公開セットに入っていません。`);
   if (extra.length) throw new Error(`「公開OK」ではない写真 ${extra.join('・')} が公開セットに入っています（使いません）。`);
   if (new Set(got).size !== got.length) throw new Error('同じ写真が2つ入っています。');
+  // AIの写真チェックで警告がある写真は、オーナーが警告を確認して「公開OK」にしたものだけ
+  const unchecked = r.media.filter((m) => got.includes(m.id) && m.aiCheck && (m.aiCheck.concerns || []).length && !m.warningsCheckedAt).map((m) => m.id);
+  if (unchecked.length) throw new Error(`写真 ${unchecked.join('・')} にはAIの警告があり、オーナーの確認の記録がありません（承認画面で確認してください）。`);
   const photos = s.photos.map((p) => {
     if (p.reportId !== c.reportId) throw new Error(`写真 ${p.id} が別の報告のものです。`);
     if (!new RegExp(`^${p.id}\\.(jpe?g|png|heic|webp)$`, 'i').test(p.name || '')) throw new Error(`写真 ${p.id} のファイル名が正しくありません。`);
@@ -86,6 +91,22 @@ export function readSet(file) {
     return { id: p.id, name: p.name, buf };
   });
   return { set: s, candidate: c, photos };
+}
+
+// オーナーの確認（承認画面で「公開OK」・AIの警告の確認）から、写真の確認の内容を作る。写真は加工しない
+export function ownerPrivacy(c, photos) {
+  const r = c.report;
+  const out = { reportId: c.reportId, version: 1, checkedBy: 'オーナー（承認画面で写真を確認して公開OK）', checkedAt: (c.approval.hp && c.approval.hp.at) || '', photos: {} };
+  for (const p of photos) {
+    const m = r.media.find((x) => x.id === p.id);
+    if (!m || !isPublishable(m)) throw new Stop(`写真 ${p.id} はオーナーの「公開OK」になっていません。`);
+    out.photos[p.id] = {
+      sha256: createHash('sha256').update(p.buf).digest('hex'), status: 'ok', checked: CHECK_ITEMS.slice(),
+      crop: null, redact: [], rotate: 0, enhance: 'off',
+      note: m.aiCheck && (m.aiCheck.concerns || []).length ? 'AIの警告をオーナーが確認して公開OK' : 'オーナーが確認して公開OK'
+    };
+  }
+  return out;
 }
 
 // ---------------------------------------------------------------- 実行
@@ -141,10 +162,18 @@ export async function main(argv) {
     if (before.publishLog && before.publishLog.hp && before.publishLog.hp.fp === c.approval.hp.fp) stop('この内容はすでに公開済みです（何もしません）。');
   }
   // 写真のプライバシー確認（必須）：公開OKの写真すべてを、この写真そのもの（SHA-256）で確認してあること
-  const privacyFile = opt('--privacy') ? resolve(opt('--privacy')) : null;
-  if (!privacyFile || !existsSync(privacyFile)) stop('写真のプライバシー確認ファイル（--privacy）がありません。公開OKの写真を確認して、処理の内容を決めてから実行してください。');
+  // --owner-check … オーナーが承認画面で写真を確認して「公開OK」にした判断をそのまま使う（写真は加工しない：
+  //                 塗りつぶし・ぼかし・切り抜き・傾きの修正・画質の補正をしない。サイズの変換と撮影情報の削除だけ）
+  const ownerCheck = argv.includes('--owner-check');
+  if (ownerCheck && opt('--privacy')) stop('--owner-check と --privacy は一緒に使えません。');
+  let privacyFile = opt('--privacy') ? resolve(opt('--privacy')) : null;
   let privacy;
-  try { privacy = loadPrivacy(privacyFile, id); } catch (e) { stop(e.message); }
+  if (ownerCheck) {
+    privacy = ownerPrivacy(c, photos);
+  } else {
+    if (!privacyFile || !existsSync(privacyFile)) stop('写真のプライバシー確認ファイル（--privacy）がありません。公開OKの写真を確認して処理の内容を決めるか、--owner-check（オーナーの確認だけ・加工なし）で実行してください。');
+    try { privacy = loadPrivacy(privacyFile, id); } catch (e) { stop(e.message); }
+  }
   for (const p of photos) {
     const e = privacy.photos[p.id];
     if (!e) stop(`写真 ${p.id} のプライバシー確認がありません（確認していない写真は公開しません）。`);
@@ -180,6 +209,10 @@ export async function main(argv) {
   if (existsSync(work) && readdirSync(work).length) stop(`作業フォルダ ${work} が空ではありません。`);
   mkdirSync(join(work, 'photos', id), { recursive: true });
   for (const p of photos) writeFileSync(join(work, 'photos', id, p.name), p.buf);
+  if (ownerCheck) {
+    privacyFile = join(work, 'photo-check-owner.json');      // 作業フォルダ（リポジトリの外）に置き、画像の作成で使う
+    writeFileSync(privacyFile, JSON.stringify(privacy, null, 2));
+  }
   const candFile = join(work, 'candidates.json');
   writeFileSync(candFile, JSON.stringify({ exportVersion: 1, exportedAt: read.set.exportedAt, candidates: [c] }, null, 2));
   const prepared = join(work, 'prepared.json');
@@ -237,8 +270,10 @@ export async function main(argv) {
   console.log(`  一覧のプレビュー：${base}${CASES_URL}`);
   console.log(`  作業フォルダ（写真一覧用の画像など・リポジトリの外）：${work}`);
   notes.forEach((n) => console.log(`  ※ ${n}`));
+  const prUrl = `https://github.com/oshisuma/oshisuma-site/compare/main...${branch}?expand=1`;
+  if (push) console.log(`  GitHubのレビュー（PR）を作るページ：${prUrl}`);
   console.log('  まだ本番には公開していません。オーナーがプレビューを確認し、承認してから main に統合します。');
-  return { work, title, slug: hp.slug, branch, articleUrl, notes };
+  return { work, title, slug: hp.slug, branch, articleUrl, notes, prUrl };
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
