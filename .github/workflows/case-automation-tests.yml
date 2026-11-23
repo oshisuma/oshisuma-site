@@ -1,0 +1,35 @@
+name: Repair case automation checks
+on:
+  pull_request:
+    paths:
+      - 'automation/**'
+      - 'tools/cases/**'
+      - '.github/workflows/case-automation-tests.yml'
+  push:
+    branches:
+      - 'work/auto-case-pipeline-phase1-20261117'
+    paths:
+      - 'automation/**'
+      - 'tools/cases/**'
+      - '.github/workflows/case-automation-tests.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test automation/*.test.mjs
+      # Secrets or real customer photos are NEVER part of this artifact.
+      - name: Assemble review-only Apps Script add-on
+        run: node automation/build-legacy-bundle.mjs --out "$RUNNER_TEMP/oshisuma-legacy-addon.gs"
+      - name: Upload review-only bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: oshisuma-legacy-addon-review
+          path: ${{ runner.temp }}/oshisuma-legacy-addon.gs
+          if-no-files-found: error
+          retention-days: 7

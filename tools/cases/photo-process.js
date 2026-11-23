@@ -41,9 +41,52 @@
     return btoa(s);
   }
 
+  // マスクは撮影画像全体の0..1座標で指定し、常に不透明の塗りつぶしにする。
+  // ぼかしだけではQRや番号を復元できる場合があるため、識別情報には塗りつぶしを優先。
+  // 入力座標が不正なら公開用画像の生成を中断する（加工漏れを作らない）。
+  function maskRect(sourceWidth, sourceHeight, crop, layoutValue, mask) {
+    const vals = [mask.x, mask.y, mask.w, mask.h];
+    if (!vals.every(v => typeof v === 'number' && Number.isFinite(v)) ||
+        mask.w <= 0 || mask.h <= 0 ||
+        mask.x < 0 || mask.y < 0 || mask.x + mask.w > 1 || mask.y + mask.h > 1) {
+      throw new Error('個人情報マスクの範囲が不正です');
+    }
+    const mx = mask.x * sourceWidth;
+    const my = mask.y * sourceHeight;
+    const mw = mask.w * sourceWidth;
+    const mh = mask.h * sourceHeight;
+    const sx = Math.max(mx, layoutValue.sx);
+    const sy = Math.max(my, layoutValue.sy);
+    const ex = Math.min(mx + mw, layoutValue.sx + layoutValue.sw);
+    const ey = Math.min(my + mh, layoutValue.sy + layoutValue.sh);
+    if (ex <= sx || ey <= sy) return null;
+    return {
+      x: (sx - layoutValue.sx) * layoutValue.w / layoutValue.sw,
+      y: (sy - layoutValue.sy) * layoutValue.h / layoutValue.sh,
+      w: (ex - sx) * layoutValue.w / layoutValue.sw,
+      h: (ey - sy) * layoutValue.h / layoutValue.sh
+    };
+  }
+  function safeTone(tone) {
+    if (!tone) return { brightness: 1, contrast: 1, saturation: 1 };
+    const vals = [tone.brightness, tone.contrast, tone.saturation];
+    if (!vals.every(v => typeof v === 'number' && Number.isFinite(v)))
+      throw new Error('写真補正値が不正です');
+    // 自然な写真補正の範囲のみ許可。破損や傷を消すための生成的編集はしない。
+    if (tone.brightness < 0.9 || tone.brightness > 1.1 ||
+        tone.contrast < 0.9 || tone.contrast > 1.1 ||
+        tone.saturation < 0.92 || tone.saturation > 1.08)
+      throw new Error('写真補正値が強すぎます');
+    return tone;
+  }
+
   // renditions: [{ key, spec, formats: [{ type: 'image/jpeg', quality: 0.82 }, …] }]
   // region: { x, y, w, h }（0〜1）… 人の顔・伝票などを外すために、写真の一部だけを使うとき
-  async function process(blob, renditions, region) {
+  async function process(blob, renditions, region, options) {
+    const opts = options || {};
+    const masks = Array.isArray(opts.masks) ? opts.masks : [];
+    if (masks.length > 25) throw new Error('個人情報マスクが多すぎます');
+    const tone = safeTone(opts.tone || null);
     const bmp = await loadBitmap(blob);
     const source = { width: bmp.width, height: bmp.height };
     const rg = region || { x: 0, y: 0, w: 1, h: 1 };
@@ -63,7 +106,16 @@
       ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, l.w, l.h);
       ctx.imageSmoothingQuality = 'high';
+      ctx.filter = 'brightness(' + tone.brightness + ') contrast(' + tone.contrast +
+        ') saturate(' + tone.saturation + ')';
       ctx.drawImage(bmp, l.sx, l.sy, l.sw, l.sh, 0, 0, l.w, l.h);
+      ctx.filter = 'none';
+      ctx.fillStyle = '#1f2937';
+      for (const mask of masks) {
+        const rect = maskRect(bmp.width, bmp.height, rg, l, mask);
+        if (rect) ctx.fillRect(Math.floor(rect.x), Math.floor(rect.y),
+          Math.ceil(rect.w + 1), Math.ceil(rect.h + 1));
+      }
       for (const f of r.formats) {
         const b = await toBlob(canvas, f.type, f.quality);
         // ブラウザがWebPの書き出しに対応していない場合は、PNGなど別の形式になるため使わない
@@ -75,5 +127,5 @@
     return { source, renditions: out };
   }
 
-  global.OshismaPhoto = { process, layout };
+  global.OshismaPhoto = { process, layout, maskRect, safeTone };
 })(typeof window !== 'undefined' ? window : globalThis);
