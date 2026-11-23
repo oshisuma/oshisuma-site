@@ -15,10 +15,13 @@ import { join, resolve, relative, isAbsolute } from 'node:path';
 import { ROOT, fingerprint } from './lib.mjs';
 import { RENDITIONS, GBP_PHOTO_RENDITION, GBP_PHOTO_LIMITS, existingImageNames, seoStems, isPublishable } from './photos.mjs';
 import { startBrowser, processPhoto } from './browser.mjs';
+import { loadPrivacy, privacyFor, verifyRedactions, qualityText } from './privacy.mjs';
 
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
 const [candFile, photosDir, outFile, gbpOut] = [opt('--candidates'), opt('--photos'), opt('--out'), opt('--gbp-out')];
+// --privacy <写真のプライバシー確認ファイル> … 個人情報などを塗りつぶし・ぼかしてから公開用の画像を作る（確認のない写真は作らない）
+const privacyFile = opt('--privacy');
 if (!candFile || !photosDir || !outFile) { console.error('--candidates・--photos・--out を指定してください。'); process.exit(1); }
 if (gbpOut) {
   const rel = relative(ROOT, resolve(gbpOut));
@@ -48,6 +51,7 @@ for (const c of input.candidates) {
     }
     // 番号（01・02…）は「公開OK」の写真の並び順で付ける（HP用とGoogle写真一覧用で同じ番号）
     const okMedia = r.media.filter((m) => isPublishable(m) && m.alt);
+    const privacy = privacyFile ? loadPrivacy(privacyFile, id) : null;
     const fresh = okMedia.filter((m) => !m.card);
     const stems = fresh.length ? seoStems(r.facts, hp, okMedia.length, taken, HP_SUFFIXES) : [];
     for (const [i, m] of okMedia.entries()) {
@@ -57,10 +61,19 @@ for (const c of input.candidates) {
       const dir = join(photosDir, id);
       const file = existsSync(dir) && readdirSync(dir).find((f) => f.replace(/\.[^.]+$/, '') === m.id);
       if (!file) throw new Error(`写真 ${m.id} のコピーが受け渡し用フォルダにありません（${dir}）。`);
+      // 写真のプライバシー確認：確認した写真と同じか・公開してよいか・どこを処理するか
+      // 確認ファイルがあるとき（今のしくみ）は、傾きの修正・画質の補正も行う。ないとき（これまでの記事）は今までどおり
+      const pv = privacy ? privacyFor(privacy, m.id, join(dir, file)) : { crop: null, redactions: [], opts: {} };
+      const useCrop = pv.crop || m.crop || null;
+      if (pv.crop) m.crop = pv.crop;
       browser = browser || await startBrowser();
       const stem = needHp ? stems[i] : (m.src.split('/').pop().replace(/\.jpg$/, ''));
       if (needHp) {
-        const result = await processPhoto(browser, join(dir, file), RENDITIONS, m.crop || null);
+        const result = await processPhoto(browser, join(dir, file), RENDITIONS, useCrop, pv.redactions, pv.opts);
+        verifyRedactions(m.id, result.renditions);   // できあがった画像で、処理した部分が読めないことを確かめる
+        if (pv.redactions.length || pv.crop) m.privacyProcessed = true;
+        if (result.quality) m.photoFinish = { rotate: result.rotate, enhanced: result.quality.applied, ...(result.quality.applied ? {} : { skipped: result.quality.problems }) };
+        if (result.quality) console.log(`  写真 ${m.id} の画質の補正：${qualityText(result.quality)}${result.rotate ? `／傾き ${result.rotate}度` : ''}`);
         mkdirSync(join(ROOT, outRel), { recursive: true });
         const files = {};
         for (const x of result.renditions) {
@@ -83,7 +96,8 @@ for (const c of input.candidates) {
       }
       if (needGbp) {
         // Google写真一覧用：切り抜かず高画質のコピー（リポジトリの外）
-        const result = await processPhoto(browser, join(dir, file), [GBP_PHOTO_RENDITION], m.crop || null);
+        const result = await processPhoto(browser, join(dir, file), [GBP_PHOTO_RENDITION], useCrop, pv.redactions, pv.opts);
+        verifyRedactions(m.id, result.renditions);
         const x = result.renditions[0];
         const buf = Buffer.from(x.base64, 'base64');
         if (buf.length < GBP_PHOTO_LIMITS.minBytes || buf.length > GBP_PHOTO_LIMITS.maxBytes) throw new Error(`写真 ${m.id} の写真一覧用の画像が ${buf.length} バイトです（10KB以上5MB以下が必要）。`);

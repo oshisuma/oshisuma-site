@@ -21,6 +21,24 @@ import {
   ROOT, SITE, CASES_URL, loadShell, renderArticle, renderCard, validateReport, fingerprint, hpTitle, readText
 } from './lib.mjs';
 
+// 公開記録（リポジトリ＝誰でも見られる）に入れない管理用の項目。承認画面（管理用スプレッドシート）にはそのまま残る
+const ADMIN_ONLY_REPORT_KEYS = [
+  'intake',        // スタッフの報告文
+  'draftSource',   // 下書きの読み込み元
+  'exported',      // 公開候補の書き出し記録
+  'hold',          // 保留の記録（操作した人のメールアドレス・理由）
+  'aiDraft'        // AI下書きの作成記録（エラー内容など）
+];
+const ADMIN_ONLY_MEDIA_KEYS = [
+  'original',          // 元写真のID
+  'decidedBy',         // 写真を判断した人のメールアドレス
+  'decidedAt',
+  'checkNotes',        // 確認メモ
+  'gbpPhoto',          // このパソコンの中の写真一覧用画像の場所
+  'aiCheck',           // AIの写真チェックの結果・警告
+  'warningsCheckedAt'  // AIの警告を確認して公開OKにした日時
+];
+
 const args = process.argv.slice(2);
 const opt = (n) => { const i = args.indexOf(n); return i >= 0 ? args[i + 1] : null; };
 const candidatesFile = opt('--candidates');
@@ -83,6 +101,8 @@ for (const c of byId.values()) {
     const isTest = r.status === 'test' || (r.source && r.source.type === 'test');
     if (mode === 'production' && isTest) throw new Error('テストデータは本番用に作りません。');
     if (mode === 'test' && !isTest) throw new Error('テストモードでは、テストデータ以外は扱いません。');
+    // 保留中の記事は公開しない（承認画面で保留を解除し、承認し直したものだけ）
+    if (r.hold && r.hold.on) throw new Error('保留中の記事です（承認画面で保留を解除してから承認し直してください）。');
     // 承認の確認：HP記事が承認済みで、承認した時点から内容が変わっていないか
     const hpApproval = c.approval && c.approval.hp;
     if (!hpApproval || hpApproval.state !== 'approved') { record(id, 'skipped', 'HP記事が承認済みではありません'); continue; }
@@ -109,11 +129,10 @@ for (const c of byId.values()) {
     // ページ・カード・サイトマップを作る
     const out = JSON.parse(JSON.stringify(r));
     // リポジトリは誰でも見られるため、スタッフの報告文・確認メモ・承認者のメール・元写真のIDなどは残さない
-    delete out.intake;
-    delete out.draftSource;
-    delete out.exported;
+    // 管理用の情報は承認画面（管理用スプレッドシート）にだけ残し、公開記録には入れない
+    for (const k of ADMIN_ONLY_REPORT_KEYS) delete out[k];
     if (out.facts) delete out.facts.uncertain;
-    for (const m of out.media || []) { delete m.original; delete m.decidedBy; delete m.decidedAt; delete m.checkNotes; delete m.gbpPhoto; }   // gbpPhoto … このパソコンの中の写真一覧用画像の場所
+    for (const m of out.media || []) for (const k of ADMIN_ONLY_MEDIA_KEYS) delete m[k];
     out.status = mode === 'test' ? 'test' : 'published';
     out.approval = { hp: { state: 'approved', at: hpApproval.at, fp: hpApproval.fp }, gbp: { state: c.approval.gbp ? c.approval.gbp.state : 'draft' }, gbpPhotos: { state: c.approval.gbpPhotos ? c.approval.gbpPhotos.state : 'draft' } };
     out.publishLog = {

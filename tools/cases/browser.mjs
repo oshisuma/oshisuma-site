@@ -37,12 +37,35 @@ export async function startBrowser() {
 }
 
 // 元写真（ファイル）から、renditions で指定した公開用の画像を作る
-export function processPhoto(browser, file, renditions, region) {
+// redactions … 読み取れなくする部分（写真のプライバシー確認で決めたもの）
+// opts … { rotate: 傾きの修正（度）, enhance: 画質の補正をするか }
+export function processPhoto(browser, file, renditions, region, redactions, opts) {
   const b64 = readFileSync(file).toString('base64');
   return browser.evaluate(`(async () => {
     const bin = atob(${JSON.stringify(b64)});
     const bytes = new Uint8Array(bin.length);
     for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
-    return OshismaPhoto.process(new Blob([bytes], { type: 'image/jpeg' }), ${JSON.stringify(renditions)}, ${JSON.stringify(region || null)});
+    return OshismaPhoto.process(new Blob([bytes], { type: 'image/jpeg' }), ${JSON.stringify(renditions)}, ${JSON.stringify(region || null)}, ${JSON.stringify(redactions || [])}, ${JSON.stringify(opts || {})});
+  })()`);
+}
+
+// 2つの画像（ファイル）の同じ範囲の形がどれだけ同じか（確認用）
+export function similarityFiles(browser, fileA, fileB, rect) {
+  const a = readFileSync(fileA).toString('base64');
+  const b = readFileSync(fileB).toString('base64');
+  return browser.evaluate(`(async () => {
+    const blob = (s) => { const bin = atob(s); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return new Blob([u]); };
+    return OshismaPhoto.similarity(blob(${JSON.stringify(a)}), blob(${JSON.stringify(b)}), ${JSON.stringify(rect)});
+  })()`);
+}
+
+// 画像（ファイル）の決まった範囲に、細かい模様が残っていないかを測る（確認用）
+export function measureFile(browser, file, rects) {
+  const b64 = readFileSync(file).toString('base64');
+  return browser.evaluate(`(async () => {
+    const bin = atob(${JSON.stringify(b64)});
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return OshismaPhoto.measure(new Blob([bytes]), ${JSON.stringify(rects)});
   })()`);
 }
